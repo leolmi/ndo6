@@ -6,6 +6,7 @@ angular.module('ndo6App')
       .state('main', {
         url: '/',
         templateUrl: 'app/main/main.html',
+        authenticate: true,
         controller: 'MainCtrl'
       });
   });

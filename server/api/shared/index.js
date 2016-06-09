@@ -12,7 +12,7 @@ router.get('/messages/:id', auth.isAuthenticatedOnMap(), controller.indexMessage
 router.post('/point/:id', auth.isAuthenticatedOnMap(), controller.createPoint);
 router.post('/message/:id', auth.isAuthenticatedOnMap(), controller.createMessage);
 
-router.destroy('/point/:id', auth.isAuthenticated(), controller.destroyPoint);
-router.destroy('/message/:id', auth.isAuthenticated(), controller.destroyMessage);
+router.delete('/point/:id', auth.isAuthenticated(), controller.destroyPoint);
+router.delete('/message/:id', auth.isAuthenticated(), controller.destroyMessage);
 
 module.exports = router;

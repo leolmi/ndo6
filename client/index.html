@@ -8,8 +8,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <base href="/">
     <title></title>
-    <meta name="description" content="">
+    <meta name="description" content="Condividi posizione e messaggi tra amici, calcola percorsi">
     <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="bower_components/angular-toastr/dist/angular-toastr.css" />
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(client) app/vendor.css -->
       <!-- bower:css -->
@@ -21,6 +23,7 @@
       <!-- injector:css -->
       <link rel="stylesheet" href="app/account/login/login.css">
       <link rel="stylesheet" href="app/admin/admin.css">
+      <link rel="stylesheet" href="app/animations.css">
       <link rel="stylesheet" href="app/app.css">
       <link rel="stylesheet" href="app/main/main.css">
       <link rel="stylesheet" href="components/modal/modal.css">
@@ -61,6 +64,7 @@
       <script src="bower_components/lodash/dist/lodash.compat.js"></script>
       <script src="bower_components/angular-socket-io/socket.js"></script>
       <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+      <script src="bower_components/angular-toastr/dist/angular-toastr.tpls.js"></script>
       <!-- endbower -->
       <script src="socket.io-client/socket.io.js"></script>
     <!-- endbuild -->
@@ -76,8 +80,11 @@
           <script src="app/admin/admin.js"></script>
           <script src="app/main/main.controller.js"></script>
           <script src="app/main/main.js"></script>
+          <script src="app/services/maps.service.js"></script>
+          <script src="app/services/ndo6.service.js"></script>
           <script src="components/auth/auth.service.js"></script>
           <script src="components/auth/user.service.js"></script>
+          <script src="components/logger/log.service.js"></script>
           <script src="components/modal/modal.service.js"></script>
           <script src="components/mongoose-error/mongoose-error.directive.js"></script>
           <script src="components/navbar/navbar.controller.js"></script>
