@@ -25,10 +25,11 @@ angular.module('ndo6App')
       mapsInitialized : mapsDefer.promise
     };
   })
-  .controller('MainCtrl', ['$scope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth',
-    function ($scope, $http, $window, $location, socket, $timeout, initializer, maps, Auth) {
+  .controller('MainCtrl', ['$scope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth','ndo6','Position',
+    function ($scope, $http, $window, $location, socket, $timeout, initializer, maps, Auth, ndo6, Position) {
 
       $scope.monitorHeight = 200;
+      $scope.currentMap = {};
 
       /**
        * Centra la mappa
@@ -36,6 +37,7 @@ angular.module('ndo6App')
        * @param [finder]
        */
       $scope.centerMap = function(pos, finder){
+        if (!$scope.context) return;
         // il centro è considerato più in alto per
         // lasciare lo spazio al monitor
         var bounds = $scope.context.map.getBounds();
@@ -45,7 +47,7 @@ angular.module('ndo6App')
         var ddl = ($scope.monitorHeight * dl)/(2*H);
 
         // Calcola le coordinate del centro
-        var latLng = maps.getLatLng(google, pos);
+        var latLng = maps.getLatLng($scope.context.G, pos);
 
         // Imposta il centro della mappa
         $scope.context.map.setCenter(latLng);
@@ -53,7 +55,7 @@ angular.module('ndo6App')
         var mrk = finder ? finder() : null;
         if (mrk) {
           // Se ha trovato il marker lo anima
-          mrk.setAnimation(google.maps.Animation.BOUNCE);
+          mrk.setAnimation($scope.context.G.maps.Animation.BOUNCE);
           $timeout(function() { mrk.setAnimation(null); }, 1000);
         }
       };
@@ -73,8 +75,55 @@ angular.module('ndo6App')
 
       $scope.logout = function() {
         Auth.logout();
+        ndo6.reset();
         $location.path('/login');
       };
+
+      var _last = new Position();
+
+      function loop() {
+        if (!ndo6.options.active) return;
+        $timeout(function(){
+          read();
+        }, ndo6.options.delay);
+      }
+
+      function read() {
+        ndo6.readPosition()
+          .then(function (pos) {
+            var npos = new Position(pos);
+            if (!_last || !_last.sameOf(npos)) {
+              if ($scope.currentMap.id && ndo6.options.active)
+                $http.post('/api/position/'+$scope.currentMap.id, npos);
+              _last.keep(npos);
+            }
+            loop();
+          }, function () {
+            loop();
+          });
+      }
+
+
+      $scope.$watch(function() { return ndo6.options.active; }, function(){
+        if (ndo6.options.active) loop();
+      });
+
+      $scope.$watch(function() { return _last; }, function(){
+        //Aggiorna la posizione del marker
+        ndo6.options.clearMarkers();
+        if ($scope.context) {
+          var m = new $scope.context.G.maps.Marker({
+            map: $scope.context.map,
+            label: 'io',
+            position: maps.getLatLng($scope.context.G, _last)
+          });
+          ndo6.options.markers.push(m);
+          $scope.centerMap(m.position);
+        }
+      }, true);
+
+
+      loop();
 
       // $scope.awesomeThings = [];
       //
