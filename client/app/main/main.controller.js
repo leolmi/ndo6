@@ -25,8 +25,8 @@ angular.module('ndo6App')
       mapsInitialized : mapsDefer.promise
     };
   })
-  .controller('MainCtrl', ['$scope', '$http', '$window', 'socket', '$timeout', 'initializer', 'maps',
-    function ($scope, $http, $window, socket, $timeout, initializer, maps) {
+  .controller('MainCtrl', ['$scope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth',
+    function ($scope, $http, $window, $location, socket, $timeout, initializer, maps, Auth) {
 
       $scope.monitorHeight = 200;
 
@@ -71,6 +71,10 @@ angular.module('ndo6App')
         // checkErrors();
       });
 
+      $scope.logout = function() {
+        Auth.logout();
+        $location.path('/login');
+      };
 
       // $scope.awesomeThings = [];
       //

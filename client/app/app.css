@@ -232,3 +232,11 @@ p.error {
 .on-right {
   float: right;
 }
+
+.as-button {
+  cursor: pointer;
+  outline: none;
+}
+.as-button:hover {
+  color: yellowgreen;
+}
