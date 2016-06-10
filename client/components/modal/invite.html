@@ -1,0 +1,8 @@
+<div ng-controller="InviteCtrl">
+  <label>Messaggio (precompilato)</label>
+  <pre>{{modal.context.fixedmessage}}</pre>
+  <label>Aggiungi un messaggio personalizzato se vuoi</label>
+  <textarea class="form-control input-sm vertical" rows="2" ng-model="modal.context.message"></textarea>
+  <label>Scrivi gli indirizzi e-mail degli amici che vuoi invitare</label>
+  <textarea class="form-control input-sm vertical" rows="3" ng-model="modal.context.emails"></textarea>
+</div>

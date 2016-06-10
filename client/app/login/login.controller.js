@@ -1,15 +1,12 @@
 'use strict';
 
 angular.module('ndo6App')
-  .controller('LoginCtrl', ['$scope','$timeout','Auth','$location', '$window', 'ndo6','Logger',
-    function ($scope, $timeout,Auth, $location, $window, ndo6, Logger) {
-      $scope.user = {};
+  .controller('LoginCtrl', ['$scope','$rootScope','$timeout','Auth','$location', '$window', 'ndo6','Logger',
+    function ($scope, $rootScope, $timeout,Auth, $location, $window, ndo6, Logger) {
+      $scope.user = ndo6.session.user;
       $scope.errors = {};
       $scope.loading = false;
-      $scope.product = {
-        name: 'Ndo6',
-        version: '1.0.32'
-      };
+      $scope.product = $rootScope.product;
 
       function setDefaultFocus() {
         var e = $('#default-control');
@@ -42,7 +39,10 @@ angular.module('ndo6App')
           password: $scope.user.password
         })
           .then(function () {
-            // Logged in, redirect to home
+            ndo6.session.user = {
+              name: $scope.user.name || $scope.user.email,
+              email: $scope.user.email
+            };
             $location.path('/main');
           })
           .catch(function (err) {

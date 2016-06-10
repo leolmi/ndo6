@@ -9,6 +9,9 @@ exports.index = function(req, res) {
 };
 
 exports.create = function(req, res) {
+
+  return u.error(res, 'Not implemented yet..');
+
   req.body.owner = req.user._id;
   var exp = new Date();
   exp.setDate(exp.getDate() + 10);

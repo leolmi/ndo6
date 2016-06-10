@@ -25,44 +25,42 @@ angular.module('ndo6App')
       mapsInitialized : mapsDefer.promise
     };
   })
-  .controller('MainCtrl', ['$scope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth','ndo6','Position','uiUtil',
-    function ($scope, $http, $window, $location, socket, $timeout, initializer, maps, Auth, ndo6, Position, uiUtil) {
-
+  .controller('MainCtrl', ['$scope', '$rootScope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth','ndo6','Position','uiUtil','Modal','Logger',
+    function ($scope, $rootScope, $http, $window, $location, socket, $timeout, initializer, maps, Auth, ndo6, Position, uiUtil, Modal, Logger) {
       $scope.monitorHeight = 200;
-      $scope.currentMap = {};
-
+      $scope.options = ndo6.options;
       /**
        * Centra la mappa
        * @param pos
        * @param [finder]
        */
       $scope.centerMap = function(pos, finder){
-        if (!$scope.context) return;
+        if (!ndo6.session.context) return;
         // il centro è considerato più in alto per
         // lasciare lo spazio al monitor
-        var bounds = $scope.context.map.getBounds();
+        var bounds = ndo6.session.context.map.getBounds();
         if (!bounds) return;
         var dl = bounds.getNorthEast().lat() - bounds.getSouthWest().lat();
         var H = angular.element($window).height();
         var ddl = ($scope.monitorHeight * dl)/(2*H);
 
         // Calcola le coordinate del centro
-        var latLng = maps.getLatLng($scope.context.G, pos);
+        var latLng = maps.getLatLng(ndo6.session.context.G, pos);
 
         // Imposta il centro della mappa
-        $scope.context.map.setCenter(latLng);
+        ndo6.session.context.map.setCenter(latLng);
 
         var mrk = finder ? finder() : null;
         if (mrk) {
           // Se ha trovato il marker lo anima
-          mrk.setAnimation($scope.context.G.maps.Animation.BOUNCE);
+          mrk.setAnimation(ndo6.session.context.G.maps.Animation.BOUNCE);
           $timeout(function() { mrk.setAnimation(null); }, 1000);
         }
       };
 
       initializer.mapsInitialized.then(function () {
         maps.createContext(google, $scope.centerMap, function (ctx) {
-          $scope.context = ctx;
+          ndo6.session.context = ctx;
           // initWatchers();
           $scope.loading = false;
         });
@@ -73,11 +71,11 @@ angular.module('ndo6App')
         // checkErrors();
       });
 
-      $scope.logout = function() {
+      function logout() {
         Auth.logout();
         ndo6.reset();
         $location.path('/login');
-      };
+      }
 
       var _last = new Position();
 
@@ -93,8 +91,8 @@ angular.module('ndo6App')
           .then(function (pos) {
             var npos = new Position(pos);
             if (!_last || !_last.sameOf(npos)) {
-              if ($scope.currentMap.id && ndo6.options.active)
-                $http.post('/api/position/'+$scope.currentMap.id, npos);
+              if (ndo6.session.map && ndo6.options.active)
+                $http.post('/api/position/'+ndo6.session.map.id, npos);
               _last.keep(npos);
             }
             loop();
@@ -103,32 +101,13 @@ angular.module('ndo6App')
           });
       }
 
-      // var _menu;
-      // $window.onmouseup = function(e) {
-      //   if (_menu && !_menu.is(e.target) && _menu.has(e.target).length === 0)
-      //     _menu.removeClass('open');
-      // };
-
-      // $(window).on('mouseup', function(e){
-      //   //var container = $("YOUR CONTAINER SELECTOR");
-      //
-      //   if (_menu && !_menu.is(e.target) // if the target of the click isn't the container...
-      //     && _menu.has(e.target).length === 0) // ... nor a descendant of the container
-      //   {
-      //     _menu.removeClass('open')
-      //   }
-      //
-      //
-      //
-      // });
-
       $scope.closeOverlay = function() {
         $scope.overpage = undefined;
       };
 
-      $scope.showSettings = function() {
+      function showSettings() {
         openPage('settings');
-      };
+      }
 
 
 
@@ -155,16 +134,82 @@ angular.module('ndo6App')
       $scope.$watch(function() { return _last; }, function(){
         //Aggiorna la posizione del marker
         ndo6.options.clearMarkers();
-        if ($scope.context) {
-          var m = new $scope.context.G.maps.Marker({
-            map: $scope.context.map,
+        if (ndo6.session.context) {
+          var m = new ndo6.session.context.G.maps.Marker({
+            map: ndo6.session.context.map,
             label: 'io',
-            position: maps.getLatLng($scope.context.G, _last)
+            position: maps.getLatLng(ndo6.session.context.G, _last)
           });
           ndo6.options.markers.push(m);
           $scope.centerMap(m.position);
         }
       }, true);
+
+      function center(m) {
+        if (ndo6.session.context && _last) {
+          var pos = maps.getLatLng(ndo6.session.context.G, _last);
+          $scope.centerMap(pos);
+        }
+      }
+
+      function errHanlder(err) {
+        var msg = _.isObject(err) ? err.message || err.data : err;
+        Logger.error('Error', msg);
+      }
+
+      var modalInvite = Modal.confirm.popup(function(opt){
+        //Logger.info('TODO','invita gli amici nel gruppo: '+JSON.stringify(opt));
+        //cache.invite(opt.mails, cache.user);
+        //TODO: invita altri membri nel gruppo
+        $http.post('/api/invitations', opt)
+          .then(function() {
+            Logger.info('Invite successfully sended!');
+          }, errHanlder)
+      });
+      function invite() {
+        // if (!ndo6.session.map) {
+        //   Logger.warning('No active map', 'Create new map or select one to share position.');
+        //   return;
+        // }
+        ndo6.session.map = {title: 'Ciccio Ciccio ....'};
+        var opt = {
+          title: 'Invita altre persone nel gruppo indicandone la mail',
+          template: Modal.TEMPLATE_INVITE,
+          ok: true,
+          cancel: true,
+          fixedmessage: 'Ciao, ' + ndo6.session.user.name + ' ti invita ad entrare sulla mappa "' + ndo6.session.map.title + '".\n' +
+          'Vai sul sito ' + $rootScope.product.name.toLowerCase() + '.herokuapp.com, registrati o accedi se già ti sei registrato.\n' +
+          'Una volta entrato vedrai la notifica per accedere alla mappa condivisa.',
+          message: '',
+          emails: ''
+        };
+        modalInvite(opt);
+      }
+
+
+      $scope.menu = [{
+        disabled: true,
+        caption: 'Monitor',
+        action: angular.noop
+      },{
+        caption: 'Center Me',
+        action: center
+      },{
+        disabled: true,
+        caption: 'Share Position',
+        action: angular.noop
+      },{
+        caption: 'Invite',
+        action: invite
+      },{
+        divider: true
+      },{
+        caption: 'Settings',
+        action: showSettings
+      },{
+        caption: 'Logout',
+        action: logout
+      }];
 
 
       loop();

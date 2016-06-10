@@ -44,6 +44,10 @@ angular.module('ndo6App', [
   })
 
   .run(function ($rootScope, $location, Auth) {
+    $rootScope.product = {
+      name: 'Ndo6',
+      version: '1.0.32'
+    };
     // Redirect to login if route requires auth and you're not logged in
     $rootScope.$on('$stateChangeStart', function (event, next) {
       Auth.isLoggedInAsync(function(loggedIn) {

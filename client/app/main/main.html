@@ -6,21 +6,18 @@
 <!-- FINDER -->
 <input id="map-finder" class="form-control input-sm" type="text">
 
-<!-- LOGOUT BUTTON -->
-<!--<i class="fa fa-2x fa-sign-out as-button logout-btn" ng-click="logout()"></i>-->
+<!-- MENU -->
 <div class="dropdown logout-btn" ng-hide="overpage">
   <i id="dLabel" class="fa fa-2x fa-bars as-button" ng-click="openMenu($event)"></i>
   <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
-    <li><a href="#" ng-click="showSettings()">Settings</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="#" ng-click="logout()">Logout</a></li>
+    <li ng-repeat="item in menu" ng-class="{'divider':item.divider, 'disabled':item.disabled}">
+      <a ng-if="!item.divider" href="#" ng-click="item.action($event)">{{item.caption}}</a>
+    </li>
   </ul>
 </div>
 
-<!--<i class="show-route fa fa-map fa-2x aslink" ng-show="context.route" ng-click="showroute()"></i>-->
-
 <!-- MAP -->
-<div id="map-canvas" ng-class="{'blur':overpage}"></div>
+<div id="map-canvas" ng-class="{'blur':overpage || modalActive}"></div>
 
 <!-- OVERPAGES -->
 <div class="over-page" ng-class="{'active':overpage}">

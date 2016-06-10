@@ -76,7 +76,7 @@ angular.module('ndo6App')
        *
        * @param  {String}   oldPassword
        * @param  {String}   newPassword
-       * @param  {Function} callback    - optional
+       * @param  {Function} [callback]    - optional
        * @return {Promise}
        */
       changePassword: function(oldPassword, newPassword, callback) {

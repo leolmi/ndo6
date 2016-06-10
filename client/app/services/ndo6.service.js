@@ -3,6 +3,11 @@
 angular.module('ndo6App')
   .factory('ndo6', ['$q',
     function($q) {
+      var _session = {
+        user: {},
+        map: null,
+        context: null
+      };
       var _options = {
         active: true,
         delay: 1000,
@@ -25,6 +30,10 @@ angular.module('ndo6App')
       };
 
       function reset() {
+        _session.user = {};
+        _session.map = null;
+        _session.context = null;
+
         _options.active = true;
         _options.delay = 1000;
         _options.centerLocked = false;
@@ -57,6 +66,7 @@ angular.module('ndo6App')
       }
 
       return {
+        session: _session,
         options: _options,
         reset: reset,
         checkGeo:checkGeo,

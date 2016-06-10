@@ -156,7 +156,6 @@
 }
 
 .over-page {
-  color: #fff;
   position: fixed;
   top: 0;
   left: 0;
@@ -171,7 +170,7 @@
   bottom: 0;
   right: 0;
   top: 0;
-  background-color: #0A0A16;
+  background-color: #fff;
   opacity: 0;
   transition-property: opacity;
   transition-duration: .15s;
@@ -179,7 +178,7 @@
 }
 
 .over-page.active > .overlay {
-  opacity: .6;
+  opacity: .3;
 }
 
 .over-page .overpage-body {
