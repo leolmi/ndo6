@@ -6,12 +6,19 @@
 <!-- FINDER -->
 <input id="map-finder" class="form-control input-sm" type="text">
 
+<div class="map-header" ng-hide="overpage">
+  <div class="map-title">{{session.map ? session.map.title : 'Private Map'}}</div>
+</div>
+
 <!-- MENU -->
 <div class="dropdown logout-btn" ng-hide="overpage">
   <i id="dLabel" class="fa fa-2x fa-bars as-button" ng-click="openMenu($event)"></i>
   <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
     <li ng-repeat="item in menu" ng-class="{'divider':item.divider, 'disabled':item.disabled}">
-      <a ng-if="!item.divider" href="#" ng-click="item.action($event)">{{item.caption}}</a>
+      <a ng-if="!item.divider" href="#" ng-click="item.action($event)">
+        <i class="menu-item-icon fa" ng-class="item.icon" ng-show="item.icon"></i>
+        {{item.caption}}
+      </a>
     </li>
   </ul>
 </div>

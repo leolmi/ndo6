@@ -29,6 +29,7 @@ angular.module('ndo6App')
     function ($scope, $rootScope, $http, $window, $location, socket, $timeout, initializer, maps, Auth, ndo6, Position, uiUtil, Modal, Logger) {
       $scope.monitorHeight = 200;
       $scope.options = ndo6.options;
+      $scope.session = ndo6.session;
       /**
        * Centra la mappa
        * @param pos
@@ -186,28 +187,44 @@ angular.module('ndo6App')
         modalInvite(opt);
       }
 
+      function newmap() {
+
+      }
+
 
       $scope.menu = [{
+        icon: 'fa-map',
+        caption: 'New Map',
+        action: newmap
+      },{
+        divider: true
+      },{
         disabled: true,
         caption: 'Monitor',
+        icon: 'fa-desktop',
         action: angular.noop
       },{
         caption: 'Center Me',
+        icon: 'fa-crosshairs',
         action: center
       },{
         disabled: true,
         caption: 'Share Position',
+        icon: 'fa-neuter',
         action: angular.noop
       },{
         caption: 'Invite',
+        icon: 'fa-paper-plane',
         action: invite
       },{
         divider: true
       },{
         caption: 'Settings',
+        icon: 'fa-cog',
         action: showSettings
       },{
         caption: 'Logout',
+        icon: 'fa-sign-out',
         action: logout
       }];
 

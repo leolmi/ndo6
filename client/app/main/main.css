@@ -201,6 +201,27 @@
   right: 8px;
 }
 
+.menu-item-icon {
+  color: yellowgreen;
+  margin-right: 8px;
+  margin-left: -8px;
+}
+
+.map-header {
+  position: absolute;
+  width: calc(100% - 170px);
+  width: -webkit-calc(100% - 170px);
+  top: 40px;
+  height: 20px;
+  z-index: 1;
+  left: 130px;
+  font-weight: bold;
+}
+.map-header .map-title {
+  font-weight: bold;
+}
+
+
 @media(max-width: 400px) {
   .finder {
     margin: 30px 40px;
