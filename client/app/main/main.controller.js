@@ -25,8 +25,8 @@ angular.module('ndo6App')
       mapsInitialized : mapsDefer.promise
     };
   })
-  .controller('MainCtrl', ['$scope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth','ndo6','Position',
-    function ($scope, $http, $window, $location, socket, $timeout, initializer, maps, Auth, ndo6, Position) {
+  .controller('MainCtrl', ['$scope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth','ndo6','Position','uiUtil',
+    function ($scope, $http, $window, $location, socket, $timeout, initializer, maps, Auth, ndo6, Position, uiUtil) {
 
       $scope.monitorHeight = 200;
       $scope.currentMap = {};
@@ -103,6 +103,50 @@ angular.module('ndo6App')
           });
       }
 
+      // var _menu;
+      // $window.onmouseup = function(e) {
+      //   if (_menu && !_menu.is(e.target) && _menu.has(e.target).length === 0)
+      //     _menu.removeClass('open');
+      // };
+
+      // $(window).on('mouseup', function(e){
+      //   //var container = $("YOUR CONTAINER SELECTOR");
+      //
+      //   if (_menu && !_menu.is(e.target) // if the target of the click isn't the container...
+      //     && _menu.has(e.target).length === 0) // ... nor a descendant of the container
+      //   {
+      //     _menu.removeClass('open')
+      //   }
+      //
+      //
+      //
+      // });
+
+      $scope.closeOverlay = function() {
+        $scope.overpage = undefined;
+      };
+
+      $scope.showSettings = function() {
+        openPage('settings');
+      };
+
+
+
+      $scope.openMenu = function(e) {
+        uiUtil.toggleMenu(e);
+      };
+
+      function openPage(template, params){
+        if ($scope.overpage && $scope.overpage.name == template) {
+          $scope.closeOverlay();
+        } else {
+          $scope.overpage = {
+            name: template,
+            template: 'app/overpages/overpage-' + template + '.html',
+            params: params
+          };
+        }
+      }
 
       $scope.$watch(function() { return ndo6.options.active; }, function(){
         if (ndo6.options.active) loop();

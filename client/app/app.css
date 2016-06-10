@@ -68,6 +68,14 @@ body > .ng-scope {
   z-index: -1;
 }
 
+.blur {
+  -webkit-filter: blur(4px);
+  -moz-filter: blur(4px);
+  -ms-filter: blur(4px);
+  -o-filter: blur(4px);
+  filter: blur(4px);
+}
+
 .primary {
   color:#fff;
   background-color: #3276b1;
