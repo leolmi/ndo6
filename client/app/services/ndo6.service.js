@@ -11,6 +11,8 @@ angular.module('ndo6App')
       var _options = {
         active: true,
         delay: 1000,
+        center: false,
+        centerFirst: true,
         centerLocked: false,
         markers: [],
         monitor:{
@@ -36,6 +38,7 @@ angular.module('ndo6App')
 
         _options.active = true;
         _options.delay = 1000;
+        _options.centerFirst = true;
         _options.centerLocked = false;
         _options.monitor.visible = true;
         _options.clearMarkers();

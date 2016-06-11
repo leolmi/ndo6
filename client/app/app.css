@@ -249,3 +249,6 @@ p.error {
 .as-button:hover {
   color: yellowgreen;
 }
+.as-button.hover-red:hover {
+  color: red;
+}

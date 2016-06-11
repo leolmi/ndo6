@@ -132,17 +132,38 @@ angular.module('ndo6App')
         if (ndo6.options.active) loop();
       });
 
+      function replaceOrAdd(m) {
+        var index = -1;
+        var exm = _.find(ndo6.options.markers, function (xm, xi) {
+          index = xi;
+          return xm.ndo6.id == m.ndo6.id;
+        });
+        if (exm) {
+          ndo6.options.markers.splice(index, 1, m);
+          exm.setMap(null);
+        } else {
+          ndo6.options.markers.push(m);
+        }
+      }
+
       $scope.$watch(function() { return _last; }, function(){
         //Aggiorna la posizione del marker
-        ndo6.options.clearMarkers();
         if (ndo6.session.context) {
           var m = new ndo6.session.context.G.maps.Marker({
             map: ndo6.session.context.map,
-            label: 'io',
+            label: 'I',
             position: maps.getLatLng(ndo6.session.context.G, _last)
           });
-          ndo6.options.markers.push(m);
-          $scope.centerMap(m.position);
+          m.ndo6 = {
+            id: 'user@'+ndo6.session.user.name,
+            type: 'user',
+            user: ndo6.session.user.name
+          };
+          replaceOrAdd(m);
+          if (ndo6.options.centerFirst || ndo6.options.centerLocked) {
+            $scope.centerMap(m.position);
+            ndo6.options.centerFirst = false;
+          }
         }
       }, true);
 
@@ -184,10 +205,31 @@ angular.module('ndo6App')
         modalInvite(opt);
       }
 
+      $scope.exitCenter = function() {
+        ndo6.options.center = false;
+      };
+      $scope.execOnPosition = function() {
+        var pos = ndo6.session.context.map.getCenter();
+        var m = new ndo6.session.context.G.maps.Marker({
+          map: ndo6.session.context.map,
+          label: 'P',
+          position: pos
+        });
+        m.ndo6 = {
+          id: uiUtil.guid(),
+          type: 'point',
+          owner: ndo6.session.user.name
+        };
+        replaceOrAdd(m);
+      };
+
       function newmap() {
 
       }
 
+      function onPosition() {
+        ndo6.options.center = !ndo6.options.center;
+      }
 
       $scope.menu = [{
         icon: 'fa-map',
@@ -205,10 +247,12 @@ angular.module('ndo6App')
         icon: 'fa-crosshairs',
         action: center
       },{
-        disabled: true,
-        caption: 'Share Position',
+        caption: 'On Position',
         icon: 'fa-neuter',
-        action: angular.noop
+        active: function() {
+          return ndo6.options.center;
+        },
+        action: onPosition
       },{
         caption: 'Invite',
         icon: 'fa-paper-plane',

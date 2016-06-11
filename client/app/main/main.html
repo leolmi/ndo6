@@ -17,7 +17,7 @@
 <div class="dropdown logout-btn" ng-hide="overpage">
   <i id="dLabel" class="fa fa-2x fa-bars as-button" ng-click="openMenu($event)"></i>
   <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
-    <li ng-repeat="item in menu" ng-class="{'divider':item.divider, 'disabled':item.disabled}">
+    <li ng-repeat="item in menu" ng-class="{'divider':item.divider, 'disabled':item.disabled, 'active':item.active && item.active()}">
       <a ng-if="!item.divider" href="#" ng-click="item.action($event)">
         <i class="menu-item-icon fa" ng-class="item.icon" ng-show="item.icon"></i>
         {{item.caption}}
@@ -38,5 +38,13 @@
   <div class="overlay" ng-click="closeOverlay()"></div>
 </div>
 
+<div class="map-center" ng-show="options.center">
+  <div class="map-center-H"></div>
+  <div class="map-center-V"></div>
+</div>
+<div class="map-center-buttons" ng-show="options.center">
+  <i class="fa fa-3x fa-times-circle as-button hover-red" ng-click="exitCenter()"></i>
+  <i class="fa fa-3x fa-check-circle as-button" ng-click="execOnPosition()"></i>
+</div>
 
 
