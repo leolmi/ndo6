@@ -3,9 +3,9 @@
 <header class="hero-unit">
   <i class="fa fa-map-marker fa-jump"></i>
   <div class="login-title">
-    <p ng-show="loading">Accesso in corso...</p>
-    <p ng-hide="loading">{{signin ? 'Registrati' : 'Accedi'}} a {{product.name}}</p>
-    <p ng-hide="loading">per condividere messaggi e posizioni</p>
+    <p ng-show="loading">Logging in...</p>
+    <p ng-hide="loading">{{signup ? 'Sign up for' : 'Log in'}} {{product.name}}</p>
+    <p ng-hide="loading">to share positions and posts in real time</p>
   </div>
 </header>
 
@@ -18,35 +18,37 @@
       <div class="row">
         <div class="form-group form-group-sm" ng-class="{ 'has-error': formlgn.email.$invalid && submitted }">
           <label>Email</label>
-          <input id="default-control" type="email" name="email" class="form-control" ng-model="user.email" required>
+          <input id="default-control" type="email" name="email" class="form-control" ng-model="user.email" ng-class="{'ng-invalid':recoverError}" required mongoose-error>
         </div>
-        <div class="form-group form-group-sm" ng-show="signin" ng-class="{'has-error': formlgn.nick.$invalid && submitted && signin }">
+        <div class="form-group form-group-sm" ng-show="signup" ng-class="{'has-error': formlgn.nick.$invalid && submitted && signup }">
           <label>Nick</label>
-          <input type="text" name="nick" class="form-control" ng-model="user.name" ng-required="signin" mongoose-error/>
+          <input type="text" name="nick" class="form-control" ng-model="user.name" ng-required="signup" mongoose-error/>
         </div>
         <div class="form-group form-group-sm" ng-class="{ 'has-error': formlgn.password.$invalid && submitted }">
           <label>Password</label>
-          <input type="password" name="password" class="form-control" ng-model="user.password" ng-minlength="3" required mongoose-error/>
+          <input type="password" name="password" class="form-control" ng-model="user.password" ng-minlength="3" ng-required="!recovering" mongoose-error/>
         </div>
       </div>
-      <div class="row" ng-show="signin">
-        <div class="form-group form-group-sm" ng-class="{ 'has-error': formlgn.confirmPassword.$invalid && submitted && signin }">
-          <label>Ripeti Password</label>
-          <input type="password" name="confirmPassword" class="form-control" ng-model="user.password2" ng-minlength="3" compare-to="user.password" compare-if="signin"/>
+      <div class="row" ng-show="signup">
+        <div class="form-group form-group-sm" ng-class="{ 'has-error': formlgn.confirmPassword.$invalid && submitted && signup }">
+          <label>Repeat Password</label>
+          <input type="password" name="confirmPassword" class="form-control" ng-model="user.password2" ng-minlength="3" compare-to="user.password" ng-required="signup && !recovering" compare-if="signup && !recovering"/>
         </div>
       </div>
       <div class="form-group has-error">
-        <p class="help-block" ng-show="formlgn.email.$error.required && formlgn.password.$error.required && submitted">Inserire una mail ed una password di almeno 3 caratteri.</p>
-        <p class="help-block" ng-show="formlgn.email.$error.email && submitted">Inserire una mail valida.</p>
-        <p class="help-block" ng-show="formlgn.nick.$error.required && submitted && signin">Definisci un nome con il quale ti presenterai nelle mappe</p>
-        <p class="help-block" ng-show="(formlgn.password.$error.minlength || formlgn.password.$error.required) && submitted"> La password deve avere almeno 3 caratteri.</p>
+        <p class="help-block" ng-show="formlgn.email.$error.mongoose && submitted && !recovering">Existing account, recover your password if you've forgotten.</p>
+        <p class="help-block" ng-show="formlgn.email.$error.required && formlgn.password.$error.required && submitted && !recovering">Enter a valid email address and a password of at least 3 characters.</p>
+        <p class="help-block" ng-show="formlgn.email.$error.email && submitted">Enter a valid email.</p>
+        <p class="help-block" ng-show="formlgn.nick.$error.required && submitted && signup">Enter a nickname by which you present yourself in the maps.</p>
+        <p class="help-block" ng-show="(formlgn.password.$error.minlength || formlgn.password.$error.required) && submitted && !recovering"> Password must be at least 3 characters.</p>
         <p class="help-block" ng-show="formlgn.password.$error.mongoose">{{ errors.password }}</p>
-        <p class="help-block error" ng-show="formlgn.confirmPassword.$error.compareTo && submitted && signin"> Ripeti la password correttamente.</p>
+        <p class="help-block error" ng-show="formlgn.confirmPassword.$error.compareTo && submitted && signup"> Ripeat password correctly.</p>
         <p class="help-block">{{ errors.other }}</p>
       </div>
       <div class="buttons-container">
-        <div class="btn-default aslink" ng-click="toggle()">{{signin ? 'Accesso' : 'Registrazione'}}</div>
-        <div class="btn-primary aslink on-right" ng-click="go(formlgn)">Vai</div>
+        <div class="btn-default aslink" ng-click="toggle()">{{signup ? 'Log in' : 'Sign up'}}</div>
+        <div class="btn-danger aslink" ng-hide="signup" ng-click="recover(formlgn)">Recover</div>
+        <div class="btn-primary aslink on-right" ng-click="go(formlgn)">Go</div>
       </div>
     </form>
   </div>

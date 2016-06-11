@@ -50,8 +50,9 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-body > .ng-scope {
+body > [ui-view] {
   height: 100%;
+  overflow: hidden;
 }
 
 .background {

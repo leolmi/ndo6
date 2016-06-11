@@ -43,7 +43,7 @@ angular.module('ndo6App', [
     };
   })
 
-  .run(function ($rootScope, $location, Auth) {
+  .run(function ($rootScope, $location, Auth, ndo6) {
     $rootScope.product = {
       name: 'Ndo6',
       version: '1.0.32'
@@ -53,6 +53,12 @@ angular.module('ndo6App', [
       Auth.isLoggedInAsync(function(loggedIn) {
         if (next.authenticate && !loggedIn) {
           $location.path('/login');
+        } else {
+          var u = Auth.getCurrentUser() || {};
+          ndo6.session.user = {
+            name: u.name || u.email,
+            email: u.email
+          };
         }
       });
     });

@@ -99,3 +99,20 @@ exports.me = function(req, res, next) {
 exports.authCallback = function(req, res, next) {
   res.redirect('/');
 };
+
+/**
+ * Password recover
+ */
+exports.recover = function(req, res) {
+  User.findOne({
+    email: req.body.email
+  }, function (err, user) {
+    if(err) return res.send(500, err);
+    if (!user) return res.send(500, 'Unregistered email');
+
+    //TODO: send mail to user...
+
+    return res.send(501, 'Not implemented yet');
+    // res.json(200);
+  });
+};

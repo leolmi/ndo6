@@ -1,8 +1,26 @@
 'use strict';
 
 angular.module('ndo6App')
-  .controller('LoginCtrl', ['$scope','$rootScope','$timeout','Auth','$location', '$window', 'ndo6','Logger',
-    function ($scope, $rootScope, $timeout,Auth, $location, $window, ndo6, Logger) {
+  .directive('compareTo',[function() {
+    return {
+      require: "ngModel",
+      scope: { otherModelValue: "=compareTo" },
+      link: function(scope, elm, atr, ngModel) {
+        var compareIf = atr['compareIf'];
+
+        ngModel.$validators.compareTo = function(modelValue) {
+          if (compareIf && !elm.scope().$eval(compareIf)) return true;
+          return modelValue == scope.otherModelValue;
+        };
+
+        scope.$watch("otherModelValue", function() {
+          ngModel.$validate();
+        });
+      }
+    };
+  }])
+  .controller('LoginCtrl', ['$scope','$rootScope','$timeout','Auth','User','$location', '$window', 'ndo6','Logger',
+    function ($scope, $rootScope, $timeout,Auth, User, $location, $window, ndo6, Logger) {
       $scope.user = ndo6.session.user;
       $scope.errors = {};
       $scope.loading = false;
@@ -29,7 +47,7 @@ angular.module('ndo6App')
 
 
       $scope.toggle = function () {
-        $scope.signin = !$scope.signin;
+        $scope.signup = !$scope.signup;
         setDefaultFocus();
       };
 
@@ -39,10 +57,6 @@ angular.module('ndo6App')
           password: $scope.user.password
         })
           .then(function () {
-            ndo6.session.user = {
-              name: $scope.user.name || $scope.user.email,
-              email: $scope.user.email
-            };
             $location.path('/main');
           })
           .catch(function (err) {
@@ -51,7 +65,7 @@ angular.module('ndo6App')
           });
       }
 
-      function signIn(form) {
+      function signUp(form) {
         Auth.createUser({
           email: $scope.user.email,
           name: $scope.user.name,
@@ -68,23 +82,55 @@ angular.module('ndo6App')
               form[field].$setValidity('mongoose', false);
               $scope.errors[field] = error.message;
             });
+            $scope.loading = false;
           });
       }
 
       $scope.go = function (form) {
-        beforeSubmit(function () {
-          $scope.submitted = true;
-          if (form.$valid) {
-            if ($scope.signin)
-              signIn(form);
+        $scope.recovering = false;
+        $scope.submitted = true;
+        if (form.$valid) {
+          beforeSubmit(function () {
+            if ($scope.signup)
+              signUp(form);
             else
               logIn();
-          }
-          else {
-            $scope.loading = false;
-          }
-        });
+          });
+        } else {
+          $scope.loading = false;
+        }
+        // beforeSubmit(function () {
+        //   $scope.submitted = true;
+        //   if (form.$valid) {
+        //     if ($scope.signup)
+        //       signUp(form);
+        //     else
+        //       logIn();
+        //   }
+        //   else {
+        //     $scope.loading = false;
+        //   }
+        // });
       };
+
+      $scope.recover = function(form) {
+        $scope.submitted = false;
+        $scope.recovering = true;
+        if (form.email.$error.email) {
+          $scope.submitted = true;
+        } else {
+          Auth.recover({
+            email: $scope.user.email
+          })
+            .then(function () {
+              Logger.info('An email was sent to the address indicated.');
+            })
+            .catch(function (err) {
+              Logger.error('Error recovering', err);
+            })
+        }
+      };
+
 
       $scope.loginOauth = function (provider) {
         $window.location.href = '/auth/' + provider;

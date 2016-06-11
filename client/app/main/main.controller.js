@@ -66,7 +66,7 @@ angular.module('ndo6App')
           $scope.loading = false;
         });
       }, function (err) {
-        $scope.error = err ? err.message : 'Errori nel caricamento della mappa!';
+        $scope.error = err ? err.message : 'Errors loading map!';
         $scope.loading = false;
         // refreshMarkers();
         // checkErrors();
@@ -159,28 +159,25 @@ angular.module('ndo6App')
       }
 
       var modalInvite = Modal.confirm.popup(function(opt){
-        //Logger.info('TODO','invita gli amici nel gruppo: '+JSON.stringify(opt));
-        //cache.invite(opt.mails, cache.user);
-        //TODO: invita altri membri nel gruppo
         $http.post('/api/invitations', opt)
           .then(function() {
-            Logger.info('Invite successfully sended!');
+            Logger.info('Invite successfully send!');
           }, errHanlder)
       });
       function invite() {
-        // if (!ndo6.session.map) {
-        //   Logger.warning('No active map', 'Create new map or select one to share position.');
-        //   return;
-        // }
-        ndo6.session.map = {title: 'Ciccio Ciccio ....'};
+        if (!ndo6.session.map) {
+          Logger.warning('No active map', 'Create new map or select one to share position.');
+          return;
+        }
         var opt = {
-          title: 'Invita altre persone nel gruppo indicandone la mail',
+          title: 'Invite others to the current map',
           template: Modal.TEMPLATE_INVITE,
           ok: true,
           cancel: true,
-          fixedmessage: 'Ciao, ' + ndo6.session.user.name + ' ti invita ad entrare sulla mappa "' + ndo6.session.map.title + '".\n' +
-          'Vai sul sito ' + $rootScope.product.name.toLowerCase() + '.herokuapp.com, registrati o accedi se già ti sei registrato.\n' +
-          'Una volta entrato vedrai la notifica per accedere alla mappa condivisa.',
+          fixedmessage: 'Ciao, ' + ndo6.session.user.name + ' invite you to the map "' + ndo6.session.map.title + '".\n' +
+            'Follow the link: [PRIVATE-LINK-BOOKMARK]\n'+
+            'Go on ' + $rootScope.product.name.toLowerCase() + '.herokuapp.com, register or log in if you already registered.\n' +
+            'Once you entered you will see the notification to access the shared map.',
           message: '',
           emails: ''
         };
@@ -226,6 +223,14 @@ angular.module('ndo6App')
         caption: 'Logout',
         icon: 'fa-sign-out',
         action: logout
+      }];
+
+      $scope.tools = [{
+        icon: 'fa-users'
+      },{
+        icon: 'fa-map-marker'
+      },{
+        icon: 'fa-map'
       }];
 
 

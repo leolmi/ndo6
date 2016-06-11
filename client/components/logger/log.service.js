@@ -25,10 +25,13 @@ angular.module('ndo6App')
       }
     }
 
-    function validateMessage(message) {
-      if (typeof message!='string')
-        return JSON.stringify(message);
-      return message;
+    function validateMessage(err) {
+      if (_.isObject(err)) {
+        if (err.message || err.data)
+          return err.message || err.data;
+        return JSON.stringify(err);
+      }
+      return err;
     }
 
     var toastOk = function(title, message){

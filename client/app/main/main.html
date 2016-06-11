@@ -7,7 +7,10 @@
 <input id="map-finder" class="form-control input-sm" type="text">
 
 <div class="map-header" ng-hide="overpage">
-  <div class="map-title">{{session.map ? session.map.title : 'Private Map'}}</div>
+  <div class="map-title"> {{session.user.name}} - {{session.map ? session.map.title : 'Private Map'}}</div>
+  <div class="map-header-tools">
+    <i class="fa as-button" ng-repeat="tool in tools" ng-class="tool.icon"></i>
+  </div>
 </div>
 
 <!-- MENU -->

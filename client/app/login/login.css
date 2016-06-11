@@ -8,10 +8,9 @@
 
 .hero-unit {
   position: relative;
-  padding: 30px 15px;
+  padding: 30px 15px 0;
   text-align: center;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-  /*color: #222;*/
 }
 .hero-unit > i {
   font-size: 10em;
@@ -52,7 +51,6 @@
 
 .buttons-container {
   position: relative;
-  padding-top: 20px;
 }
 .buttons-container div:hover {
   /*color: darkorange;*/

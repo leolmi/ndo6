@@ -23,18 +23,18 @@ angular.module('ndo6App')
         $http.post('/auth/local', {
           email: user.email,
           password: user.password
-        }).
-        success(function(data) {
-          $cookieStore.put('token', data.token);
-          currentUser = User.get();
-          deferred.resolve(data);
-          return cb();
-        }).
-        error(function(err) {
-          this.logout();
-          deferred.reject(err);
-          return cb(err);
-        }.bind(this));
+        })
+          .success(function (data) {
+            $cookieStore.put('token', data.token);
+            currentUser = User.get();
+            deferred.resolve(data);
+            return cb();
+          })
+          .error(function (err) {
+            this.logout();
+            deferred.reject(err);
+            return cb(err);
+          }.bind(this));
 
         return deferred.promise;
       },
@@ -93,6 +93,26 @@ angular.module('ndo6App')
       },
 
       /**
+       * Recover password
+       *
+       * @param info
+       * @returns {Promise}
+       */
+      recover: function(info) {
+        return $q(function(resolve, reject){
+          $http.post('/api/users/recover', {
+            email: info.email
+          })
+            .success(function () {
+              resolve();
+            })
+            .error(function (err) {
+              reject(err);
+            });
+        });
+      },
+
+      /**
        * Gets all available info on authenticated user
        *
        * @return {Object} user
@@ -114,6 +134,7 @@ angular.module('ndo6App')
        * Waits for currentUser to resolve before checking if user is logged in
        */
       isLoggedInAsync: function(cb) {
+        cb = cb || angular.noop;
         if(currentUser.hasOwnProperty('$promise')) {
           currentUser.$promise.then(function() {
             cb(true);

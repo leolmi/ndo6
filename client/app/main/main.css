@@ -212,15 +212,25 @@
   width: calc(100% - 170px);
   width: -webkit-calc(100% - 170px);
   top: 40px;
-  height: 20px;
+  height: 80px;
   z-index: 1;
   left: 130px;
   font-weight: bold;
+  overflow: hidden;
 }
 .map-header .map-title {
   font-weight: bold;
+  display: inline-block;
 }
 
+.map-header .map-header-tools {
+  float: right;
+}
+.map-header .map-header-tools > i {
+  display: inline-block;
+  font-size: 2em;
+  margin: 8px;
+}
 
 @media(max-width: 400px) {
   .finder {
