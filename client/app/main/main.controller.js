@@ -149,16 +149,13 @@ angular.module('ndo6App')
       $scope.$watch(function() { return _last; }, function(){
         //Aggiorna la posizione del marker
         if (ndo6.session.context) {
-          var m = new ndo6.session.context.G.maps.Marker({
-            map: ndo6.session.context.map,
-            label: 'I',
-            position: maps.getLatLng(ndo6.session.context.G, _last)
-          });
-          m.ndo6 = {
+          var m = ndo6.getMarker({
             id: 'user@'+ndo6.session.user.name,
+            label: 'I',
             type: 'user',
+            pos: maps.getLatLng(ndo6.session.context.G, _last),
             user: ndo6.session.user.name
-          };
+          });
           replaceOrAdd(m);
           if (ndo6.options.centerFirst || ndo6.options.centerLocked) {
             $scope.centerMap(m.position);
@@ -205,38 +202,22 @@ angular.module('ndo6App')
         modalInvite(opt);
       }
 
-      $scope.exitCenter = function() {
-        ndo6.options.center = false;
-      };
 
       var modalPosition = Modal.confirm.popup(function(opt){
-        $http.post('/api/invitations', opt)
-          .then(function() {
-            Logger.info('Invite successfully send!');
-          }, errHanlder)
+        var m  = ndo6.getMarker(opt);
+        replaceOrAdd(m);
       });
       $scope.execOnPosition = function() {
         var opt = {
-          title: 'Position',
+          title: 'Marker',
+          label: 'P',
+          description: '',
           template: Modal.TEMPLATE_POSITION,
-          ok: true,
+          ok: {text: 'Add'},
           cancel: true,
           pos: ndo6.session.context.map.getCenter()
         };
         modalPosition(opt);
-
-        // // var pos = ndo6.session.context.map.getCenter();
-        // var m = new ndo6.session.context.G.maps.Marker({
-        //   map: ndo6.session.context.map,
-        //   label: 'P',
-        //   position: pos
-        // });
-        // m.ndo6 = {
-        //   id: uiUtil.guid(),
-        //   type: 'point',
-        //   owner: ndo6.session.user.name
-        // };
-        // replaceOrAdd(m);
       };
 
 
@@ -245,18 +226,15 @@ angular.module('ndo6App')
 
       }
 
-      function onPosition() {
-        ndo6.options.center = !ndo6.options.center;
-      }
-
       $scope.menu = [{
+        disabled: function() { return true; },
         icon: 'fa-map',
         caption: 'New Map',
         action: newmap
       },{
         divider: true
       },{
-        disabled: true,
+        disabled: function() { return true; },
         caption: 'Monitor',
         icon: 'fa-desktop',
         action: angular.noop
@@ -265,13 +243,7 @@ angular.module('ndo6App')
         icon: 'fa-crosshairs',
         action: center
       },{
-        caption: 'On Position',
-        icon: 'fa-neuter',
-        active: function() {
-          return ndo6.options.center;
-        },
-        action: onPosition
-      },{
+        disabled: function() { return !ndo6.session.map; },
         caption: 'Invite',
         icon: 'fa-paper-plane',
         action: invite

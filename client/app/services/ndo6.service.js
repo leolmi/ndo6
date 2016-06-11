@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('ndo6App')
-  .factory('ndo6', ['$q',
-    function($q) {
+  .factory('ndo6', ['$q','uiUtil',
+    function($q,uiUtil) {
       var _session = {
         user: {},
         map: null,
@@ -11,7 +11,6 @@ angular.module('ndo6App')
       var _options = {
         active: true,
         delay: 1000,
-        center: false,
         centerFirst: true,
         centerLocked: false,
         markers: [],

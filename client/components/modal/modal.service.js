@@ -65,7 +65,7 @@ angular.module('ndo6App')
             ok: 'OK',
             okClass: 'btn-warning',
             okResult: 'ok',
-            cancel: 'Annulla',
+            cancel: 'Cancel',
             cancelClass: 'btn-default',
             no: '',
             noClass: 'btn-danger',
@@ -74,14 +74,14 @@ angular.module('ndo6App')
           };
           switch (type) {
             case(modal_DELETE):
-              opt.title = 'Conferma Eliminazione';
-              opt.body = '<p>Sicuro di voler eliminare <strong>' + args[0] + '</strong> ?</p>';
-              opt.ok = 'Elimina';
+              opt.title = 'Confirm Delete';
+              opt.body = '<p>Confirm delete <strong>' + args[0] + '</strong> ?</p>';
+              opt.ok = 'Delete';
               opt.okClass = 'btn-danger';
               opt.modalClass = 'modal-danger';
               break;
             case(modal_YESNOCANCEL):
-              opt.ok = 'Si';
+              opt.ok = 'Yes';
               opt.no = 'No';
               break;
           }
@@ -207,7 +207,7 @@ angular.module('ndo6App')
             if (args[0].cancel) {
               buttons.push({
                 classes: 'btn-warning',
-                text: args[0].cancel.text || 'Annulla',
+                text: args[0].cancel.text || 'Cancel',
                 click: function (e) {
                   popupModal.dismiss(e);
                 }

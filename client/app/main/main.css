@@ -207,6 +207,10 @@
   margin-left: -8px;
 }
 
+.dropdown-menu > .disabled > a > i.menu-item-icon {
+  color: #ccc;
+}
+
 .map-header {
   position: absolute;
   width: calc(100% - 170px);

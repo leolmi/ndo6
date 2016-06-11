@@ -5,8 +5,8 @@
   margin: -50px 0 0 -50px;
   width: 101px;
   height: 101px;
-  border-radius: 50px;
-  border: #000 1px solid;
+  /*border-radius: 50px;*/
+  /*border: #000 1px solid;*/
   pointer-events: none;
 }
 
@@ -23,6 +23,13 @@
   left: 49px;
   position: relative;
   margin: 20px 0;
+}
+
+.map-center-button {
+  font-size: 5em;
+  position: absolute;
+  bottom: 100px;
+  right: 100px;
 }
 
 .map-center-buttons {
