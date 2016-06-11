@@ -68,11 +68,25 @@ angular.module('ndo6App')
         });
       }
 
+      function getMarker(info) {
+        var m = new _session.context.G.maps.Marker({
+          map: _session.context.map,
+          label: info.label || 'P',
+          position: info.pos
+        });
+        m.ndo6 = {
+          id: uiUtil.guid()
+        };
+        _.extend(m.ndo6, info);
+        return m;
+      }
+
       return {
         session: _session,
         options: _options,
         reset: reset,
-        checkGeo:checkGeo,
-        readPosition:readPosition
+        checkGeo: checkGeo,
+        readPosition: readPosition,
+        getMarker: getMarker
       }
     }]);

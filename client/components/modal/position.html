@@ -1,0 +1,10 @@
+<div ng-controller="PositionCtrl" class="modal-position">
+  <label>Position</label>
+  <pre>{{pos}}</pre>
+  <label>Location</label>
+  <div class="working-container" ng-show="geocoding">
+    <div class="working"></div>
+  </div>
+  <pre ng-show="result">{{result}}</pre>
+  <pre ng-show="error" style="color:red;">{{error}}</pre>
+</div>

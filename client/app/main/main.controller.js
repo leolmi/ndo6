@@ -208,20 +208,38 @@ angular.module('ndo6App')
       $scope.exitCenter = function() {
         ndo6.options.center = false;
       };
+
+      var modalPosition = Modal.confirm.popup(function(opt){
+        $http.post('/api/invitations', opt)
+          .then(function() {
+            Logger.info('Invite successfully send!');
+          }, errHanlder)
+      });
       $scope.execOnPosition = function() {
-        var pos = ndo6.session.context.map.getCenter();
-        var m = new ndo6.session.context.G.maps.Marker({
-          map: ndo6.session.context.map,
-          label: 'P',
-          position: pos
-        });
-        m.ndo6 = {
-          id: uiUtil.guid(),
-          type: 'point',
-          owner: ndo6.session.user.name
+        var opt = {
+          title: 'Position',
+          template: Modal.TEMPLATE_POSITION,
+          ok: true,
+          cancel: true,
+          pos: ndo6.session.context.map.getCenter()
         };
-        replaceOrAdd(m);
+        modalPosition(opt);
+
+        // // var pos = ndo6.session.context.map.getCenter();
+        // var m = new ndo6.session.context.G.maps.Marker({
+        //   map: ndo6.session.context.map,
+        //   label: 'P',
+        //   position: pos
+        // });
+        // m.ndo6 = {
+        //   id: uiUtil.guid(),
+        //   type: 'point',
+        //   owner: ndo6.session.user.name
+        // };
+        // replaceOrAdd(m);
       };
+
+
 
       function newmap() {
 
