@@ -4,6 +4,7 @@
 var u = require('../../components/utils/utils');
 var Message = require('./message.model');
 var Point = require('./point.model');
+var Way = require('./way.model');
 
 function index(schema, req, res) {
   var filter = {map:req.params.id};

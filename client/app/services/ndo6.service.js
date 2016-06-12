@@ -6,7 +6,9 @@ angular.module('ndo6App')
       var _session = {
         user: {},
         map: null,
-        context: null
+        context: null,
+        messages: [],
+        ways: []
       };
       var _options = {
         active: true,
@@ -14,6 +16,7 @@ angular.module('ndo6App')
         centerFirst: true,
         centerLocked: false,
         markers: [],
+        points: [],
         monitor:{
           visible: true
         },
@@ -27,6 +30,9 @@ angular.module('ndo6App')
             m.setMap(null);
           });
           this.markers.splice(0);
+        },
+        clearPoints:function() {
+
         }
       };
 
@@ -34,12 +40,15 @@ angular.module('ndo6App')
         _session.user = {};
         _session.map = null;
         _session.context = null;
+        _session.markers = [];
 
         _options.active = true;
         _options.delay = 1000;
         _options.centerFirst = true;
         _options.centerLocked = false;
         _options.monitor.visible = true;
+        _options.messages = [];
+        _options.ways = [];
         _options.clearMarkers();
       }
 

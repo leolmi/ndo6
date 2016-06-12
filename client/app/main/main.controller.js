@@ -72,6 +72,66 @@ angular.module('ndo6App')
         // checkErrors();
       });
 
+      function errHanlder(err) {
+        var msg = _.isObject(err) ? err.message || err.data : err;
+        Logger.error('Error', msg);
+      }
+
+      function replaceOrAdd(m) {
+        var index = -1;
+        var exm = _.find(ndo6.options.markers, function (xm, xi) {
+          index = xi;
+          return xm.ndo6.id == m.ndo6.id;
+        });
+        if (exm) {
+          ndo6.options.markers.splice(index, 1, m);
+          exm.setMap(null);
+        } else {
+          ndo6.options.markers.push(m);
+        }
+      }
+
+      function refreshMarkers() {
+        ndo6.options.clearMarkers();
+        $scope.positions = $scope.positions || [];
+        ndo6.options.markers = _.map($scope.positions, function(p){
+          return ndo6.getMarker(p);
+        });
+        $scope.points = $scope.points || [];
+        var pointsm = _.map($scope.points, function(p){
+          return ndo6.getMarker(p);
+        });
+        ndo6.options.markers.push.apply(ndo6.options.markers, pointsm);
+      }
+
+      function readPositions() {
+        $http.get('/api/positions/'+ndo6.session.map.id)
+          .then(function(positions){
+            $scope.positions = positions;
+            socket.syncUpdates('position', $scope.positions, refreshMarkers);
+          }, errHanlder);
+      }
+
+      function readShared() {
+        $http.get('/api/shared/points/'+ndo6.session.map.id)
+          .then(function(points){
+            $scope.points = points;
+            socket.syncUpdates('point', $scope.points, refreshMarkers);
+          }, errHanlder);
+        $http.get('/api/shared/messages/'+ndo6.session.map.id)
+          .then(function(messages){
+            ndo6.options.messages = messages;
+            socket.syncUpdates('message', ndo6.options.messages);
+          }, errHanlder);
+        $http.get('/api/shared/ways/'+ndo6.session.map.id)
+          .then(function(ways){
+            ndo6.options.ways = ways;
+            socket.syncUpdates('way', ndo6.options.ways);
+          }, errHanlder);
+      }
+
+
+
       function logout() {
         Auth.logout();
         ndo6.reset();
@@ -93,7 +153,7 @@ angular.module('ndo6App')
             var npos = new Position(pos);
             if (!_last || !_last.sameOf(npos)) {
               if (ndo6.session.map && ndo6.options.active)
-                $http.post('/api/position/'+ndo6.session.map.id, npos);
+                $http.post('/api/positions/'+ndo6.session.map.id, npos);
               _last.keep(npos);
             }
             loop();
@@ -132,23 +192,11 @@ angular.module('ndo6App')
         if (ndo6.options.active) loop();
       });
 
-      function replaceOrAdd(m) {
-        var index = -1;
-        var exm = _.find(ndo6.options.markers, function (xm, xi) {
-          index = xi;
-          return xm.ndo6.id == m.ndo6.id;
-        });
-        if (exm) {
-          ndo6.options.markers.splice(index, 1, m);
-          exm.setMap(null);
-        } else {
-          ndo6.options.markers.push(m);
-        }
-      }
+
 
       $scope.$watch(function() { return _last; }, function(){
         //Aggiorna la posizione del marker
-        if (ndo6.session.context) {
+        if (ndo6.session.context && !ndo6.session.map) {
           var m = ndo6.getMarker({
             id: 'user@'+ndo6.session.user.name,
             label: 'I',
@@ -169,11 +217,6 @@ angular.module('ndo6App')
           var pos = maps.getLatLng(ndo6.session.context.G, _last);
           $scope.centerMap(pos);
         }
-      }
-
-      function errHanlder(err) {
-        var msg = _.isObject(err) ? err.message || err.data : err;
-        Logger.error('Error', msg);
       }
 
       var modalInvite = Modal.confirm.popup(function(opt){
@@ -268,6 +311,9 @@ angular.module('ndo6App')
       }];
 
 
+
+      readPositions();
+      readShared();
       loop();
 
       // $scope.awesomeThings = [];
