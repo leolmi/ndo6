@@ -4,11 +4,37 @@
       <h1>Options</h1>
     </div>
     <div class="col-sm-12">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" ng-model="options.active"> Position Reader Active
-        </label>
-      </div>
+      <div class="checkbox"><label>
+        <input type="checkbox" ng-model="options.active"> Position Reader Active
+      </label></div>
+    </div>
+    <div class="col-sm-12">
+      <h1>Notifications</h1>
+    </div>
+    <div class="col-sm-12">
+      <div class="checkbox"><label>
+        <input type="checkbox" ng-model="options.notify.active"> Active
+      </label></div>
+    </div>
+    <div class="col-sm-12 indent-40">
+      <div class="checkbox"><label>
+        <input type="checkbox" ng-model="options.notify.maps"> Maps
+      </label></div>
+    </div>
+    <div class="col-sm-12 indent-40">
+      <div class="checkbox"><label>
+        <input type="checkbox" ng-model="options.notify.points"> Points
+      </label></div>
+    </div>
+    <div class="col-sm-12 indent-40">
+      <div class="checkbox"><label>
+        <input type="checkbox" ng-model="options.notify.messages"> Messages
+      </label></div>
+    </div>
+    <div class="col-sm-12 indent-40">
+      <div class="checkbox"><label>
+        <input type="checkbox" ng-model="options.notify.ways"> Ways
+      </label></div>
     </div>
   </div>
   <div class="col-sm-6">

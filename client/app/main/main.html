@@ -8,10 +8,10 @@
 
 <!-- HEADER - TOOLS -->
 <div class="map-header" ng-hide="overpage">
-  <div class="map-title"> {{session.user.name}} - {{session.map ? session.map.title : 'Private Map'}}</div>
-  <div class="map-header-tools">
-    <i class="fa as-button" ng-repeat="tool in tools" ng-class="tool.icon"></i>
-  </div>
+  <div class="map-title"> {{session.user.name}} - {{session.map ? session.map.name : 'Private Map'}}</div>
+  <!--<div class="map-header-tools">-->
+    <!--<i class="fa as-button" ng-repeat="tool in tools" ng-class="tool.icon"></i>-->
+  <!--</div>-->
 </div>
 
 <!-- MENU -->
@@ -44,8 +44,15 @@
   <div class="map-center-H"></div>
   <div class="map-center-V"></div>
 </div>
+
 <!-- CENTER BUTTON -->
-<i class="fa fa-bullseye as-button map-center-button" ng-hide="overpage" ng-click="execOnPosition()"></i>
+<i class="fa fa-bullseye as-button big-button map-rightbottom-button" ng-hide="overpage" ng-click="execOnPosition()"></i>
+<!-- MAP BUTTON -->
+<i class="fa fa-map as-button big-button map-righttop-button" ng-hide="overpage" ng-click="execMaps()"></i>
+<!-- SHARE BUTTON -->
+<i class="fa fa-share-alt as-button big-button map-leftbottom-button" ng-hide="overpage" ng-click="execShared()"></i>
+<!-- SNAPSHOT BUTTON -->
+<i class="fa fa-camera as-button big-button map-lefttop-button" ng-hide="overpage" ng-click="execSnapshot()"></i>
 
 
 

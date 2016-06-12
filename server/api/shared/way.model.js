@@ -14,6 +14,6 @@ var WaySchema = new Schema({
   name: String,
   notes: String,
   points: [WayItemSchema]
-});
+},{ versionKey: false });
 
 module.exports = mongoose.model('Way', WaySchema);

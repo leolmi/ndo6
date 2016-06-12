@@ -12,7 +12,7 @@ var PointSchema = new Schema({
   latitude: Number,
   longitude: Number,
   timestamp: Number
-});
+},{ versionKey: false });
 
 module.exports = mongoose.model('Point', PointSchema);
 

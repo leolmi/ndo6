@@ -14,6 +14,6 @@ var PositionSchema = new Schema({
   heading: Number,
   speed: Number,
   timestamp: Number
-});
+},{ versionKey: false });
 
 module.exports = mongoose.model('Position', PositionSchema);

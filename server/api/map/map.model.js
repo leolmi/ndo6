@@ -4,10 +4,11 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var MapSchema = new Schema({
-  _id: String,
+  name: String,
+  description: String,
   owner: String,
   center: String,
-  active: Boolean
-});
+  active: {type:Boolean, default:true}
+},{ versionKey: false });
 
 module.exports = mongoose.model('Map', MapSchema);

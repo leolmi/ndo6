@@ -12,10 +12,10 @@ router.get('/ways/:id', auth.isAuthenticatedOnMap(), controller.indexWays);
 
 router.post('/point/:id', auth.isAuthenticatedOnMap(), controller.createPoint);
 router.post('/message/:id', auth.isAuthenticatedOnMap(), controller.createMessage);
-router.post('/ways/:id', auth.isAuthenticatedOnMap(), controller.createWays);
+router.post('/ways/:id', auth.isAuthenticatedOnMap(), controller.createWay);
 
 router.delete('/point/:id', auth.isAuthenticated(), controller.destroyPoint);
 router.delete('/message/:id', auth.isAuthenticated(), controller.destroyMessage);
-router.delete('/ways/:id', auth.isAuthenticatedOnMap(), controller.destroyWays);
+router.delete('/ways/:id', auth.isAuthenticatedOnMap(), controller.destroyWay);
 
 module.exports = router;

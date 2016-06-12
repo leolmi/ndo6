@@ -242,6 +242,10 @@ p.error {
   float: right;
 }
 
+.indent-40 {
+  padding-left: 40px;
+}
+
 .as-button {
   cursor: pointer;
   outline: none;

@@ -8,6 +8,7 @@ angular.module('ndo6App')
     var template_WELCOME = 'welcome';
     var template_INVITE = 'invite';
     var template_POSITION = 'position';
+    var template_MAP = 'map';
     // var template_POSINFO = 'posinfo';
     // var template_POINT = 'point';
     // var template_INFOLIST = 'infolist';
@@ -45,6 +46,7 @@ angular.module('ndo6App')
       TEMPLATE_WELCOME:template_WELCOME,
       TEMPLATE_INVITE:template_INVITE,
       TEMPLATE_POSITION:template_POSITION,
+      TEMPLATE_MAP:template_MAP,
       // TEMPLATE_POSINFO:template_POSINFO,
       // TEMPLATE_POINT:template_POINT,
       // TEMPLATE_INFOLIST:template_INFOLIST,

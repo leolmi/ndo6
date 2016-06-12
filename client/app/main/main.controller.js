@@ -72,65 +72,6 @@ angular.module('ndo6App')
         // checkErrors();
       });
 
-      function errHanlder(err) {
-        var msg = _.isObject(err) ? err.message || err.data : err;
-        Logger.error('Error', msg);
-      }
-
-      function replaceOrAdd(m) {
-        var index = -1;
-        var exm = _.find(ndo6.options.markers, function (xm, xi) {
-          index = xi;
-          return xm.ndo6.id == m.ndo6.id;
-        });
-        if (exm) {
-          ndo6.options.markers.splice(index, 1, m);
-          exm.setMap(null);
-        } else {
-          ndo6.options.markers.push(m);
-        }
-      }
-
-      function refreshMarkers() {
-        ndo6.options.clearMarkers();
-        $scope.positions = $scope.positions || [];
-        ndo6.options.markers = _.map($scope.positions, function(p){
-          return ndo6.getMarker(p);
-        });
-        $scope.points = $scope.points || [];
-        var pointsm = _.map($scope.points, function(p){
-          return ndo6.getMarker(p);
-        });
-        ndo6.options.markers.push.apply(ndo6.options.markers, pointsm);
-      }
-
-      function readPositions() {
-        $http.get('/api/positions/'+ndo6.session.map.id)
-          .then(function(positions){
-            $scope.positions = positions;
-            socket.syncUpdates('position', $scope.positions, refreshMarkers);
-          }, errHanlder);
-      }
-
-      function readShared() {
-        $http.get('/api/shared/points/'+ndo6.session.map.id)
-          .then(function(points){
-            $scope.points = points;
-            socket.syncUpdates('point', $scope.points, refreshMarkers);
-          }, errHanlder);
-        $http.get('/api/shared/messages/'+ndo6.session.map.id)
-          .then(function(messages){
-            ndo6.options.messages = messages;
-            socket.syncUpdates('message', ndo6.options.messages);
-          }, errHanlder);
-        $http.get('/api/shared/ways/'+ndo6.session.map.id)
-          .then(function(ways){
-            ndo6.options.ways = ways;
-            socket.syncUpdates('way', ndo6.options.ways);
-          }, errHanlder);
-      }
-
-
 
       function logout() {
         Auth.logout();
@@ -204,7 +145,7 @@ angular.module('ndo6App')
             pos: maps.getLatLng(ndo6.session.context.G, _last),
             user: ndo6.session.user.name
           });
-          replaceOrAdd(m);
+          ndo6.replaceOrAdd(m);
           if (ndo6.options.centerFirst || ndo6.options.centerLocked) {
             $scope.centerMap(m.position);
             ndo6.options.centerFirst = false;
@@ -223,7 +164,7 @@ angular.module('ndo6App')
         $http.post('/api/invitations', opt)
           .then(function() {
             Logger.info('Invite successfully send!');
-          }, errHanlder)
+          }, ndo6.errHandler)
       });
       function invite() {
         if (!ndo6.session.map) {
@@ -263,24 +204,63 @@ angular.module('ndo6App')
         modalPosition(opt);
       };
 
+      $scope.execMaps = function() {
+        openPage('maps');
+      };
+      $scope.execShared = function() {
+
+      };
+      $scope.execSnapshot = function() {
+
+      };
 
 
+      var modalNewMap = Modal.confirm.popup(function(opt){
+        $http.post('/api/maps', opt.map)
+          .then(function(map) {
+            ndo6.session.map = map;
+          }, ndo6.errHandler)
+      });
       function newmap() {
+        var opt = {
+          title: 'New Map',
+          map: {
+            name: 'new map',
+            description: '',
+            active: true
+          },
+          template: Modal.TEMPLATE_MAP,
+          ok: true,
+          cancel: true
+        };
+        modalNewMap(opt);
+      }
+
+      function newway() {
+
+      }
+
+      function search() {
 
       }
 
       $scope.menu = [{
-        disabled: function() { return true; },
+        // disabled: function() { return true; },
         icon: 'fa-map',
         caption: 'New Map',
         action: newmap
       },{
-        divider: true
-      },{
         disabled: function() { return true; },
-        caption: 'Monitor',
-        icon: 'fa-desktop',
-        action: angular.noop
+        icon: 'fa-code-fork',
+        caption: 'New Way',
+        action: newway
+      },{
+        divider: true
+      // },{
+      //   disabled: function() { return true; },
+      //   caption: 'Monitor',
+      //   icon: 'fa-desktop',
+      //   action: angular.noop
       },{
         caption: 'Center Me',
         icon: 'fa-crosshairs',
@@ -290,6 +270,11 @@ angular.module('ndo6App')
         caption: 'Invite',
         icon: 'fa-paper-plane',
         action: invite
+      },{
+        disabled: function() { return true; },
+        caption: 'Search',
+        icon: 'fa-search',
+        action: search
       },{
         divider: true
       },{
@@ -302,40 +287,7 @@ angular.module('ndo6App')
         action: logout
       }];
 
-      $scope.tools = [{
-        icon: 'fa-users'
-      },{
-        icon: 'fa-map-marker'
-      },{
-        icon: 'fa-map'
-      }];
 
-
-
-      readPositions();
-      readShared();
+      ndo6.refresh();
       loop();
-
-      // $scope.awesomeThings = [];
-      //
-      // $http.get('/api/things').success(function(awesomeThings) {
-      //   $scope.awesomeThings = awesomeThings;
-      //   socket.syncUpdates('thing', $scope.awesomeThings);
-      // });
-      //
-      // $scope.addThing = function() {
-      //   if($scope.newThing === '') {
-      //     return;
-      //   }
-      //   $http.post('/api/things', { name: $scope.newThing });
-      //   $scope.newThing = '';
-      // };
-      //
-      // $scope.deleteThing = function(thing) {
-      //   $http.delete('/api/things/' + thing._id);
-      // };
-      //
-      // $scope.$on('$destroy', function () {
-      //   socket.unsyncUpdates('thing');
-      // });
     }]);

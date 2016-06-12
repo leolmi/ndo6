@@ -11,6 +11,6 @@ var InvitationSchema = new Schema({
   accepted: {type: Boolean, default: false},
   refused: {type: Boolean, default: false},
   expiration: Number
-});
+},{ versionKey: false });
 
 module.exports = mongoose.model('Invitation', InvitationSchema);

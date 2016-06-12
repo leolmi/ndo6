@@ -18,6 +18,9 @@ exports.indexPoints = function(req, res) {
 exports.indexMessages = function(req, res) {
   index(Message, req, res);
 };
+exports.indexWays = function(req, res) {
+  index(Way, req, res);
+};
 
 exports.createPoint = function(req, res) {
   u.create(Point, req, res);
@@ -25,10 +28,16 @@ exports.createPoint = function(req, res) {
 exports.createMessage = function(req, res) {
   u.create(Message, req, res);
 };
+exports.createWay = function(req, res) {
+  u.create(Way, req, res);
+};
 
 exports.destroyPoint = function(req, res) {
   u.destroy(Point, req, res);
 };
 exports.destroyMessage = function(req, res) {
   u.destroy(Message, req, res);
+};
+exports.destroyWay = function(req, res) {
+  u.destroy(Way, req, res);
 };
