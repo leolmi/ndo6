@@ -53,12 +53,22 @@ angular.module('ndo6App')
           maximumAge: 0
         }
       };
+      var _shared = [{
+        name:'points',
+        socketName: 'point',
+        cb: refreshMarkers
+      },{
+        name:'messages',
+        socketName: 'message'
+      },{
+        name:'ways',
+        socketName: 'way'
+      }];
 
       function reset(full) {
         _session.user = {};
         _session.map = null;
         _session.context = null;
-
 
         _options.active = true;
         _options.delay = 1000;
@@ -143,13 +153,15 @@ angular.module('ndo6App')
           _data.positions = [];
           refreshMarkers();
         } else {
-          $http.get('/api/positions/' + _session.map.id)
-            .then(function (positions) {
-              _data.positions = positions;
+          $http.get('/api/positions/' + _session.map._id)
+            .then(function (resp) {
+              _data.positions = resp.data;
               socket.syncUpdates('position', _data.positions, refreshMarkers);
             }, errHandler);
         }
       }
+
+
 
       function readShared() {
         if (!_session.map) {
@@ -158,21 +170,13 @@ angular.module('ndo6App')
           _data.messages = [];
           _data.ways = [];
         } else {
-          $http.get('/api/shared/points/' + _session.map.id)
-            .then(function (points) {
-              _data.points = points;
-              socket.syncUpdates('point', _data.points, refreshMarkers);
-            }, errHandler);
-          $http.get('/api/shared/messages/' + _session.map.id)
-            .then(function (messages) {
-              _data.messages = messages;
-              socket.syncUpdates('message', _data.messages);
-            }, errHandler);
-          $http.get('/api/shared/ways/' + _session.map.id)
-            .then(function (ways) {
-              _data.ways = ways;
-              socket.syncUpdates('way', _data.ways);
-            }, errHandler);
+          _shared.forEach(function(s){
+            $http.get('/api/shared/'+s.name+'/' + _session.map._id)
+              .then(function (resp) {
+                _data[s.name] = resp.data;
+                socket.syncUpdates(s.socketName, _data[s.name], s.cb);
+              }, errHandler);
+          });
         }
       }
 

@@ -8,89 +8,6 @@
   width: calc(100% - 160px);
 }
 
-
-.monitor {
-  position: absolute;
-  height: 200px;
-  z-index: 1000;
-  background-color: #fff;
-  opacity: .6;
-  bottom: 0;
-  width: 100%;
-  color: #222;
-}
-.monitor:hover {
-  opacity: .93;
-}
-.monitor.minimized {
-  height: 0;
-}
-.monitor.minimized > section {
-  display: none;
-}
-
-.monitor > section {
-  padding: 10px;
-}
-.monitor > footer {
-  padding: 0 10px;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  font-size: 32px;
-  background-color: #fff;
-  opacity: .9;
-}
-
-.monitor .info > div {
-  font-size: 10px;
-}
-.monitor .section > .title {
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.monitor > .section {
-  height: 160px;
-}
-.monitor > .section:hover {
-  background-color: yellowgreen;
-}
-
-.monitor > .user {
-  width: 200px;
-  /*background-color: #245269;*/
-  border-right: #aaa 1px solid;
-}
-.monitor > .user > .info {
-  margin-top: 10px;
-}
-.monitor > .chat {
-  /*background-color: #219161;*/
-  position: absolute;
-  left: 200px;
-  top: 0;
-  width: calc(100% - 400px);
-  border-right: #aaa 1px solid;
-}
-.monitor > .group {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 200px;
-  /*background-color: #ba9d37;*/
-}
-
-.monitor > footer > .btn-hidden {
-  display: none;
-  /*margin-top: 6px;*/
-}
-
-.monitor > footer .fa.onright {
-  margin: 6px;
-}
-
 .working-container.main {
   height: 100%;
 }
@@ -118,36 +35,6 @@
   color: orange;
 }
 
-.monitor-toggler {
-  /*position: absolute;*/
-  /*right: 10px;*/
-  /*bottom: 204px;*/
-  /*font-size: 14px;*/
-  /*text-transform: uppercase;*/
-  /*text-align: center;*/
-  /*font-weight: bold;*/
-  /*color: #333;*/
-  position: absolute;
-  right: 0;
-  bottom: 200px;
-  font-size: 14px;
-  text-transform: uppercase;
-  text-align: center;
-  font-weight: bold;
-  color: #333;
-  padding: 6px;
-  background-color: white;
-  opacity: .9;
-  border-radius: 8px 0 0 0;
-}
-.monitor-toggler > i {
-  /*bottom: 44px;*/
-  font-size: 16px;
-}
-.monitor-toggler.on-bottom {
-  bottom: 44px;
-}
-
 .logout-btn {
   position: absolute;
   right: 8px;
@@ -155,52 +42,6 @@
   z-index: 10;
 }
 
-.over-page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.over-page > .overlay {
-  position: absolute;
-  width: 100%;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  top: 0;
-  background-color: #fff;
-  opacity: 0;
-  transition-property: opacity;
-  transition-duration: .15s;
-  z-index: 200;
-}
-
-.over-page.active > .overlay {
-  opacity: .3;
-}
-
-.over-page .overpage-body {
-  overflow: hidden;
-  min-height: 100px;
-}
-.over-page:not(.active) {
-  display: none;
-}
-.over-page > .over-page-content {
-  width: 100%;
-  max-height: 100%;
-  left: 0;
-  position: fixed;
-  z-index: 210;
-  overflow: auto;
-}
-.overlay-times {
-  z-index: 220;
-  position: absolute;
-  right: 8px;
-}
 
 .menu-item-icon {
   color: yellowgreen;
@@ -242,22 +83,5 @@
     margin: 30px 40px;
     width: calc(100% - 50px);
     width: -webkit-calc(100% - 50px);
-  }
-}
-
-@media (max-width: 700px) {
-  .monitor > footer > .btn-hidden {
-    display: block;
-  }
-  .monitor > .section:not(.active) {
-    display: none;
-  }
-  .monitor > .section.active {
-    width: 100%;
-    left: 0;
-    border-right: none;
-  }
-  .chat-text {
-    bottom: 170px;
   }
 }

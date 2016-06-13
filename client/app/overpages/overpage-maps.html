@@ -1,5 +1,23 @@
-<div class="row" ng-controller="MapsCtrl">
-  <div class="map-row" ng-repeat="m in maps">
-    <h3>{{m.name}}</h3>
+<div class="ovepage-maps row" ng-controller="MapsCtrl">
+  <search-box ng-model="searchText"></search-box>
+  <div class="maps-container">
+    <div class="map-row private-map-row" ng-hide="searchText"
+         ng-class="{'active':!current}" ng-click="set()">
+      <i class="fa fa-map map-row-icon"></i>
+      <i class="fa fa-check-circle map-row-current" ng-show="!current"></i>
+      <div class="map-row-content">
+        <h3>Private Map {{current ? '' : '(current)'}}</h3>
+        <p class="map-row-content-desc">Private map with no shared elements.</p>
+      </div>
+    </div>
+    <div class="map-row" ng-repeat="m in maps | filter:searchText"
+         ng-class="{'active':m._id==current}" ng-click="set(m)">
+      <i class="fa fa-map map-row-icon"></i>
+      <i class="fa fa-check-circle map-row-current" ng-show="m._id==current"></i>
+      <div class="map-row-content">
+        <h3>{{m.name}} {{m._id==current ? '(current)' : ''}}</h3>
+        <p class="map-row-content-desc">{{m.description}}</p>
+      </div>
+    </div>
   </div>
 </div>

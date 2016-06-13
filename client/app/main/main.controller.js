@@ -94,7 +94,7 @@ angular.module('ndo6App')
             var npos = new Position(pos);
             if (!_last || !_last.sameOf(npos)) {
               if (ndo6.session.map && ndo6.options.active)
-                $http.post('/api/positions/'+ndo6.session.map.id, npos);
+                $http.post('/api/positions/'+ndo6.session.map._id, npos);
               _last.keep(npos);
             }
             loop();
@@ -208,17 +208,17 @@ angular.module('ndo6App')
         openPage('maps');
       };
       $scope.execShared = function() {
-
+        //openPage('shared');
       };
       $scope.execSnapshot = function() {
-
+        //TODO: snapshot
       };
 
 
       var modalNewMap = Modal.confirm.popup(function(opt){
         $http.post('/api/maps', opt.map)
-          .then(function(map) {
-            ndo6.session.map = map;
+          .then(function(resp) {
+            ndo6.session.map = resp.data;
           }, ndo6.errHandler)
       });
       function newmap() {
