@@ -1,6 +1,11 @@
-/*.ovepage-maps {*/
-  /*padding: 50px;*/
-/*}*/
+.ovepage-maps {
+  height: 100%;
+  /*display: flex;*/
+  /*flex-direction: column;*/
+}
+.ovepage-maps .search-box {
+  /*flex-grow: 1;*/
+}
 
 .ovepage-maps .maps-container {
   margin: 20px 0;

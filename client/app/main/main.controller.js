@@ -148,9 +148,9 @@ angular.module('ndo6App')
           template: Modal.TEMPLATE_INVITE,
           ok: true,
           cancel: true,
-          fixedmessage: 'Ciao, ' + ndo6.session.user.name + ' invite you to the map "' + ndo6.session.map.title + '".\n' +
+          fixedmessage: 'Ciao, ' + ndo6.session.user.name + ' invite you to the map "' + ndo6.session.map.name + '".\n' +
             'Follow the link: [PRIVATE-LINK-BOOKMARK]\n'+
-            'Go on ' + $rootScope.product.name.toLowerCase() + '.herokuapp.com, register or log in if you already registered.\n' +
+            'Otherwise go on ' + $rootScope.product.name.toLowerCase() + '.herokuapp.com, register or log in if you already registered.\n' +
             'Once you entered you will see the notification to access the shared map.',
           message: '',
           emails: ''
@@ -169,16 +169,19 @@ angular.module('ndo6App')
       $scope.execOnPosition = function() {
         var opt = {
           title: 'Marker',
-          label: 'P',
-          description: '',
+          marker: {
+            label: 'P',
+            title: '',
+            icon: maps.getIcon('purple'),
+            pos: ndo6.session.context.map.getCenter()
+          },
           template: Modal.TEMPLATE_POSITION,
           ok: {text: 'Add'},
-          cancel: true,
-          pos: ndo6.session.context.map.getCenter()
+          cancel: true
         };
         Modal.show(opt, 'popup')
           .then(function(o){
-            var m  = ndo6.getMarker(o);
+            var m  = ndo6.getMarker(o.marker);
             ndo6.replaceOrAdd(m);
           });
       };
@@ -194,14 +197,16 @@ angular.module('ndo6App')
       };
 
 
-      $scope.newmap = function() {
-        var opt = {
-          title: 'New Map',
-          map: {
+      $scope.editMap = function(map) {
+        var title = map ? 'Edit Map' : 'New Map';
+        map = map || {
             name: 'new map',
             description: '',
             active: true
-          },
+          };
+        var opt = {
+          title: title,
+          map: map,
           template: Modal.TEMPLATE_MAP,
           ok: true,
           cancel: true
@@ -215,25 +220,45 @@ angular.module('ndo6App')
           });
       };
 
-      $scope.newway = function() {
 
-
+      $scope.editWay = function(way) {
+        var title = way ? 'Edit Way' : 'New Way';
+        way = way || {
+            title: 'New Way',
+            mode: 'car',
+            points:[]
+          };
+        var opt = {
+          title: title,
+          way: way,
+          template: Modal.TEMPLATE_WAY,
+          ok: {text: 'Add'},
+          cancel: true
+        };
+        Modal.show(opt, 'popup')
+          .then(function(o){
+            ///TEMP>>>>>
+            Logger.info('Way', 'New way created!')
+            ///<<<<<<<<<
+          });
       };
 
       function search() {
 
       }
 
+      function help() {
+        openPage('help');
+      }
+
       $scope.menu = [{
-        // disabled: function() { return true; },
         icon: 'fa-map',
         caption: 'New Map',
-        action: $scope.newmap
+        action: function() { $scope.editMap(); }
       },{
-        disabled: function() { return true; },
         icon: 'fa-code-fork',
         caption: 'New Way',
-        action: $scope.newway
+        action: function() { $scope.editWay(); }
       },{
         divider: true
       // },{
@@ -256,6 +281,10 @@ angular.module('ndo6App')
         icon: 'fa-search',
         action: search
       },{
+        caption: 'Help',
+        icon: 'fa-user-md',
+        action: help
+      },{
         divider: true
       },{
         caption: 'Settings',
@@ -273,6 +302,10 @@ angular.module('ndo6App')
         $scope.closeOverlay();
       });
 
+      $rootScope.$on('CLICK-ON-MARKER', function(e, marker){
+        Logger.info('Click on marker', 'marker:'+JSON.stringify(marker.ndo6));
+      });
+
       $scope.$watch(function() { return ndo6.options.active; }, function(){
         if (ndo6.options.active) loop();
       });
@@ -282,6 +315,7 @@ angular.module('ndo6App')
         if (ndo6.session.context && !ndo6.session.map) {
           var m = ndo6.getMarker({
             id: 'user@'+ndo6.session.user.name,
+            title: ndo6.session.user.name,
             label: 'I',
             type: 'user',
             pos: maps.getLatLng(ndo6.session.context.G, _last),

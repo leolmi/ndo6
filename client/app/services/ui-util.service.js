@@ -38,8 +38,16 @@ angular.module('ndo6App')
           s4() + '-' + s4() + s4() + s4();
       }
 
+      function remove(arr, item) {
+        if (!arr || !_.isArray(arr) || !item) return;
+        var index = arr.indexOf(item);
+        if (index>-1)
+          arr.splice(index, 1);
+      }
+
       return {
         toggleMenu:toggleMenu,
-        guid:guid
+        guid:guid,
+        remove: remove
       }
     }]);

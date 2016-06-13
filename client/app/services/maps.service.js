@@ -2,7 +2,32 @@
 'use strict';
 
 angular.module('ndo6App')
-  .factory('maps', [function() {
+  .factory('maps', ['$location', function($location) {
+    var _standardIcons = [{
+      color: 'blue'
+    },{
+      color: 'cyan'
+    },{
+      color: 'gold'
+    },{
+      color: 'green'
+    },{
+      color: 'grey'
+    },{
+      color: 'purple'
+    },{
+      color: 'red'
+    },{
+      color: 'violet'
+    }];
+
+    function getIcon(color) {
+      var icon = _.find(_standardIcons, function (i) {
+        return i.color == color;
+      });
+      return icon ? $location.absUrl()+'assets/markers/marker-'+icon.color+'.png' : undefined;
+    }
+
     function getOptions(G) {
       return {
         zoom: 14,
@@ -169,6 +194,8 @@ angular.module('ndo6App')
     }
 
     return {
+      standardIcons: _standardIcons,
+      getIcon:getIcon,
       getLatLng:getLatLng,
       getOptions:getOptions,
       createContext:createContext,

@@ -3,6 +3,8 @@
 angular.module('ndo6App')
   .factory('Modal', ['$q','$rootScope','$modal',
     function ($q, $rootScope, $modal) {
+      var base_TEMPLATE_DIR = 'app/modals/';
+
       var modal_DELETE = 'delete';
       var modal_YESNOCANCEL = 'yesnocancel';
       var modal_OKCANCEL = 'okcancel';
@@ -11,6 +13,7 @@ angular.module('ndo6App')
       var template_INVITE = 'invite';
       var template_POSITION = 'position';
       var template_MAP = 'map';
+      var template_WAY = 'way';
       // var template_POSINFO = 'posinfo';
       // var template_POINT = 'point';
       // var template_INFOLIST = 'infolist';
@@ -51,6 +54,7 @@ angular.module('ndo6App')
         TEMPLATE_INVITE: template_INVITE,
         TEMPLATE_POSITION: template_POSITION,
         TEMPLATE_MAP: template_MAP,
+        TEMPLATE_WAY: template_WAY,
         // TEMPLATE_POSINFO:template_POSINFO,
         // TEMPLATE_POINT:template_POINT,
         // TEMPLATE_INFOLIST:template_INFOLIST,
@@ -238,7 +242,7 @@ angular.module('ndo6App')
                   dismissable: true,
                   idle: false,
                   title: args[0].title,
-                  template: 'components/modal/' + args[0].template + '.html',
+                  template: base_TEMPLATE_DIR + args[0].template + '.html',
                   buttons: buttons,
                   show: show
                 },

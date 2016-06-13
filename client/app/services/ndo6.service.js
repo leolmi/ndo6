@@ -107,12 +107,17 @@ angular.module('ndo6App')
         var m = new _session.context.G.maps.Marker({
           map: _session.context.map,
           label: info.label || 'P',
-          position: info.pos
+          position: info.pos,
+          title: info.title || info.description,
+          icon: info.icon
         });
         m.ndo6 = {
           id: uiUtil.guid()
         };
         _.extend(m.ndo6, info);
+        _session.context.G.maps.event.addListener(m, 'click', function() {
+          if (m.map) $rootScope.$broadcast('CLICK-ON-MARKER', m);
+        });
         return m;
       }
 
