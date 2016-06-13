@@ -22,6 +22,7 @@ angular.module('ndo6App')
        * @return {Object}            - the instance $modal.open() returns
        */
       function openModal(scope, modalClass) {
+        $rootScope.$broadcast('SHOWING-MODAL');
         var modalScope = $rootScope.$new();
         scope = scope || {};
         scope.product = $rootScope.product;

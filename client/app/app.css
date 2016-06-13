@@ -250,9 +250,14 @@ p.error {
   cursor: pointer;
   outline: none;
 }
-.as-button:hover {
+.as-button:not([disabled]):hover {
   color: yellowgreen;
 }
-.as-button.hover-red:hover {
+.as-button:not([disabled]).hover-red:hover {
   color: red;
 }
+.as-button[disabled] {
+  cursor: not-allowed;
+  color: #aaa;
+}
+

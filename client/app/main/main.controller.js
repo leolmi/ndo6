@@ -129,29 +129,7 @@ angular.module('ndo6App')
         }
       }
 
-      $scope.$watch(function() { return ndo6.options.active; }, function(){
-        if (ndo6.options.active) loop();
-      });
 
-
-
-      $scope.$watch(function() { return _last; }, function(){
-        //Aggiorna la posizione del marker
-        if (ndo6.session.context && !ndo6.session.map) {
-          var m = ndo6.getMarker({
-            id: 'user@'+ndo6.session.user.name,
-            label: 'I',
-            type: 'user',
-            pos: maps.getLatLng(ndo6.session.context.G, _last),
-            user: ndo6.session.user.name
-          });
-          ndo6.replaceOrAdd(m);
-          if (ndo6.options.centerFirst || ndo6.options.centerLocked) {
-            $scope.centerMap(m.position);
-            ndo6.options.centerFirst = false;
-          }
-        }
-      }, true);
 
       function center(m) {
         if (ndo6.session.context && _last) {
@@ -160,12 +138,6 @@ angular.module('ndo6App')
         }
       }
 
-      var modalInvite = Modal.confirm.popup(function(opt){
-        $http.post('/api/invitations', opt)
-          .then(function() {
-            Logger.info('Invite successfully send!');
-          }, ndo6.errHandler)
-      });
       function invite() {
         if (!ndo6.session.map) {
           Logger.warning('No active map', 'Create new map or select one to share position.');
@@ -183,14 +155,17 @@ angular.module('ndo6App')
           message: '',
           emails: ''
         };
-        modalInvite(opt);
+        // modalInvite(opt);
+        Modal.show(opt, 'popup')
+          .then(function(o){
+            $http.post('/api/invitations', o)
+              .then(function() {
+                Logger.info('Invite successfully send!');
+              }, ndo6.errHandler)
+          });
       }
 
 
-      var modalPosition = Modal.confirm.popup(function(opt){
-        var m  = ndo6.getMarker(opt);
-        replaceOrAdd(m);
-      });
       $scope.execOnPosition = function() {
         var opt = {
           title: 'Marker',
@@ -201,7 +176,11 @@ angular.module('ndo6App')
           cancel: true,
           pos: ndo6.session.context.map.getCenter()
         };
-        modalPosition(opt);
+        Modal.show(opt, 'popup')
+          .then(function(o){
+            var m  = ndo6.getMarker(o);
+            ndo6.replaceOrAdd(m);
+          });
       };
 
       $scope.execMaps = function() {
@@ -215,13 +194,7 @@ angular.module('ndo6App')
       };
 
 
-      var modalNewMap = Modal.confirm.popup(function(opt){
-        $http.post('/api/maps', opt.map)
-          .then(function(resp) {
-            ndo6.session.map = resp.data;
-          }, ndo6.errHandler)
-      });
-      function newmap() {
+      $scope.newmap = function() {
         var opt = {
           title: 'New Map',
           map: {
@@ -233,12 +206,19 @@ angular.module('ndo6App')
           ok: true,
           cancel: true
         };
-        modalNewMap(opt);
-      }
+        Modal.show(opt, 'popup')
+          .then(function(o){
+            $http.post('/api/maps', o.map)
+              .then(function(resp) {
+                ndo6.session.map = resp.data;
+              }, ndo6.errHandler)
+          });
+      };
 
-      function newway() {
+      $scope.newway = function() {
 
-      }
+
+      };
 
       function search() {
 
@@ -248,12 +228,12 @@ angular.module('ndo6App')
         // disabled: function() { return true; },
         icon: 'fa-map',
         caption: 'New Map',
-        action: newmap
+        action: $scope.newmap
       },{
         disabled: function() { return true; },
         icon: 'fa-code-fork',
         caption: 'New Way',
-        action: newway
+        action: $scope.newway
       },{
         divider: true
       // },{
@@ -286,6 +266,34 @@ angular.module('ndo6App')
         icon: 'fa-sign-out',
         action: logout
       }];
+
+
+
+      $rootScope.$on('SHOWING-MODAL', function() {
+        $scope.closeOverlay();
+      });
+
+      $scope.$watch(function() { return ndo6.options.active; }, function(){
+        if (ndo6.options.active) loop();
+      });
+
+      $scope.$watch(function() { return _last; }, function(){
+        //Aggiorna la posizione del marker
+        if (ndo6.session.context && !ndo6.session.map) {
+          var m = ndo6.getMarker({
+            id: 'user@'+ndo6.session.user.name,
+            label: 'I',
+            type: 'user',
+            pos: maps.getLatLng(ndo6.session.context.G, _last),
+            user: ndo6.session.user.name
+          });
+          ndo6.replaceOrAdd(m);
+          if (ndo6.options.centerFirst || ndo6.options.centerLocked) {
+            $scope.centerMap(m.position);
+            ndo6.options.centerFirst = false;
+          }
+        }
+      }, true);
 
 
       ndo6.refresh();

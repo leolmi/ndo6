@@ -47,8 +47,29 @@
 }
 
 
+.overpage-buttons {
+  position: fixed;
+  bottom: 50px;
+  height: 60px;
+  width: 100%;
+  left: 0;
+  padding: 0 100px;
+  text-align: right;
+}
+.overpage-buttons > i {
+  display: inline-block;
+  position: relative;
+  margin-left: 40px;
+}
+
 @media(max-width: 600px) {
   .over-page .overpage-body {
     padding: 50px 20px;
+  }
+  .overpage-buttons {
+    padding: 0 20px;
+  }
+  .overpage-buttons > i {
+    margin-left: 20px;
   }
 }
