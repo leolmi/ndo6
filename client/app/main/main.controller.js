@@ -69,8 +69,8 @@ angular.module('ndo6App')
               if (data && data.invitation) {
                 var opt = {
                   data: data,
-                  template: Modal.TEMPLATE_ACCEPT,
-                  ok: true,
+                  template: Modal.templates.accept,
+                  ok: {text:'Accept'},
                   cancel: true,
                   show: {footer: true}
                 };
@@ -163,12 +163,13 @@ angular.module('ndo6App')
         exp.setDate(exp.getDate() + 10);
         var opt = {
           invitation: {
+            map: ndo6.session.map._id,
             userMessage: 'Hi, '+ndo6.session.user.name+' invite you to map "'+ndo6.session.map.name+'"',
             target: '',
             expdate: exp
           },
           title: 'Invite others to the map '+ndo6.session.map.name,
-          template: Modal.TEMPLATE_INVITE,
+          template: Modal.templates.invite,
           ok: true,
           cancel: true
         };
@@ -178,7 +179,7 @@ angular.module('ndo6App')
             o.invitation.expiration = o.invitation.expdate.getTime();
             $http.post('/api/invitations', o.invitation)
               .then(function() {
-                Logger.info('Invite successfully send!');
+                Logger.info('Invitation successfully sent!');
               }, ndo6.errHandler)
           });
       }
@@ -193,7 +194,7 @@ angular.module('ndo6App')
             icon: maps.getIcon('purple'),
             pos: ndo6.session.context.map.getCenter()
           },
-          template: Modal.TEMPLATE_POSITION,
+          template: Modal.templates.position,
           ok: {text: 'Add'},
           cancel: true
         };
@@ -217,7 +218,7 @@ angular.module('ndo6App')
       $scope.deleteMap = function(map) {
         if (!map) return;
         var action = map.invite ? 'Refuse' : 'Delete';
-        var opt = Modal.confirm.getAskOptions(Modal.MODAL_DELETE, map.name, action);
+        var opt = Modal.confirm.getAskOptions(Modal.types.delete, map.name, action);
         Modal.show(opt)
           .then(function () {
             ndo6.deleteMap(map);
@@ -234,7 +235,7 @@ angular.module('ndo6App')
         var opt = {
           title: title,
           map: map,
-          template: Modal.TEMPLATE_MAP,
+          template: Modal.templates.map,
           ok: true,
           cancel: true
         };
@@ -258,7 +259,7 @@ angular.module('ndo6App')
         var opt = {
           title: title,
           way: way,
-          template: Modal.TEMPLATE_WAY,
+          template: Modal.templates.way,
           ok: {text: 'Add'},
           cancel: true
         };

@@ -4,21 +4,6 @@ angular.module('ndo6App')
   .factory('Modal', ['$q','$rootScope','$modal',
     function ($q, $rootScope, $modal) {
       var base_TEMPLATE_DIR = 'app/modals/';
-
-      var modal_DELETE = 'delete';
-      var modal_YESNOCANCEL = 'yesnocancel';
-      var modal_OKCANCEL = 'okcancel';
-
-      var template_WELCOME = 'welcome';
-      var template_INVITE = 'invite';
-      var template_ACCEPT = 'accept';
-      var template_POSITION = 'position';
-      var template_MAP = 'map';
-      var template_WAY = 'way';
-      // var template_POSINFO = 'posinfo';
-      // var template_POINT = 'point';
-      // var template_INFOLIST = 'infolist';
-
       /**
        * Opens a modal
        * @param  {Object} scope      - an object to be merged with modal's scope
@@ -48,19 +33,18 @@ angular.module('ndo6App')
 
       // Public API here
       return {
-        MODAL_DELETE: modal_DELETE,
-        MODAL_YESNOCANCEL: modal_YESNOCANCEL,
-        MODAL_OKCANCEL: modal_OKCANCEL,
-        TEMPLATE_WELCOME: template_WELCOME,
-        TEMPLATE_INVITE: template_INVITE,
-        TEMPLATE_ACCEPT: template_ACCEPT,
-        TEMPLATE_POSITION: template_POSITION,
-        TEMPLATE_MAP: template_MAP,
-        TEMPLATE_WAY: template_WAY,
-        // TEMPLATE_POSINFO:template_POSINFO,
-        // TEMPLATE_POINT:template_POINT,
-        // TEMPLATE_INFOLIST:template_INFOLIST,
-
+        types: {
+          delete:'delete',
+          yesnocancel:'yesnocancel',
+          okcancel:'okcancel'
+        },
+        templates: {
+          invite:'invite',
+          accept:'accept',
+          position:'position',
+          map:'map',
+          way:'way'
+        },
         show: function (options, type) {
           var self = this;
           type = type || 'ask';
@@ -93,7 +77,7 @@ angular.module('ndo6App')
               modalClass: 'modal-warning'
             };
             switch (type) {
-              case(modal_DELETE):
+              case('delete'):
                 var action = args[1] ? args[1] : 'Delete';
                 opt.title = 'Confirm ' + action;
                 opt.body = '<p>Confirm ' + action + ' <strong>' + args[0] + '</strong> ?</p>';
@@ -101,11 +85,11 @@ angular.module('ndo6App')
                 opt.okClass = 'btn-danger';
                 opt.modalClass = 'modal-danger';
                 break;
-              case(modal_YESNOCANCEL):
+              case('yesnocancel'):
                 opt.ok = 'Yes';
                 opt.no = 'No';
                 break;
-              case (modal_OKCANCEL):
+              case ('okcancel'):
                 opt.ok = 'OK';
                 break;
             }

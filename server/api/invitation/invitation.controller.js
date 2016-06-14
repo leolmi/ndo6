@@ -42,15 +42,19 @@ exports.create = function(req, res) {
     if (err) return u.error(res, err);
     if (!map) return u.error(res, 'Map not found!');
     // invia una mail ad ogni invitato...
-    targets.forEach(function (t) {
+    targets.forEach(function (t, ti) {
       if (t && t != req.user.email) {
         //TODO: verifica che l'utente non abbia già un invito valido sulla mappa
         invitation._id = u.guid();
         invitation.target = t;
         invitation.message = getMessage(req, invitation, map);
         Invitation.create(invitation, function (err, i) {
-          if (!err) {
+
+          if (err) {
+            console.log('Target n°' + ti + '  Error: '+JSON.stringify(err));
+          } else {
             //TODO: send mail.....
+            console.log('Target n°' + ti + ' invitation:'+JSON.stringify(i));
           }
         });
       }
@@ -64,8 +68,8 @@ exports.show = function(req, res) {
   Invitation.findById(req.params.id, function (err, invitation) {
     if (err) return u.error(res, err);
     if (!invitation) return u.notfound(res);
-    if (invitation.target != req.user.email) return u.notallow(res);
-    if (invitation.banned) return u.notallow(res);
+    if (invitation.target != req.user.email) return u.error(res, 'Not allowed!');
+    if (invitation.banned) return u.error(res, 'Not allowed!');
     if (invitation.refused) return u.error(res, 'Just refused!');
     if (invitation.accepted) return u.error(res, 'Just accepted!');
     var exp = new Date();
@@ -91,15 +95,15 @@ exports.execute = function(req, res) {
 
     switch (action) {
       case 'ban':
-        if (req.user._id != invitation.owner) return u.notallow(res);
+        if (req.user._id != invitation.owner) return u.error(res, 'Not allowed!');;
         invitation.banned = true;
         break;
       case 'refuse':
-        if (req.user.email != invitation.target) return u.notallow(res);
+        if (req.user.email != invitation.target) return u.error(res, 'Not allowed!');;
         invitation.refused = true;
         break;
       case 'accept':
-        if (req.user.email != invitation.target) return u.notallow(res);
+        if (req.user.email != invitation.target) return u.error(res, 'Not allowed!');;
         invitation.accepted = true;
         break;
       default:

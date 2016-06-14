@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var InvitationSchema = new Schema({
+  _id: {type:String},
   owner: String,
   target: String,
   map: String,

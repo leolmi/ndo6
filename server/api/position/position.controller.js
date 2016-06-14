@@ -10,5 +10,7 @@ exports.index = function(req, res) {
 
 exports.create = function(req, res) {
   req.body.owner = req.user._id;
+  if (!req.body.map)
+    return u.error(res, 'Undefined map!');
   u.create(Position, req, res);
 };

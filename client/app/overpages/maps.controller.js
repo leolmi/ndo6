@@ -12,7 +12,7 @@ angular.module('ndo6App')
 
       $scope.set = function(map) {
         if (($scope.current && map && $scope.current == map._id) || (!$scope.current && !map)) return;
-        var opt = Modal.confirm.getAskOptions(Modal.MODAL_OKCANCEL);
+        var opt = Modal.confirm.getAskOptions(Modal.types.okcancel);
         opt.title = 'Set the map';
         opt.body = '<p>Confirm set map <strong>' + (map ? map.name : 'private map') + '</strong> ?</p>';
         Modal.show(opt)

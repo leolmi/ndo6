@@ -76,7 +76,7 @@ var deleted = function(res, obj, cb) {
 exports.deleted = deleted;
 
 /**
- * 
+ *
  * @param res
  * @returns {*}
  */
@@ -221,8 +221,8 @@ exports.getMails = function(txt) {
   var m;
   var mails = [];
   while ((m = rgx.exec(txt)) !== null) {
-    if (m.index === re.lastIndex) {
-      re.lastIndex++;
+    if (m.index === rgx.lastIndex) {
+      rgx.lastIndex++;
     }
     mails.push(m[1]);
   }

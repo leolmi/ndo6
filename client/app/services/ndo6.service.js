@@ -105,7 +105,7 @@ angular.module('ndo6App')
           navigator.geolocation.getCurrentPosition(function () {
             resolve();
           }, function () {
-            reject('Geolocation is not activated.');
+            reject('Geolocation is not available.');
           });
         });
       }
