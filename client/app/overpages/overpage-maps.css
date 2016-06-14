@@ -19,10 +19,16 @@
   border-radius: 4px;
   background-color: rgba(255, 255,255,.4);
 }
+.ovepage-maps .maps-container > .map-row.invite-to {
+  background-color: rgba(173, 0, 178, 0.2);
+}
 .ovepage-maps .maps-container > .map-row:not(.active):hover {
   cursor: pointer;
   background-color: rgba(123, 178, 0, 0.4);
 }
+
+
+
 /*.ovepage-maps .maps-container > .map-row:hover {*/
   /*background-color: rgba(123, 178, 0, 0.4);*/
 /*}*/
@@ -45,14 +51,28 @@
   max-width: 100%;
   display: block;
 }
-.ovepage-maps .maps-container > .map-row > .map-row-current {
+.ovepage-maps .maps-container > .map-row > .over-icon {
   position: absolute;
   font-size: 3em;
-  color: yellowgreen;
   left: 30px;
   top: 30px;
 }
+.ovepage-maps .maps-container > .map-row > .over-icon.map-row-current {
+  color: yellowgreen;
+}
+.ovepage-maps .maps-container > .map-row > .over-icon.map-row-new {
+  color: fuchsia;
+}
+
 .ovepage-maps .maps-container > .map-row > .map-row-icon {
   position: absolute;
   font-size: 3em;
+}
+.ovepage-maps .maps-container > .map-row > .map-row-icon.right-1 {
+  right: 20px;
+  bottom: 20px;
+}
+.ovepage-maps .maps-container > .map-row > .map-row-icon.right-2 {
+  right: 80px;
+  bottom: 20px;
 }

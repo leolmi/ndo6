@@ -8,7 +8,7 @@
 
 <!-- HEADER - TOOLS -->
 <div class="map-header" ng-hide="overpage">
-  <div class="map-title"> {{session.user.name}} - {{session.map ? session.map.name : 'Private Map'}}</div>
+  <div class="map-title"> {{session.user.name}} - <span class="map-name" ng-class="{'private':!session.map}">{{session.map ? session.map.name : 'Private Map'}}</span></div>
   <!--<div class="map-header-tools">-->
     <!--<i class="fa as-button" ng-repeat="tool in tools" ng-class="tool.icon"></i>-->
   <!--</div>-->

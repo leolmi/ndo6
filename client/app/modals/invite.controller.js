@@ -5,5 +5,4 @@
 angular.module('ndo6App')
   .controller('InviteCtrl', ['$scope', function ($scope) {
     //TODO: mostra la finestra di invito al gruppo.
-
   }]);

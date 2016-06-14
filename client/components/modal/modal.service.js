@@ -11,6 +11,7 @@ angular.module('ndo6App')
 
       var template_WELCOME = 'welcome';
       var template_INVITE = 'invite';
+      var template_ACCEPT = 'accept';
       var template_POSITION = 'position';
       var template_MAP = 'map';
       var template_WAY = 'way';
@@ -52,6 +53,7 @@ angular.module('ndo6App')
         MODAL_OKCANCEL: modal_OKCANCEL,
         TEMPLATE_WELCOME: template_WELCOME,
         TEMPLATE_INVITE: template_INVITE,
+        TEMPLATE_ACCEPT: template_ACCEPT,
         TEMPLATE_POSITION: template_POSITION,
         TEMPLATE_MAP: template_MAP,
         TEMPLATE_WAY: template_WAY,
@@ -92,9 +94,10 @@ angular.module('ndo6App')
             };
             switch (type) {
               case(modal_DELETE):
-                opt.title = 'Confirm Delete';
-                opt.body = '<p>Confirm delete <strong>' + args[0] + '</strong> ?</p>';
-                opt.ok = 'Delete';
+                var action = args[1] ? args[1] : 'Delete';
+                opt.title = 'Confirm ' + action;
+                opt.body = '<p>Confirm ' + action + ' <strong>' + args[0] + '</strong> ?</p>';
+                opt.ok = action;
                 opt.okClass = 'btn-danger';
                 opt.modalClass = 'modal-danger';
                 break;

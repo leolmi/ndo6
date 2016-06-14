@@ -76,12 +76,28 @@ var deleted = function(res, obj, cb) {
 exports.deleted = deleted;
 
 /**
+ * 
+ * @param res
+ * @returns {*}
+ */
+var notimplemented = function(res) { return res.send(501); };
+exports.notimplemented = notimplemented;
+
+/**
  * Return standard 404
  * @param res
  * @returns {*}
  */
 var notfound = function(res) {return res.send(404); };
 exports.notfound = notfound;
+
+/**
+ * Return standard 401
+ * @param res
+ * @returns {*}
+ */
+var notallow = function(res) {return res.send(401); };
+exports.notallow = notallow;
 
 /**
  * Return standard 500
@@ -198,4 +214,17 @@ exports.guid = function() {
   }
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
     s4() + '-' + s4() + s4() + s4();
+};
+
+exports.getMails = function(txt) {
+  var rgx = /([a-z][a-z0-9_.]+@([a-z0-9-]+\.)+[a-z]{2,6})/g;
+  var m;
+  var mails = [];
+  while ((m = rgx.exec(txt)) !== null) {
+    if (m.index === re.lastIndex) {
+      re.lastIndex++;
+    }
+    mails.push(m[1]);
+  }
+  return mails;
 };

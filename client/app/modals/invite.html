@@ -1,8 +1,8 @@
 <div ng-controller="InviteCtrl">
-  <label>Message (precompiled)</label>
-  <pre>{{modal.context.fixedmessage}}</pre>
   <label>Add a personalized message</label>
-  <textarea class="form-control input-sm vertical" rows="2" ng-model="modal.context.message"></textarea>
-  <label>Recipients</label>
-  <textarea class="form-control input-sm vertical" rows="3" ng-model="modal.context.emails"></textarea>
+  <textarea class="form-control input-sm vertical" rows="2" ng-model="modal.context.invitation.userMessage"></textarea>
+  <label>Emails (separate with one or more spaces)</label>
+  <textarea class="form-control input-sm vertical" rows="3" ng-model="modal.context.invitation.target"></textarea>
+  <label>Expiration Date</label>
+  <input type="date" class="form-control" ng-model="modal.context.invitation.expdate">
 </div>

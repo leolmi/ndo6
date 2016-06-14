@@ -1,58 +1,113 @@
 'use strict';
 var u = require('../../components/utils/utils');
 var Invitation = require('./invitation.model');
+var Map = require('../map/map.model');
+var MESSAGE_TEMPLATE = '<p>Hi, [OWNER-NAME] invite you to the map [MAP-NAME].</p>'+
+  '<p>Follow the link: <a href="[MAP-URL]">[MAP-NAME]</a></p>' +
+  '<p>Otherwise go on <a href="[NDO6-URL]">Ndo6</a>, register or log in if you already registered.</p>' +
+  '<p>Once you entered you will see the notification to access the shared map.</p>'
+
+function getMessage(req, invitation, map) {
+  var host = req.headers.host;
+  var message = MESSAGE_TEMPLATE.replace(/\[MAP\-URL\]/g, host + '/map#' + invitation._id);
+  message = message.replace(/\[NDO6\-URL\]/g, host);
+  message = message.replace(/\[OWNER\-NAME\]/g, req.user.name);
+  message = message.replace(/\[MAP\-NAME\]/g, map.name);
+  return message;
+}
 
 
 exports.index = function(req, res) {
-  var filter = {target: req.user._id};
+  var filter = { $or:[
+    {target: req.user.email, banned: false, refused: false, accepted: false},
+    {owner: req.user._id}] };
   u.index(Invitation, req, res, filter);
 };
 
+
 exports.create = function(req, res) {
-
-  return u.error(res, 'Not implemented yet..');
-
-  req.body.owner = req.user._id;
+  var invitation = req.body;
+  invitation.owner = req.user._id;
+  if (!invitation.target) return u.error(res, 'Undefined target!');
+  var targets = u.getMails(invitation.target);
+  if (!targets || targets.length <= 0)  return u.error(res, 'Invalid target!');
+  if (!invitation.map) return u.error(res, 'Undefined map!');
+  invitation.accepted = false;
+  invitation.refused = false;
+  invitation.banned = false;
   var exp = new Date();
   exp.setDate(exp.getDate() + 10);
-  req.body.expiration = req.body.expiration || exp.getTime();
-  u.create(Invitation, req, res);
+  invitation.expiration = invitation.expiration || exp.getTime();
+  Map.findById(invitation.map, function (err, map) {
+    if (err) return u.error(res, err);
+    if (!map) return u.error(res, 'Map not found!');
+    // invia una mail ad ogni invitato...
+    targets.forEach(function (t) {
+      if (t && t != req.user.email) {
+        //TODO: verifica che l'utente non abbia già un invito valido sulla mappa
+        invitation._id = u.guid();
+        invitation.target = t;
+        invitation.message = getMessage(req, invitation, map);
+        Invitation.create(invitation, function (err, i) {
+          if (!err) {
+            //TODO: send mail.....
+          }
+        });
+      }
+    });
+    return u.created(res);
+  });
 };
 
-exports.accept = function(req, res) {
+
+exports.show = function(req, res) {
   Invitation.findById(req.params.id, function (err, invitation) {
-    if(err) { return u.error(res, err); }
-    if(!invitation) { return u.notfound(res); }
-    if (invitation.accepted) { return u.error(res, new Error('Just accepted!')); }
-    if (invitation.refused) { return u.error(res, new Error('Just refused!')); }
+    if (err) return u.error(res, err);
+    if (!invitation) return u.notfound(res);
+    if (invitation.target != req.user.email) return u.notallow(res);
+    if (invitation.banned) return u.notallow(res);
+    if (invitation.refused) return u.error(res, 'Just refused!');
+    if (invitation.accepted) return u.error(res, 'Just accepted!');
     var exp = new Date();
-    if (invitation.expiration<exp.getTime()) { return u.error(res, new Error('Invitation expired!')); }
-    invitation.accepted = true;
-    invitation.save(function(err){
-      if(err) { return u.error(res, err); }
-      u.ok(res, 'You have accepted invitation!');
+    if (invitation.expiration < exp.getTime()) return u.error(res, 'Invitation expired!');
+    Map.findById(invitation.map, function (err, map) {
+      if (err) return u.error(res, err);
+      if (!map) return u.error(res, 'Map not found!');
+      map.setInvite(invitation);
+      u.ok(res, {invitation: invitation, map: map});
     });
   });
 };
 
-exports.destroy = function(req, res) {
-  Invitation.findById(req.params.id, function (err, invitation) {
-    if(err) return u.error(res, err);
-    if(!invitation) return u.notfound(res);
-    if (invitation.owner == req.user._id) {
-      invitation.remove(function (err) {
-        if (err) return u.error(res, err);
-        return u.deleted(res, invitation);
-      });
-    } else if (invitation.target == req.user._id) {
-      invitation.refused = true;
-      invitation.accepted = false;
-      invitation.save(function(err){
-        if (err) return u.error(res, err);
-        return u.ok(res);
-      });
-    } else {
-      return u.error(res, new Error('Invalid invitation!'));
+
+exports.execute = function(req, res) {
+  var invId = req.body.id || req.body._id;
+  var action = req.params.action;
+  if (!action) return u.error(res, 'Undefined action!');
+  if (!invId) return u.error(res, 'Undefined invitation!');
+  Invitation.findById(invId, function (err, invitation) {
+    if (err) return u.error(res, err);
+    if (!invitation) return u.notfound(res);
+
+    switch (action) {
+      case 'ban':
+        if (req.user._id != invitation.owner) return u.notallow(res);
+        invitation.banned = true;
+        break;
+      case 'refuse':
+        if (req.user.email != invitation.target) return u.notallow(res);
+        invitation.refused = true;
+        break;
+      case 'accept':
+        if (req.user.email != invitation.target) return u.notallow(res);
+        invitation.accepted = true;
+        break;
+      default:
+        return u.notfound(res);
     }
+    invitation.save(function (err) {
+      if (err) return u.error(res, err);
+      return u.ok(res);
+    });
   });
 };

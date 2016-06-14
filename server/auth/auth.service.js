@@ -51,7 +51,7 @@ function isAuthenticatedOnMap() {
         if (err) return next(err);
         if (!map) return res.send(401);
         if (map.owner == req.user._id) return next();
-        var filter = {target: req.user._id, map: req.params.id, accepted: true, refused: false};
+        var filter = {target: req.user._id, map: req.params.id, accepted: true, refused: false, banned: false};
         console.log('[DEBUG] - isAuthenticatedOnMap - filter: ' + JSON.stringify(filter));
         Invitation.find(filter, function (err, invitation) {
           if (err) return next(err);

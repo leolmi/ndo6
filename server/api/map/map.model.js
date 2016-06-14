@@ -11,4 +11,19 @@ var MapSchema = new Schema({
   active: {type:Boolean, default:true}
 },{ versionKey: false });
 
+MapSchema.methods = {
+  /**
+   * Imposta l'invito
+   * @param invitation
+   */
+  setInvite: function(invitation) {
+    if (!invitation) return;
+    this._doc.invite = {
+      id: invitation._id,
+      accepted: invitation.accepted
+    }
+  }
+};
+
+
 module.exports = mongoose.model('Map', MapSchema);

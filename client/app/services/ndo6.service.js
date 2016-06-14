@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('ndo6App')
-  .factory('ndo6', ['$q','$rootScope','$http','socket','uiUtil','Logger',
-    function($q,$rootScope,$http,socket,uiUtil,Logger) {
+  .factory('ndo6', ['$q','$location','$rootScope','$http','socket','uiUtil','Logger',
+    function($q,$location,$rootScope,$http,socket,uiUtil,Logger) {
       var _session = {
         user: {},
         map: null,
@@ -79,13 +79,32 @@ angular.module('ndo6App')
         _data.reset(full);
       }
 
-      function checkGeo() {
+      function invite() {
+        if ($location.path()=='/map') {
+          _session.invite = $location.hash();
+        }
+      }
+
+      function checkInvite() {
         return $q(function(resolve, reject){
+          if (!_session.invite) return resolve();
+          $http.get('/api/invitations/' + _session.invite)
+            .then(function (resp) {
+              resolve(resp.data);
+            }, function(err){
+              if (err.data) console.log(err.data);
+              resolve();
+            });
+        });
+      }
+
+      function checkGeo() {
+        return $q(function (resolve, reject) {
           if (!navigator.geolocation)
             return reject('Geolocation is not supported by this browser.');
-          navigator.geolocation.getCurrentPosition(function() {
+          navigator.geolocation.getCurrentPosition(function () {
             resolve();
-          }, function() {
+          }, function () {
             reject('Geolocation is not activated.');
           });
         });
@@ -185,6 +204,39 @@ angular.module('ndo6App')
         }
       }
 
+      function setMap(map) {
+        return $q(function (resolve, reject) {
+          function internalSetMap(map) {
+            if (map && map.invite)
+              map.invite.accepted = true;
+            _session.map = map;
+            resolve();
+          }
+          if (!map  || !map.invite || map.invite.accepted) {
+            internalSetMap(map);
+          } else {
+            $http.post('/api/invitations/accept', map.invite)
+              .then(function () {
+                internalSetMap(map);
+              }, errHandler);
+          }
+        });
+      }
+
+      function deleteMap(map) {
+        if (map.invite) {
+          $http.post('/api/invitations/refuse', map.invite)
+            .then(function () {
+              Logger.info('Invitation refused!')
+            }, errHandler);
+        } else {
+          $http.delete('/api/map/'+map._id)
+            .then(function () {
+              Logger.info('Map deleted successfully!')
+            }, errHandler);
+        }
+      }
+
       function refresh() {
         readPositions();
         readShared();
@@ -195,6 +247,8 @@ angular.module('ndo6App')
         refresh();
       });
 
+      invite();
+
       return {
         session: _session,
         options: _options,
@@ -204,7 +258,10 @@ angular.module('ndo6App')
         replaceOrAdd: replaceOrAdd,
         errHandler: errHandler,
         checkGeo: checkGeo,
+        checkInvite: checkInvite,
         readPosition: readPosition,
-        getMarker: getMarker
+        getMarker: getMarker,
+        setMap: setMap,
+        deleteMap: deleteMap
       }
     }]);

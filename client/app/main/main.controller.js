@@ -63,7 +63,23 @@ angular.module('ndo6App')
         maps.createContext(google, $scope.centerMap, function (ctx) {
           ndo6.session.context = ctx;
           // initWatchers();
-          $scope.loading = false;
+          ndo6.checkInvite()
+            .then(function(data) {
+              $scope.loading = false;
+              if (data && data.invitation) {
+                var opt = {
+                  data: data,
+                  template: Modal.TEMPLATE_ACCEPT,
+                  ok: true,
+                  cancel: true,
+                  show: {footer: true}
+                };
+                Modal.show(opt, 'popup')
+                  .then(function (o) {
+                    ndo6.setMap(o.data.map);
+                  });
+              }
+            });
         });
       }, function (err) {
         $scope.error = err ? err.message : 'Errors loading map!';
@@ -143,22 +159,24 @@ angular.module('ndo6App')
           Logger.warning('No active map', 'Create new map or select one to share position.');
           return;
         }
+        var exp = new Date();
+        exp.setDate(exp.getDate() + 10);
         var opt = {
-          title: 'Invite others to the current map',
+          invitation: {
+            userMessage: 'Hi, '+ndo6.session.user.name+' invite you to map "'+ndo6.session.map.name+'"',
+            target: '',
+            expdate: exp
+          },
+          title: 'Invite others to the map '+ndo6.session.map.name,
           template: Modal.TEMPLATE_INVITE,
           ok: true,
-          cancel: true,
-          fixedmessage: 'Ciao, ' + ndo6.session.user.name + ' invite you to the map "' + ndo6.session.map.name + '".\n' +
-            'Follow the link: [PRIVATE-LINK-BOOKMARK]\n'+
-            'Otherwise go on ' + $rootScope.product.name.toLowerCase() + '.herokuapp.com, register or log in if you already registered.\n' +
-            'Once you entered you will see the notification to access the shared map.',
-          message: '',
-          emails: ''
+          cancel: true
         };
-        // modalInvite(opt);
         Modal.show(opt, 'popup')
           .then(function(o){
-            $http.post('/api/invitations', o)
+            if (!o.invitation.target) return Logger.error('Error','Add one target email at least!');
+            o.invitation.expiration = o.invitation.expdate.getTime();
+            $http.post('/api/invitations', o.invitation)
               .then(function() {
                 Logger.info('Invite successfully send!');
               }, ndo6.errHandler)
@@ -196,6 +214,15 @@ angular.module('ndo6App')
         //TODO: snapshot
       };
 
+      $scope.deleteMap = function(map) {
+        if (!map) return;
+        var action = map.invite ? 'Refuse' : 'Delete';
+        var opt = Modal.confirm.getAskOptions(Modal.MODAL_DELETE, map.name, action);
+        Modal.show(opt)
+          .then(function () {
+            ndo6.deleteMap(map);
+          });
+      };
 
       $scope.editMap = function(map) {
         var title = map ? 'Edit Map' : 'New Map';
@@ -295,6 +322,8 @@ angular.module('ndo6App')
         icon: 'fa-sign-out',
         action: logout
       }];
+
+
 
 
 

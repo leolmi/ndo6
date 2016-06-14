@@ -11,14 +11,14 @@ angular.module('ndo6App')
       }
 
       $scope.set = function(map) {
-        if (($scope.current && map && $scope.current==map._id) || (!$scope.current && !map)) return;
+        if (($scope.current && map && $scope.current == map._id) || (!$scope.current && !map)) return;
         var opt = Modal.confirm.getAskOptions(Modal.MODAL_OKCANCEL);
         opt.title = 'Set the map';
         opt.body = '<p>Confirm set map <strong>' + (map ? map.name : 'private map') + '</strong> ?</p>';
         Modal.show(opt)
           .then(function () {
-            ndo6.session.map = map;
-            readCurrent();
+            ndo6.setMap(map)
+              .then(readCurrent);
           });
       };
 
