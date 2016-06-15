@@ -42,6 +42,7 @@ angular.module('ndo6App')
           invite:'invite',
           accept:'accept',
           position:'position',
+          marker: 'marker',
           map:'map',
           way:'way'
         },

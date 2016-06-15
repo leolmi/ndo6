@@ -4,15 +4,19 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var WayItemSchema = new Schema({
+  id: String,
   latitude: Number,
   longitude: Number
 });
 
 var WaySchema = new Schema({
+  id: String,
+  type: String,
   map: String,
   user: String,
-  name: String,
+  title: String,
   notes: String,
+  timestamp: Number,
   points: [WayItemSchema]
 },{ versionKey: false });
 

@@ -45,9 +45,22 @@ angular.module('ndo6App')
           arr.splice(index, 1);
       }
 
+      function addOrReplace(arr, item, equal, replace) {
+        if (!arr || !_.isArray(arr) || !item) return;
+        var ex = _.find(arr, function(i) {
+          return equal(i, item);
+        });
+        if (ex) {
+          replace(ex, item);
+        } else {
+          arr.push(item);
+        }
+      }
+
       return {
         toggleMenu:toggleMenu,
         guid:guid,
-        remove: remove
+        remove: remove,
+        addOrReplace: addOrReplace
       }
     }]);

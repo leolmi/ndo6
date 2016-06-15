@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('ndo6App')
-  .factory('ndo6', ['$q','$location','$rootScope','$http','socket','uiUtil','Logger',
-    function($q,$location,$rootScope,$http,socket,uiUtil,Logger) {
+  .factory('ndo6', ['$q','$location','$timeout','$rootScope','$http','socket','maps','uiUtil','Logger','Position',
+    function($q,$location,$timeout,$rootScope,$http,socket,maps,uiUtil,Logger,Position) {
       var _session = {
         user: {},
         map: null,
@@ -17,7 +17,7 @@ angular.module('ndo6App')
         positions: [],
         clearMarkers:function() {
           this.markers.forEach(function(m){
-            m.setMap(null);
+            if (m) m.setMap(null);
           });
           this.markers.splice(0);
         },
@@ -64,6 +64,7 @@ angular.module('ndo6App')
         name:'ways',
         socketName: 'way'
       }];
+      var _last = new Position();
 
       function reset(full) {
         _session.user = {};
@@ -77,18 +78,63 @@ angular.module('ndo6App')
         _options.monitor.visible = true;
 
         _data.reset(full);
+
+        _last = new Position();
       }
 
-      function invite() {
+      function setZoom(zoom) {
+        if (!zoom || !_session.context) return;
+        var listener = _session.context.G.maps.event.addListener(_session.context.map, "idle", function() {
+          _session.context.map.setZoom(zoom);
+          _session.context.G.maps.event.removeListener(listener);
+        });
+      }
+
+      /**
+       * centra la mappa
+       */
+      function centerMap(pos, zoom, finder) {
+        if (!_session.context || !pos) return;
+        // il centro è considerato più in alto per
+        // lasciare lo spazio al monitor
+        var bounds = _session.context.map.getBounds();
+        if (!bounds) return;
+
+        // Calcola le coordinate del centro
+        var gpos = maps.getLatLng(_session.context.G, pos);
+
+        // Imposta il centro della mappa
+        _session.context.map.setCenter(gpos);
+
+        var mrk = finder ? finder() : null;
+        if (mrk) {
+          // Se ha trovato il marker lo anima
+          mrk.setAnimation(_session.context.G.maps.Animation.BOUNCE);
+          $timeout(function () {
+            mrk.setAnimation(null);
+          }, 1000);
+        }
+        setZoom(zoom);
+      }
+
+      function centerUser(pos, zoom) {
+        if (!pos && _last.isValid()) {
+          pos = maps.getLatLng(_session.context.G, _last);
+        }
+        centerMap(pos, zoom);
+      }
+
+
+      function internalCheckInvitation() {
         if ($location.path()=='/map') {
-          _session.invite = $location.hash();
+          _session.invitation = $location.hash();
         }
       }
 
-      function checkInvite() {
+      function checkInvitation() {
         return $q(function(resolve, reject){
-          if (!_session.invite) return resolve();
-          $http.get('/api/invitations/' + _session.invite)
+          if (!_session.invitation) return resolve();
+          $http.get('/api/invitations/' + _session.invitation)
             .then(function (resp) {
               resolve(resp.data);
             }, function(err){
@@ -110,10 +156,11 @@ angular.module('ndo6App')
         });
       }
 
-      function readPosition() {
-        if (!_options.active) return;
+      function internalReadPosition() {
         return $q(function(resolve, reject) {
-          if (navigator.geolocation) {
+          if (!_options.active) {
+            resolve();
+          } else if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(resolve, reject, _options.locationOptions);
           }
           else {
@@ -122,11 +169,68 @@ angular.module('ndo6App')
         });
       }
 
+
+      /**
+       * Legge la posizione corrente
+       * @returns {*}
+       */
+      function readPosition() {
+        return $q(function(resolve, reject) {
+          internalReadPosition()
+            .then(function(pos){
+              if (!_session.user || !_session.user.name) return reject();
+              var npos = new Position(pos, {
+                id: 'user@' + _session.user.email,
+                title: _session.user.name,
+                label: _session.user.name.slice(0, 1),
+                type: 'user'
+              });
+              _last = _last || new Position();
+              if (!_last.sameOf(npos)) {
+                _last.keep(npos);
+                _last.last = true;
+                if (_options.active) {
+                  if (_session.map) {
+                    $http.post('/api/positions/' + _session.map._id, _last)
+                      .then(function() {
+                        resolve();
+                      }, function(err){
+                        reject(err);
+                      });
+                  } else {
+                    if (_options.centerFirst || _options.centerLocked) {
+                      _last.center = true;
+                      _options.centerFirst = false;
+                    }
+                    if (_last.isValid()) {
+                      uiUtil.addOrReplace(_data.positions, _last, function (p1, p2) {
+                        return p1.id == p2.id;
+                      }, function (xp, np) {
+                        xp.keep(np);
+                      });
+                    }
+                    refreshPositions();
+                    resolve();
+                  }
+                } else {
+                  resolve();
+                }
+              } else {
+                resolve();
+              }
+            }, function(err){
+              reject(err);
+            });
+        });
+      }
+
       function getMarker(info) {
+        if (!_session.context) return null;
+        var latlnt = maps.getLatLng(_session.context.G, info);
         var m = new _session.context.G.maps.Marker({
           map: _session.context.map,
           label: info.label || 'P',
-          position: info.pos,
+          position: latlnt,
           title: info.title || info.description,
           icon: info.icon
         });
@@ -154,6 +258,11 @@ angular.module('ndo6App')
         }
       }
 
+      function debugHandler(resp) {
+        var msg = resp.data ? JSON.stringify(resp.data) : 'ok';
+        Logger.info(msg);
+      }
+
       function errHandler(err) {
         var msg = _.isObject(err) ? err.message || err.data : err;
         Logger.error('Error', msg);
@@ -161,10 +270,16 @@ angular.module('ndo6App')
 
       function refreshMarkers() {
         _data.clearMarkers();
+        //POSITIONS
         _data.positions = _data.positions || [];
-        _data.markers = _.map(_data.positions, function(p){
-          return getMarker(p);
-        });
+        _data.markers = _(_data.positions)
+          .filter(function(p){
+            return p.last;
+          })
+          .map(function(p){
+            return getMarker(p);
+          }).value();
+        //POINTS
         _data.points = _data.points || [];
         var pointsm = _.map(_data.points, function(p){
           return getMarker(p);
@@ -172,10 +287,16 @@ angular.module('ndo6App')
         _data.markers.push.apply(_data.markers, pointsm);
       }
 
-      function readPositions() {
+      function refreshPositions() {
         if (!_session.map) {
-          _data.positions = [];
           refreshMarkers();
+          var c = _.find(_data.positions, function(p){
+            return p.center;
+          });
+          if (c) {
+            c.center = false;
+            centerMap(c);
+          }
         } else {
           $http.get('/api/positions/' + _session.map._id)
             .then(function (resp) {
@@ -187,12 +308,10 @@ angular.module('ndo6App')
 
 
 
-      function readShared() {
+      function refreshShared() {
         if (!_session.map) {
-          _data.positions = [];
           refreshMarkers();
           _data.messages = [];
-          _data.ways = [];
         } else {
           _shared.forEach(function(s){
             $http.get('/api/shared/'+s.name+'/' + _session.map._id)
@@ -237,31 +356,87 @@ angular.module('ndo6App')
         }
       }
 
-      function refresh() {
-        readPositions();
-        readShared();
+      function share(type, data) {
+        var sharedobj = undefined;
+        switch (type) {
+          case 'point':
+            sharedobj = {
+              icon: data.icon,
+              label: data.label,
+              title: data.title,
+              latitude: data.pos.lat(),
+              longitude: data.pos.lng()
+            };
+            break;
+          // case 'message':
+          //   sharedobj = {
+          //     text: data.text,
+          //     action: data.action
+          //   };
+          //   break;
+          case 'way':
+            sharedobj = {
+              title: data.title,
+              notes: data.notes,
+              mode: data.mode,
+              points: data.points
+            };
+            break;
+        }
+        if (!sharedobj) return;
+        sharedobj.type = type;
+        sharedobj.id = type + '@' + uiUtil.guid();
+        if (_session.map) {
+          $http.post('/api/shared/' + type + '/' + _session.map._id, sharedobj)
+            .then(function () {
+              Logger.info('Object "' + type + '" shared successfully!');
+            }, errHandler);
+        }
+        else if (type == 'point') {
+          _data.points.push(sharedobj);
+          refreshShared();
+        }
       }
 
+      function deleteShared(type, id) {
+        $http.post('/api/shared/' + type + '/' + id)
+          .then(function () {
+            Logger.info('Object "' + type + '" deleted successfully!');
+          }, errHandler);
+      }
+
+      function refresh() {
+        refreshPositions();
+        refreshShared();
+      }
+
+
       $rootScope.$watch(function() { return _session.map; }, function(){
+        _last = new Position();
         _data.reset();
         refresh();
       });
 
-      invite();
+      internalCheckInvitation();
 
       return {
         session: _session,
         options: _options,
         data: _data,
+        lastPosition: _last,
+        centerMap: centerMap,
+        centerUser: centerUser,
         reset: reset,
         refresh: refresh,
         replaceOrAdd: replaceOrAdd,
         errHandler: errHandler,
         checkGeo: checkGeo,
-        checkInvite: checkInvite,
+        checkInvitation: checkInvitation,
         readPosition: readPosition,
         getMarker: getMarker,
         setMap: setMap,
-        deleteMap: deleteMap
+        deleteMap: deleteMap,
+        share: share,
+        deleteShared: deleteShared
       }
     }]);

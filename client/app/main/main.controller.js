@@ -30,42 +30,15 @@ angular.module('ndo6App')
       $scope.monitorHeight = 200;
       $scope.options = ndo6.options;
       $scope.session = ndo6.session;
-      /**
-       * Centra la mappa
-       * @param pos
-       * @param [finder]
-       */
-      $scope.centerMap = function(pos, finder){
-        if (!ndo6.session.context) return;
-        // il centro è considerato più in alto per
-        // lasciare lo spazio al monitor
-        var bounds = ndo6.session.context.map.getBounds();
-        if (!bounds) return;
-        var dl = bounds.getNorthEast().lat() - bounds.getSouthWest().lat();
-        var H = angular.element($window).height();
-        var ddl = ($scope.monitorHeight * dl)/(2*H);
-
-        // Calcola le coordinate del centro
-        var latLng = maps.getLatLng(ndo6.session.context.G, pos);
-
-        // Imposta il centro della mappa
-        ndo6.session.context.map.setCenter(latLng);
-
-        var mrk = finder ? finder() : null;
-        if (mrk) {
-          // Se ha trovato il marker lo anima
-          mrk.setAnimation(ndo6.session.context.G.maps.Animation.BOUNCE);
-          $timeout(function() { mrk.setAnimation(null); }, 1000);
-        }
-      };
 
       initializer.mapsInitialized.then(function () {
-        maps.createContext(google, $scope.centerMap, function (ctx) {
+        maps.createContext(google, ndo6.centerMap, function (ctx) {
           ndo6.session.context = ctx;
-          // initWatchers();
-          ndo6.checkInvite()
+          //verifica la presenza di inviti
+          ndo6.checkInvitation()
             .then(function(data) {
               $scope.loading = false;
+              //se è un invito valido mostra il popup per accettarlo
               if (data && data.invitation) {
                 var opt = {
                   data: data,
@@ -76,6 +49,7 @@ angular.module('ndo6App')
                 };
                 Modal.show(opt, 'popup')
                   .then(function (o) {
+                    //se accettato imposta la mappa dell'invito
                     ndo6.setMap(o.data.map);
                   });
               }
@@ -84,8 +58,6 @@ angular.module('ndo6App')
       }, function (err) {
         $scope.error = err ? err.message : 'Errors loading map!';
         $scope.loading = false;
-        // refreshMarkers();
-        // checkErrors();
       });
 
 
@@ -95,28 +67,12 @@ angular.module('ndo6App')
         $location.path('/login');
       }
 
-      var _last = new Position();
-
       function loop() {
         if (!ndo6.options.active) return;
         $timeout(function(){
-          read();
+          ndo6.readPosition()
+            .finally(loop);
         }, ndo6.options.delay);
-      }
-
-      function read() {
-        ndo6.readPosition()
-          .then(function (pos) {
-            var npos = new Position(pos);
-            if (!_last || !_last.sameOf(npos)) {
-              if (ndo6.session.map && ndo6.options.active)
-                $http.post('/api/positions/'+ndo6.session.map._id, npos);
-              _last.keep(npos);
-            }
-            loop();
-          }, function () {
-            loop();
-          });
       }
 
       $scope.closeOverlay = function() {
@@ -147,11 +103,9 @@ angular.module('ndo6App')
 
 
 
-      function center(m) {
-        if (ndo6.session.context && _last) {
-          var pos = maps.getLatLng(ndo6.session.context.G, _last);
-          $scope.centerMap(pos);
-        }
+      function center(m, zoom) {
+        var pos = m ? m.pos : undefined;
+        ndo6.centerUser(pos, zoom);
       }
 
       function invite() {
@@ -200,8 +154,7 @@ angular.module('ndo6App')
         };
         Modal.show(opt, 'popup')
           .then(function(o){
-            var m  = ndo6.getMarker(o.marker);
-            ndo6.replaceOrAdd(m);
+            ndo6.share('point', o.marker);
           });
       };
 
@@ -209,7 +162,7 @@ angular.module('ndo6App')
         openPage('maps');
       };
       $scope.execShared = function() {
-        //openPage('shared');
+        openPage('shared');
       };
       $scope.execSnapshot = function() {
         //TODO: snapshot
@@ -253,26 +206,40 @@ angular.module('ndo6App')
         var title = way ? 'Edit Way' : 'New Way';
         way = way || {
             title: 'New Way',
+            notes: '',
             mode: 'car',
-            points:[]
+            points: []
           };
         var opt = {
           title: title,
+          start: '',
+          end: '',
           way: way,
           template: Modal.templates.way,
-          ok: {text: 'Add'},
+          ok: {text: 'Calc'},
           cancel: true
         };
         Modal.show(opt, 'popup')
-          .then(function(o){
-            ///TEMP>>>>>
-            Logger.info('Way', 'New way created!')
-            ///<<<<<<<<<
+          .then(function (o) {
+            o.way.points.push(o.end);
+            o.way.points.unshift(o.start);
+            o.way.points = _.map(o.way.points, function (p) {
+              var m = _.find(ndo6.data.markers, function (m) {
+                return m.ndo6.id == p;
+              });
+              return {
+                id: p,
+                latitude: m ? m.position.lat() : null,
+                longitude: m ? m.position.lng() : null
+              }
+            });
+            ndo6.share('way', o.way);
+            //TODO: Calcolo del percorso e visualizza sulla mapppa
           });
       };
 
       function search() {
-
+        //TODO: search elements
       }
 
       function help() {
@@ -289,11 +256,6 @@ angular.module('ndo6App')
         action: function() { $scope.editWay(); }
       },{
         divider: true
-      // },{
-      //   disabled: function() { return true; },
-      //   caption: 'Monitor',
-      //   icon: 'fa-desktop',
-      //   action: angular.noop
       },{
         caption: 'Center Me',
         icon: 'fa-crosshairs',
@@ -333,31 +295,20 @@ angular.module('ndo6App')
       });
 
       $rootScope.$on('CLICK-ON-MARKER', function(e, marker){
-        Logger.info('Click on marker', 'marker:'+JSON.stringify(marker.ndo6));
+        var opt = {
+          title:'Marker Info',
+          template: Modal.templates.marker,
+          info: marker.ndo6,
+          ok:true,
+          cancel:false
+        };
+        Modal.show(opt, 'popup');
       });
 
       $scope.$watch(function() { return ndo6.options.active; }, function(){
         if (ndo6.options.active) loop();
       });
 
-      $scope.$watch(function() { return _last; }, function(){
-        //Aggiorna la posizione del marker
-        if (ndo6.session.context && !ndo6.session.map) {
-          var m = ndo6.getMarker({
-            id: 'user@'+ndo6.session.user.name,
-            title: ndo6.session.user.name,
-            label: 'I',
-            type: 'user',
-            pos: maps.getLatLng(ndo6.session.context.G, _last),
-            user: ndo6.session.user.name
-          });
-          ndo6.replaceOrAdd(m);
-          if (ndo6.options.centerFirst || ndo6.options.centerLocked) {
-            $scope.centerMap(m.position);
-            ndo6.options.centerFirst = false;
-          }
-        }
-      }, true);
 
 
       ndo6.refresh();

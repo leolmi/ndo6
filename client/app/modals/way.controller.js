@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('ndo6App')
-  .controller('WayCtrl', ['$scope','uiUtil',
-    function ($scope,uiUtil) {
+  .controller('WayCtrl', ['$scope','ndo6','uiUtil',
+    function ($scope,ndo6,uiUtil) {
+      $scope.markers = _.clone(ndo6.data.markers);
       $scope.addPoint =  function() {
         $scope.modal.context.way.points.push({});
       };

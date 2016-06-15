@@ -14,6 +14,8 @@ function index(schema, req, res) {
 
 function check(req, res, cb) {
   req.body.owner = req.user._id;
+  req.body.map = req.params.id;
+  req.body.timestamp = (new Date()).getTime();
   if (!req.body.map)
     return u.error(res, 'Undefined map!');
   cb();

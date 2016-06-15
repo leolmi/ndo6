@@ -4,6 +4,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PositionSchema = new Schema({
+  id: String,
+  last: Boolean,
+  title: String,
+  label: String,
+  type: String,
   owner: String,
   map: String,
   latitude: Number,

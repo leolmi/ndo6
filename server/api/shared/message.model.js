@@ -4,6 +4,8 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var MessageSchema = new Schema({
+  id: String,
+  type: String,
   map: String,
   user: String,
   text: String,
