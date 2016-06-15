@@ -9,5 +9,7 @@ angular.module('ndo6App')
         ways: _.clone(ndo6.data.ways)
       };
       
-      
+      $scope.activate = function(o) {
+        $scope.activeObject = o;
+      }
     }]);
