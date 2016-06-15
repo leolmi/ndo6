@@ -5,17 +5,18 @@
        ng-repeat="p in data.points | filter:searchText" >
     <i class="fa fa-map-marker shared-typeicon"></i>
     <div class="shared-item-title">{{p.title}}</div>
-    <i class="fa fa-pencil shared-tool-button indent-right-1 as-button"></i>
-    <i class="fa fa-trash shared-tool-button as-button"></i>
+    <i class="fa fa-crosshairs shared-tool-button indent-right-2 as-button" ng-click="pointCenter(p)"></i>
+    <i class="fa fa-pencil shared-tool-button indent-right-1 as-button" ng-show="isMine(p)" ng-click="editPoint(p)"></i>
+    <i class="fa fa-trash shared-tool-button as-button" ng-show="isMine(p)" ng-click="pointDelete(p)"></i>
   </div>
   <div class="shared-item shared-item-way" ng-click="activate(w)"
        ng-class="{'active':w==activeObject}"
        ng-repeat="w in data.ways | filter:searchText" >
     <i class="fa fa-code-fork shared-typeicon"></i>
     <div class="shared-item-title">{{w.title}}</div>
-    <i class="fa fa-toggle-off shared-tool-button indent-right-2 as-button"></i>
-    <i class="fa fa-pencil shared-tool-button indent-right-1 as-button"></i>
-    <i class="fa fa-trash shared-tool-button as-button"></i>
+    <i class="fa fa-toggle-off shared-tool-button indent-right-2 as-button" ng-click="wayToggle(w)"></i>
+    <i class="fa fa-pencil shared-tool-button indent-right-1 as-button" ng-show="isMine(w)" ng-click="editWay(w)"></i>
+    <i class="fa fa-trash shared-tool-button as-button" ng-show="isMine(w)" ng-click="wayDelete(w)"></i>
   </div>
   <div class="overpage-buttons">
     <i class="fa fa-camera as-button big-button" ng-click="execSnapshot()"></i>

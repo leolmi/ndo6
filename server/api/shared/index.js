@@ -16,6 +16,6 @@ router.post('/way/:id', auth.isAuthenticatedOnMap(), controller.createWay);
 
 router.delete('/point/:id', auth.isAuthenticated(), controller.destroyPoint);
 router.delete('/message/:id', auth.isAuthenticated(), controller.destroyMessage);
-router.delete('/way/:id', auth.isAuthenticatedOnMap(), controller.destroyWay);
+router.delete('/way/:id', auth.isAuthenticated(), controller.destroyWay);
 
 module.exports = router;

@@ -2,11 +2,12 @@
 'use strict';
 
 angular.module('ndo6App')
-  .controller('MarkerCtrl', ['$scope', function ($scope) {
+  .controller('MarkerCtrl', ['$scope', 'ndo6',
+    function ($scope,ndo6) {
     function getStr() {
       var result = [];
-
-      _.keys($scope.modal.context.info).forEach(function (k) {
+      var info = $scope.modal.context.info;
+      _.keys(info).forEach(function (k) {
         switch(k) {
           // case 'id':
           case '_id':
@@ -17,12 +18,12 @@ angular.module('ndo6App')
             //skip
             break;
           case 'timestamp':
-            var dt = new Date($scope.modal.context.info[k]);
+            var dt = new Date(info[k]);
             result.push(k+': '+dt.toLocaleDateString()+' '+dt.toLocaleTimeString());
             break;
           default:
-            if ($scope.modal.context.info[k] != undefined)
-              result.push(k+': '+$scope.modal.context.info[k]);
+            if (info[k] != undefined)
+              result.push(k+': '+info[k]);
             break;
         }
 
@@ -30,4 +31,5 @@ angular.module('ndo6App')
       return result.join('\n');
     }
     $scope.infoStr = getStr();
+    $scope.markerIcon = ndo6.getTypeIcon($scope.modal.context.info.type);
   }]);

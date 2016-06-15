@@ -33,10 +33,10 @@
 <!-- OVERPAGES -->
 <div class="over-page" ng-class="{'active':overpage}">
   <div class="over-page-content">
-    <i class="fa fa-3x fa-times as-button overlay-times" ng-click="closeOverlay()"></i>
+    <i class="fa fa-3x fa-times as-button overlay-times" ng-click="closeOverpage()"></i>
     <div class="overpage-body" ng-if="overpage.template" ng-include="overpage.template"></div>
   </div>
-  <div class="overlay" ng-click="closeOverlay()"></div>
+  <div class="overlay" ng-click="closeOverpage()"></div>
 </div>
 
 <!-- CENTER -->

@@ -75,7 +75,7 @@ angular.module('ndo6App')
         }, ndo6.options.delay);
       }
 
-      $scope.closeOverlay = function() {
+      $scope.closeOverpage = function() {
         $scope.overpage = undefined;
       };
 
@@ -91,7 +91,7 @@ angular.module('ndo6App')
 
       function openPage(template, params){
         if ($scope.overpage && $scope.overpage.name == template) {
-          $scope.closeOverlay();
+          $scope.closeOverpage();
         } else {
           $scope.overpage = {
             name: template,
@@ -201,9 +201,26 @@ angular.module('ndo6App')
           });
       };
 
+      $scope.pointCenter = function(p) {
+        ndo6.centerMap(p);
+        $scope.closeOverpage();
+      };
+
+      $scope.editPoint = function(p) {
+        //TODO: editor points
+      };
 
       $scope.editWay = function(way) {
         var title = way ? 'Edit Way' : 'New Way';
+        var start= '', end='';
+        if (way && way.points.length) {
+          start = way.points[0].id;
+          way.points.shift();
+          if (way.points.length) {
+            end = way.points[way.points.length - 1].id;
+            way.points.pop();
+          }
+        }
         way = way || {
             title: 'New Way',
             notes: '',
@@ -212,8 +229,8 @@ angular.module('ndo6App')
           };
         var opt = {
           title: title,
-          start: '',
-          end: '',
+          start: start,
+          end: end,
           way: way,
           template: Modal.templates.way,
           ok: {text: 'Calc'},
@@ -291,7 +308,7 @@ angular.module('ndo6App')
 
 
       $rootScope.$on('SHOWING-MODAL', function() {
-        $scope.closeOverlay();
+        $scope.closeOverpage();
       });
 
       $rootScope.$on('CLICK-ON-MARKER', function(e, marker){

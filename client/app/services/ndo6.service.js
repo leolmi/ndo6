@@ -224,6 +224,18 @@ angular.module('ndo6App')
         });
       }
 
+      function getMarkerIcon(url) {
+        if (url) {
+          var g = _session.context.G;
+          return {
+            url: url,
+            size: new g.maps.Size(22, 40),
+            origin: new g.maps.Point(0, 0),
+            anchor: new g.maps.Point(11, 40)
+          }
+        }
+      }
+
       function getMarker(info) {
         if (!_session.context) return null;
         var latlnt = maps.getLatLng(_session.context.G, info);
@@ -232,7 +244,7 @@ angular.module('ndo6App')
           label: info.label || 'P',
           position: latlnt,
           title: info.title || info.description,
-          icon: info.icon
+          icon: getMarkerIcon(info.icon)
         });
         m.ndo6 = {
           id: uiUtil.guid()
@@ -398,6 +410,14 @@ angular.module('ndo6App')
         }
       }
 
+      function getTypeIcon(type) {
+        switch(type){
+          case 'point': return 'fa-map-marker';
+          case 'user': return 'fa-user';
+          default: return 'fa-question-circle';
+        }
+      }
+
       function deleteShared(type, id) {
         $http.post('/api/shared/' + type + '/' + id)
           .then(function () {
@@ -437,6 +457,7 @@ angular.module('ndo6App')
         setMap: setMap,
         deleteMap: deleteMap,
         share: share,
-        deleteShared: deleteShared
+        delete: deleteShared,
+        getTypeIcon: getTypeIcon
       }
     }]);
