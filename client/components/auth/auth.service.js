@@ -5,6 +5,7 @@ angular.module('ndo6App')
     var currentUser = {};
     if($cookieStore.get('token')) {
       currentUser = User.get();
+      $rootScope.$broadcast('USER-LOGIN');
     }
 
     return {
@@ -27,6 +28,7 @@ angular.module('ndo6App')
           .success(function (data) {
             $cookieStore.put('token', data.token);
             currentUser = User.get();
+            $rootScope.$broadcast('USER-LOGIN');
             deferred.resolve(data);
             return cb();
           })
@@ -47,6 +49,7 @@ angular.module('ndo6App')
       logout: function() {
         $cookieStore.remove('token');
         currentUser = {};
+        $rootScope.$broadcast('USER-LOGOUT');
       },
 
       /**

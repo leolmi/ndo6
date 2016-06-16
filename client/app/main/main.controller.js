@@ -25,11 +25,16 @@ angular.module('ndo6App')
       mapsInitialized : mapsDefer.promise
     };
   })
-  .controller('MainCtrl', ['$scope', '$rootScope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth','ndo6','Position','uiUtil','Modal','Logger',
-    function ($scope, $rootScope, $http, $window, $location, socket, $timeout, initializer, maps, Auth, ndo6, Position, uiUtil, Modal, Logger) {
+  .controller('MainCtrl', ['$scope', '$rootScope', '$http', '$window', '$location', 'socket', '$timeout', 'initializer', 'maps','Auth','ndo6','Position','uiUtil','Modal','Logger','settings',
+    function ($scope, $rootScope, $http, $window, $location, socket, $timeout, initializer, maps, Auth, ndo6, Position, uiUtil, Modal, Logger, settings) {
       $scope.monitorHeight = 200;
       $scope.options = ndo6.options;
       $scope.session = ndo6.session;
+
+      function setLastMap() {
+        if (settings.data.map)
+          ndo6.setMap(settings.data.map);
+      }
 
       initializer.mapsInitialized.then(function () {
         maps.createContext(google, ndo6.centerMap, function (ctx) {
@@ -51,7 +56,11 @@ angular.module('ndo6App')
                   .then(function (o) {
                     //se accettato imposta la mappa dell'invito
                     ndo6.setMap(o.data.map);
+                  }, function() {
+                    setLastMap();
                   });
+              } else {
+                setLastMap();
               }
             });
         });

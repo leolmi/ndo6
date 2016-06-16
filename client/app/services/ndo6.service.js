@@ -132,7 +132,7 @@ angular.module('ndo6App')
       }
 
       function checkInvitation() {
-        return $q(function(resolve, reject){
+        return $q(function(resolve){
           if (!_session.invitation) return resolve();
           $http.get('/api/invitations/' + _session.invitation)
             .then(function (resp) {
@@ -435,6 +435,7 @@ angular.module('ndo6App')
         _last = new Position();
         _data.reset();
         refresh();
+        $rootScope.$broadcast('CURRENT-MAP-CHANGED', _session.map);
       });
 
       internalCheckInvitation();
