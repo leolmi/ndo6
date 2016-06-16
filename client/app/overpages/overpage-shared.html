@@ -14,7 +14,8 @@
        ng-repeat="w in data.ways | filter:searchText" >
     <i class="fa fa-code-fork shared-typeicon"></i>
     <div class="shared-item-title">{{w.title}}</div>
-    <i class="fa fa-toggle-off shared-tool-button indent-right-2 as-button" ng-click="wayToggle(w)"></i>
+    <i class="fa shared-tool-button indent-right-2 as-button" ng-click="wayToggle(w)"
+       ng-class="{'fa-toggle-on':wayIsActive(w), 'fa-toggle-off':!wayIsActive(w)}" ng-disabled="idle"></i>
     <i class="fa fa-pencil shared-tool-button indent-right-1 as-button" ng-show="isMine(w)" ng-click="editWay(w)"></i>
     <i class="fa fa-trash shared-tool-button as-button" ng-show="isMine(w)" ng-click="wayDelete(w)"></i>
   </div>

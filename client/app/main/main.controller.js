@@ -83,7 +83,19 @@ angular.module('ndo6App')
         openPage('settings');
       }
 
+      $scope.existsRoute = function() {
+        return maps.hasRoute(ndo6.session.context);
+      };
 
+      $scope.execRoute = function() {
+        var opt = {
+          title: 'Route',
+          template: Modal.templates.route,
+          ok: true,
+          cancel: false
+        };
+        Modal.show(opt, 'popup');
+      };
 
       $scope.openMenu = function(e) {
         uiUtil.toggleMenu(e);

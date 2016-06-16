@@ -419,7 +419,7 @@ angular.module('ndo6App')
       }
 
       function deleteShared(type, id) {
-        $http.post('/api/shared/' + type + '/' + id)
+        $http.delete('/api/shared/' + type + '/' + id)
           .then(function () {
             Logger.info('Object "' + type + '" deleted successfully!');
           }, errHandler);

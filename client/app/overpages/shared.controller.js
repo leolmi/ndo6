@@ -2,8 +2,9 @@
 'use strict';
 
 angular.module('ndo6App')
-  .controller('SharedCtrl', ['$scope','ndo6','Modal',
-    function ($scope, ndo6,Modal) {
+  .controller('SharedCtrl', ['$scope','ndo6','maps','Modal','Logger',
+    function ($scope, ndo6, maps, Modal, Logger) {
+      $scope.idle = null;
       $scope.data = {
         points: _.clone(ndo6.data.points),
         ways: _.clone(ndo6.data.ways)
@@ -17,25 +18,40 @@ angular.module('ndo6App')
         $scope.activeObject = o;
       };
 
-      function deleteSomething(name, cb) {
-        var opt = Modal.confirm.getAskOptions(Modal.types.delete, name);
+      function deleteSomething(type, o) {
+        var opt = Modal.confirm.getAskOptions(Modal.types.delete, o.title);
         Modal.show(opt)
-          .then(cb);
+          .then(function() {
+            ndo6.delete(type, o._id);
+          });
       }
 
+      $scope.wayIsActive = function(way) {
+        return maps.hasRoute(ndo6.session.context, way._id);
+      };
 
       $scope.pointDelete = function(p) {
-        deleteSomething(p.title, function() {
-          ndo6.delete('point', p._id);
-        });
+        deleteSomething('point', p);
       };
 
       $scope.wayToggle = function(w) {
-
+        if ($scope.idle) return;
+        if ($scope.wayIsActive(w)) {
+          maps.clearRoute(ndo6.session.context);
+        } else {
+          $scope.idle = w._id;
+          maps.calcRoute(ndo6.session.context, w)
+            .then(function() {
+              $scope.idle = null;
+              $scope.closeOverpage();
+            }, function(err){
+              Logger.error(err);
+              $scope.idle = null;
+            });
+        }
       };
+
       $scope.wayDelete = function(w) {
-        deleteSomething(w.title, function() {
-          ndo6.delete('way', w._id);
-        });
+        deleteSomething('way', w);
       };
     }]);

@@ -23,7 +23,7 @@
   </div>
   <label class="label-container">
     Way mode
-    <i class="fa as-button" ng-class="{'fa-car':modal.context.way.mode=='car', 'fa-male':modal.context.way.mode=='walk'}" ng-click="toggleMode()"></i>
+    <i class="fa as-button" ng-class="getModeIcon()" ng-click="toggleMode()"></i>
   </label>
   <label>Notes</label>
   <textarea class="form-control input-sm vertical" rows="3" ng-model="modal.context.way.notes"></textarea>

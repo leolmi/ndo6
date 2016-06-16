@@ -13,6 +13,7 @@ var WaySchema = new Schema({
   id: String,
   type: String,
   map: String,
+  mode: String,
   user: String,
   title: String,
   notes: String,

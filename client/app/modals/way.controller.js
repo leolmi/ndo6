@@ -13,10 +13,20 @@ angular.module('ndo6App')
       function getNextMode() {
         switch ($scope.modal.context.way.mode) {
           case 'car': return 'walk';
+          case 'walk': return 'bicycle';
+          case 'bicycle': return 'public';
           default: return 'car';
         }
       }
       $scope.toggleMode = function() {
         $scope.modal.context.way.mode = getNextMode();
+      };
+      $scope.getModeIcon = function() {
+        switch ($scope.modal.context.way.mode) {
+          case 'walk': return 'fa-male';
+          case 'bicycle': return 'fa-bicycle';
+          case 'public': return 'fa-bus';
+          default: return 'fa-car';
+        }
       };
     }]);

@@ -2,8 +2,8 @@
 'use strict';
 
 angular.module('ndo6App')
-  .factory('maps', ['$location','$timeout', 
-    function($location,$timeout) {
+  .factory('maps', ['$q','$location','$timeout',
+    function($q,$location,$timeout) {
       var _standardIcons = [{
         color: 'blue'
       }, {
@@ -132,28 +132,51 @@ angular.module('ndo6App')
         }
       }
 
+      function getRouteMode(context, mode) {
+        switch (mode){
+          case 'walk': return context.G.maps.TravelMode.WALKING;
+          case 'public': return context.G.maps.TravelMode.TRANSIT;
+          case 'bicycle': return context.G.maps.TravelMode.BICYCLING;
+          default: return context.G.maps.TravelMode.DRIVING;
+        }
+      }
+
       /**
        * Calcola il percorso
        * @param {object} context
        * @param {object} info
        * @param [cb]
        */
-      function calcRoute(context, info, cb) {
-        cb = cb || angular.noop;
-        context.directionsService.route({
-          origin: getLatLng(context.G, info.origin),
-          destination: getLatLng(context.G, info.destination),
-          waypoints: info.waypts,
-          optimizeWaypoints: true,
-          travelMode: info.mode
-        }, function (response, status) {
-          if (status === context.G.maps.DirectionsStatus.OK) {
-            context.route = response.routes[0];
-            context.directionsDisplay.setDirections(response);
-            return cb();
-          } else {
-            return cb('Directions request failed due to ' + status);
-          }
+      function calcRoute(context, info) {
+        return $q(function(resolve, reject){
+          if (!info || !info.points || info.points.length<2)
+            return reject('Invalid route info!');
+
+          var start = info.points.shift();
+          var end = info.points.pop();
+          var waypts = _.map(info.points, function(p){
+            return {
+              location: getLatLng(context.G, p),
+              stopover: false
+            };
+          });
+
+          context.directionsService.route({
+            origin: getLatLng(context.G, start),
+            destination: getLatLng(context.G, end),
+            waypoints: waypts,
+            optimizeWaypoints: true,
+            travelMode: getRouteMode(context, info.mode)
+          }, function (response, status) {
+            if (status === context.G.maps.DirectionsStatus.OK) {
+              context.route = response.routes[0];
+              context.route.ndo6 = info;
+              context.directionsDisplay.setDirections(response);
+              resolve();
+            } else {
+              reject('Directions request failed due to ' + status);
+            }
+          });
         });
       }
 
@@ -169,36 +192,35 @@ angular.module('ndo6App')
         context.directionsDisplay.setMap(context.map);
       }
 
+      function hasRoute(context, id) {
+        return (context && context.route && context.route.ndo6 && (!id || context.route.ndo6._id == id));
+      }
+
       function getRouteInfos(context) {
-        var infos = [];
-        if (context.route && context.route.legs.length > 0) {
-          //route: {
-          //  legs[{
-          //    distance:{
-          //      text: "162 km",
-          //      value: 162340
-          //    },
-          //    duration:{
-          //      text: "2 ore 2 min",
-          //      value: 7316
-          //    },
-          //    end_address: 'indirizzo finale',
-          //    start_address: 'indirizzo iniziale',
-          //    steps: []
-          //  }]
-          //}
+        var result = {
+          way: null,
+          info: '',
+          details: []
+        };
+        if (context && context.route && context.route.ndo6) {
+          result.way = context.route.ndo6;
           var l = context.route.legs[0];
-          infos.push({name: 'Da', value: l.start_address});
-          infos.push({name: 'A', value: l.end_address});
-          infos.push({separator: true});
-          infos.push({name: 'Durata', value: l.duration.text});
-          infos.push({name: 'Distanza', value: l.distance.text});
-          //infos.push({separator: true});
-          //l.steps.forEach(function (s, i) {
-          //  infos.push({name: '' + (i + 1), value: l.distance.text + ' (' + s.duration.text + ') ' + s.instructions});
-          //});
+          var infos = [];
+          infos.push('From: ' + l.start_address);
+          infos.push('To: ' + l.end_address);
+          infos.push('');
+          infos.push('Duration: ' + l.duration.text);
+          infos.push('Distance: ' + l.distance.text);
+          result.info = infos.join('\n');
+          l.steps.forEach(function (s, i) {
+            result.details.push({
+              distance: s.distance.text,
+              duration: s.duration.text,
+              instructions: s.instructions
+            });
+          });
         }
-        return infos;
+        return result;
       }
 
       return {
@@ -208,6 +230,7 @@ angular.module('ndo6App')
         getOptions: getOptions,
         createContext: createContext,
         routeInfo: routeInfo,
+        hasRoute: hasRoute,
         calcRoute: calcRoute,
         clearRoute: clearRoute,
         getRouteInfos: getRouteInfos

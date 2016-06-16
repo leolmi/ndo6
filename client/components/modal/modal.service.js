@@ -44,7 +44,8 @@ angular.module('ndo6App')
           position:'position',
           marker: 'marker',
           map:'map',
-          way:'way'
+          way:'way',
+          route:'route'
         },
         show: function (options, type) {
           var self = this;
