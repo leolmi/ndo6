@@ -37,7 +37,7 @@ angular.module('ndo6App')
       }
 
       initializer.mapsInitialized.then(function () {
-        maps.createContext(google, ndo6.centerMap, function (ctx) {
+        maps.createContext(ndo6.centerMap, function (ctx) {
           ndo6.session.context = ctx;
           //verifica la presenza di inviti
           ndo6.checkInvitation()
@@ -104,6 +104,10 @@ angular.module('ndo6App')
           cancel: false
         };
         Modal.show(opt, 'popup');
+      };
+
+      $scope.help = function(msg) {
+        $scope.helpStr = msg;
       };
 
       $scope.openMenu = function(e) {

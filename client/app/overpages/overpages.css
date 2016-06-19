@@ -32,13 +32,16 @@
 .over-page:not(.active) {
   display: none;
 }
+.over-page .overpage-items {
+  overflow: auto;
+}
 .over-page > .over-page-content {
   width: 100%;
   max-height: 100%;
   left: 0;
   position: fixed;
   z-index: 210;
-  overflow: auto;
+  overflow: hidden;
 }
 .overlay-times {
   z-index: 220;
@@ -49,11 +52,11 @@
 
 .overpage-buttons {
   position: fixed;
-  bottom: 50px;
+  bottom: 30px;
   height: 60px;
   width: 100%;
   left: 0;
-  padding: 0 100px;
+  padding: 0 100px 0 50px;
   text-align: right;
 }
 .overpage-buttons > i {
@@ -61,7 +64,13 @@
   position: relative;
   margin-left: 40px;
 }
-
+.overpage-buttons > p {
+  font-size: 2em;
+  color: orangered;
+  position: absolute;
+  left: 60px;
+  top: 20px;
+}
 @media(max-width: 600px) {
   .over-page .overpage-body {
     padding: 50px 20px;
@@ -71,5 +80,10 @@
   }
   .overpage-buttons > i {
     margin-left: 20px;
+  }
+  .overpage-buttons > p {
+    font-size: 1.2em;
+    left: 20px;
+    top: 10px;
   }
 }

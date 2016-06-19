@@ -1,0 +1,3 @@
+ - chat
+ - mantieni centrato
+ - monitor: posizione, altitudine, velocità.

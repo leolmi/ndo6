@@ -17,7 +17,10 @@ angular.module('ndo6App')
         positions: [],
         clearMarkers:function() {
           this.markers.forEach(function(m){
-            if (m) m.setMap(null);
+            if (m) {
+              google.maps.event.clearListeners(m, 'click');
+              m.setMap(null);
+            }
           });
           this.markers.splice(0);
         },
@@ -84,9 +87,9 @@ angular.module('ndo6App')
 
       function setZoom(zoom) {
         if (!zoom || !_session.context) return;
-        var listener = _session.context.G.maps.event.addListener(_session.context.map, "idle", function() {
+        var listener = google.maps.event.addListener(_session.context.map, "idle", function() {
           _session.context.map.setZoom(zoom);
-          _session.context.G.maps.event.removeListener(listener);
+          google.maps.event.removeListener(listener);
         });
       }
 
@@ -101,7 +104,7 @@ angular.module('ndo6App')
         if (!bounds) return;
 
         // Calcola le coordinate del centro
-        var gpos = maps.getLatLng(_session.context.G, pos);
+        var gpos = maps.getLatLng(pos);
 
         // Imposta il centro della mappa
         _session.context.map.setCenter(gpos);
@@ -109,7 +112,7 @@ angular.module('ndo6App')
         var mrk = finder ? finder() : null;
         if (mrk) {
           // Se ha trovato il marker lo anima
-          mrk.setAnimation(_session.context.G.maps.Animation.BOUNCE);
+          mrk.setAnimation(google.maps.Animation.BOUNCE);
           $timeout(function () {
             mrk.setAnimation(null);
           }, 1000);
@@ -119,7 +122,7 @@ angular.module('ndo6App')
 
       function centerUser(pos, zoom) {
         if (!pos && _last.isValid()) {
-          pos = maps.getLatLng(_session.context.G, _last);
+          pos = maps.getLatLng(_last);
         }
         centerMap(pos, zoom);
       }
@@ -226,20 +229,19 @@ angular.module('ndo6App')
 
       function getMarkerIcon(url) {
         if (url) {
-          var g = _session.context.G;
           return {
             url: url,
-            size: new g.maps.Size(22, 40),
-            origin: new g.maps.Point(0, 0),
-            anchor: new g.maps.Point(11, 40)
+            size: new google.maps.Size(22, 40),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(11, 40)
           }
         }
       }
 
       function getMarker(info) {
         if (!_session.context) return null;
-        var latlnt = maps.getLatLng(_session.context.G, info);
-        var m = new _session.context.G.maps.Marker({
+        var latlnt = maps.getLatLng( info);
+        var m = new google.maps.Marker({
           map: _session.context.map,
           label: info.label || 'P',
           position: latlnt,
@@ -250,7 +252,7 @@ angular.module('ndo6App')
           id: uiUtil.guid()
         };
         _.extend(m.ndo6, info);
-        _session.context.G.maps.event.addListener(m, 'click', function() {
+        google.maps.event.addListener(m, 'click', function() {
           if (m.map) $rootScope.$broadcast('CLICK-ON-MARKER', m);
         });
         return m;

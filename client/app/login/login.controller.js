@@ -57,6 +57,7 @@ angular.module('ndo6App')
           password: $scope.user.password
         })
           .then(function () {
+            ndo6.reset();
             $location.path('/main');
           })
           .catch(function (err) {

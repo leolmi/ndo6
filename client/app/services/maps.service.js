@@ -29,11 +29,11 @@ angular.module('ndo6App')
         return icon ? $location.absUrl() + 'assets/markers/marker-' + icon.color + '.png' : undefined;
       }
 
-      function getOptions(G) {
+      function getOptions() {
         return {
           zoom: 14,
-          center: new G.maps.LatLng(43.7681469, 11.2527254),
-          mapTypeId: G.maps.MapTypeId.ROADMAP
+          center: new google.maps.LatLng(43.7681469, 11.2527254),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
         };
       }
 
@@ -47,24 +47,23 @@ angular.module('ndo6App')
        * @param {object} [o]
        * @returns {context}
        */
-      function createContext(G, center, cb, dommap, domfinder, o) {
-        o = o || getOptions(G);
+      function createContext(center, cb, dommap, domfinder, o) {
+        o = o || getOptions();
         cb = cb || angular.noop;
         dommap = dommap || 'map-canvas';
         domfinder = domfinder || 'map-finder';
         var context = {
           options: o,
-          G: G,
-          map: new G.maps.Map(document.getElementById(dommap), o),
-          directionsService: new G.maps.DirectionsService,
-          directionsDisplay: new G.maps.DirectionsRenderer,
+          map: new google.maps.Map(document.getElementById(dommap), o),
+          directionsService: new google.maps.DirectionsService,
+          directionsDisplay: new google.maps.DirectionsRenderer,
           searchBox: {}
         };
 
         // Crea il box per la ricerca e lo sincronizza con la mappa
         var input = document.getElementById(domfinder);
-        context.searchBox = new G.maps.places.SearchBox(input);
-        context.map.controls[G.maps.ControlPosition.TOP_LEFT].push(input);
+        context.searchBox = new google.maps.places.SearchBox(input);
+        context.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
         context.directionsDisplay.setMap(context.map);
         context.map.addListener('bounds_changed', function () {
           context.searchBox.setBounds(context.map.getBounds());
@@ -75,7 +74,7 @@ angular.module('ndo6App')
           center(places[0].geometry.location);
         });
 
-        G.maps.event.addListenerOnce(context.map, 'idle', function () {
+        google.maps.event.addListenerOnce(context.map, 'idle', function () {
           cb(context);
         });
         return context;
@@ -90,21 +89,21 @@ angular.module('ndo6App')
        * @param [mode]
        * @returns {{origin: *, destination: *, waypts: *, mode: *}}
        */
-      function routeInfo(context, origin, destination, waypts, mode) {
-        mode = mode || context.G.maps.TravelMode.DRIVING;
+      function routeInfo(origin, destination, waypts, mode) {
+        mode = mode || google.maps.TravelMode.DRIVING;
         if (typeof mode == 'string') {
           switch (mode) {
             case 'walk':
-              mode = context.G.maps.TravelMode.WALKING;
+              mode = google.maps.TravelMode.WALKING;
               break;
             case 'car':
-              mode = context.G.maps.TravelMode.DRIVING;
+              mode = google.maps.TravelMode.DRIVING;
               break;
             case 'public':
-              mode = context.G.maps.TravelMode.TRANSIT;
+              mode = google.maps.TravelMode.TRANSIT;
               break;
             case 'bicycle':
-              mode = context.G.maps.TravelMode.BICYCLING;
+              mode = google.maps.TravelMode.BICYCLING;
               break;
           }
         }
@@ -119,25 +118,23 @@ angular.module('ndo6App')
 
       /**
        * Restituisce un latlng
-       * @param G
        * @param pos
-       * @returns {G.maps.LatLng}
+       * @returns {google.maps.LatLng}
        */
-      function getLatLng(G, pos) {
-        G = G || google;
+      function getLatLng(pos) {
         if (pos) {
           var lat = pos.latitude ? pos.latitude : (pos.G ? pos.G : (_.isFunction(pos.lat) ? pos.lat() : undefined));
           var lng = pos.longitude ? pos.longitude : (pos.K ? pos.K : (_.isFunction(pos.lng) ? pos.lng() : undefined));
-          return new G.maps.LatLng(lat, lng);
+          return new google.maps.LatLng(lat, lng);
         }
       }
 
-      function getRouteMode(context, mode) {
+      function getRouteMode(mode) {
         switch (mode){
-          case 'walk': return context.G.maps.TravelMode.WALKING;
-          case 'public': return context.G.maps.TravelMode.TRANSIT;
-          case 'bicycle': return context.G.maps.TravelMode.BICYCLING;
-          default: return context.G.maps.TravelMode.DRIVING;
+          case 'walk': return google.maps.TravelMode.WALKING;
+          case 'public': return google.maps.TravelMode.TRANSIT;
+          case 'bicycle': return google.maps.TravelMode.BICYCLING;
+          default: return google.maps.TravelMode.DRIVING;
         }
       }
 
@@ -156,19 +153,19 @@ angular.module('ndo6App')
           var end = info.points.pop();
           var waypts = _.map(info.points, function(p){
             return {
-              location: getLatLng(context.G, p),
+              location: getLatLng(p),
               stopover: false
             };
           });
 
           context.directionsService.route({
-            origin: getLatLng(context.G, start),
-            destination: getLatLng(context.G, end),
+            origin: getLatLng(start),
+            destination: getLatLng(end),
             waypoints: waypts,
             optimizeWaypoints: true,
             travelMode: getRouteMode(context, info.mode)
           }, function (response, status) {
-            if (status === context.G.maps.DirectionsStatus.OK) {
+            if (status === google.maps.DirectionsStatus.OK) {
               context.route = response.routes[0];
               context.route.ndo6 = info;
               context.directionsDisplay.setDirections(response);
@@ -188,7 +185,7 @@ angular.module('ndo6App')
         context.route = null;
         if (context.directionsDisplay)
           context.directionsDisplay.setMap(null);
-        context.directionsDisplay = new context.G.maps.DirectionsRenderer;
+        context.directionsDisplay = new google.maps.DirectionsRenderer;
         context.directionsDisplay.setMap(context.map);
       }
 

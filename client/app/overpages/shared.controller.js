@@ -2,12 +2,17 @@
 'use strict';
 
 angular.module('ndo6App')
-  .controller('SharedCtrl', ['$scope','ndo6','maps','Modal','Logger',
-    function ($scope, ndo6, maps, Modal, Logger) {
+  .controller('SharedCtrl', ['$scope','ndo6','maps','Modal','Logger','settings',
+    function ($scope, ndo6, maps, Modal, Logger,settings) {
       $scope.idle = null;
+      $scope.settings = settings.data;
       $scope.data = {
         points: _.clone(ndo6.data.points),
-        ways: _.clone(ndo6.data.ways)
+        ways: _.clone(ndo6.data.ways),
+        positions: _(ndo6.data.positions)
+          .filter(function(p) {
+            return p.last;
+          }).clone()
       };
 
       $scope.isMine = function(o) {

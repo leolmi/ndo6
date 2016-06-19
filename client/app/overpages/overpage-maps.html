@@ -1,6 +1,6 @@
 <div class="ovepage-maps row" ng-controller="MapsCtrl">
   <search-box ng-model="searchText"></search-box>
-  <div class="maps-container">
+  <div class="maps-container overpage-items" height-offset="230">
     <div class="map-row private-map-row" ng-hide="searchText"
          ng-class="{'active':!current}" ng-click="set()">
       <i class="fa fa-map map-row-icon"></i>
@@ -24,6 +24,7 @@
     </div>
   </div>
   <div class="overpage-buttons">
-    <i class="fa fa-plus-circle as-button big-button" ng-click="editMap()"></i>
+    <p>{{helpStr}}</p>
+    <i class="fa fa-plus-circle as-button big-button" ng-click="editMap()" help-message="Create new map"></i>
   </div>
 </div>

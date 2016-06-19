@@ -13,7 +13,8 @@ angular.module('ndo6App')
         _settings.map = '';
         _settings.shared = {
           ways: true,
-          points: true
+          points: true,
+          positions: true
         };
         _idle = false;
       }

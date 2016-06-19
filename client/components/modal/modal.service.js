@@ -51,6 +51,7 @@ angular.module('ndo6App')
           var self = this;
           type = type || 'ask';
           return $q(function (resolve, reject) {
+            if ($rootScope.modalActive) return;
             var m = self.confirm[type](resolve, reject);
             m(options);
           });

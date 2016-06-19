@@ -98,6 +98,10 @@ body > [ui-view] {
   border-color: #ac2925;
 }
 
+input[type="checkbox"] {
+  vertical-align: middle;
+}
+
 /*//////////////////////////////*/
 /*//////////////////////////////*/
 /* JUMP: */
