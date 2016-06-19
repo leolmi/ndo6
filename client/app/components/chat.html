@@ -1,0 +1,27 @@
+<div class="chat" layout="column">
+  <div class="chat-messages" layout="column" layout-align="start bottom" flex>
+    <div class="chat-message" ng-class="{'important': m.important, 'mine':m.user==user.name}"
+         ng-repeat="m in options.messages | orderBy:'time'">
+      <div ng-if="m.user==user.name" class="left-triangle"></div>
+      <div class="chat-message-header" layout="row">
+        <div class="chat-message-info"><span class="chat-message-user">{{m.user}}</span></div>
+        <span flex></span>
+        <div class="chat-message-time">{{getDate(m.time)}}</div>
+        <i ng-if="m.icon" class="material-icons chat-message-icon">{{m.icon}}</i>
+      </div>
+      <div class="chat-message-text">{{m.text}}</div>
+      <div ng-if="m.user!=user.name" class="right-triangle"></div>
+    </div>
+  </div>
+  <md-divider></md-divider>
+  <div class="chat-message-editor" layout="row" layout-align="start end">
+    <md-input-container flex>
+      <label>Message</label>
+      <textarea ng-model="message.text" md-maxlength="options.maxlength" rows="3" md-select-on-focus></textarea>
+    </md-input-container>
+    <icon-chooser ng-model="message.icon" options="iconOptions"></icon-chooser>
+    <md-button ng-hide="options.enter" class="md-icon-button" ng-click="sendMessage()">
+      <md-icon class="material-icons">send</md-icon>
+    </md-button>
+  </div>
+</div>

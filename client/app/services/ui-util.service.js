@@ -57,6 +57,7 @@ angular.module('ndo6App')
         }
       }
 
+
       return {
         toggleMenu:toggleMenu,
         guid:guid,
