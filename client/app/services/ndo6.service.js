@@ -370,7 +370,8 @@ angular.module('ndo6App')
         }
       }
 
-      function share(type, data) {
+      function share(type, data, cb) {
+        cb = cb || angular.noop;
         var sharedobj = undefined;
         switch (type) {
           case 'point':
@@ -402,8 +403,9 @@ angular.module('ndo6App')
         sharedobj.id = type + '@' + uiUtil.guid();
         if (_session.map) {
           $http.post('/api/shared/' + type + '/' + _session.map._id, sharedobj)
-            .then(function () {
+            .then(function (o) {
               Logger.info('Object "' + type + '" shared successfully!');
+              cb(o.data);
             }, errHandler);
         }
         else if (type == 'point') {

@@ -266,17 +266,19 @@ angular.module('ndo6App')
             o.way.points.push(o.end);
             o.way.points.unshift(o.start);
             o.way.points = _.map(o.way.points, function (p) {
+              var id = _.isObject(p) ? p.id : p;
               var m = _.find(ndo6.data.markers, function (m) {
-                return m.ndo6.id == p;
+                return m.ndo6.id == id;
               });
               return {
-                id: p,
+                id: id,
                 latitude: m ? m.position.lat() : null,
                 longitude: m ? m.position.lng() : null
               }
             });
-            ndo6.share('way', o.way);
-            //TODO: Calcolo del percorso e visualizza sulla mapppa
+            ndo6.share('way', o.way, function(w) {
+              maps.calcRoute(ndo6.session.context, w);
+            });
           });
       };
 

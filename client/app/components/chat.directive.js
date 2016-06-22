@@ -1,6 +1,6 @@
 /* Created by Leo on 19/06/2016. */
 'use strict';
-s
+
 angular.module('ndo6App')
   .directive('chat',['$timeout',
     function ($timeout) {

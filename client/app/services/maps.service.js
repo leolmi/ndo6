@@ -145,13 +145,16 @@ angular.module('ndo6App')
        * @param [cb]
        */
       function calcRoute(context, info) {
+        if (context && context.route)
+          clearRoute(context);
         return $q(function(resolve, reject){
           if (!info || !info.points || info.points.length<2)
             return reject('Invalid route info!');
 
-          var start = info.points.shift();
-          var end = info.points.pop();
-          var waypts = _.map(info.points, function(p){
+          var pts = _.clone(info.points);
+          var start = pts.shift();
+          var end = pts.pop();
+          var waypts = _.map(pts, function(p){
             return {
               location: getLatLng(p),
               stopover: false
