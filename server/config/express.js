@@ -19,6 +19,15 @@ var session = require('express-session');
 var mongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
 
+
+//CORS middleware
+var allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'ndo6.herokuapp.com');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+};
+
 module.exports = function(app) {
   var env = app.get('env');
 
@@ -42,6 +51,7 @@ module.exports = function(app) {
   }));
 
   if ('production' === env) {
+    app.use(allowCrossDomain);
     // app.use(favicon(path.join(config.root, 'public', 'favicon.ico')));
     // app.use(express.static(path.join(config.root, 'public')));
     // app.set('appPath', config.root + '/public');
