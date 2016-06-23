@@ -383,12 +383,16 @@ angular.module('ndo6App')
               longitude: data.pos.lng()
             };
             break;
-          // case 'message':
-          //   sharedobj = {
-          //     text: data.text,
-          //     action: data.action
-          //   };
-          //   break;
+          case 'message':
+            sharedobj = {
+              user: _session.user.name,
+              text: data.text,
+              action: data.action,
+              icon: data.icon,
+              type: data.type,
+              timestamp: (new Date()).getTime()
+            };
+            break;
           case 'way':
             sharedobj = {
               title: data.title,

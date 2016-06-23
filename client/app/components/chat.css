@@ -1,10 +1,17 @@
 .chat {
-  min-height: 300px; }
+  min-height: 300px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 0 300px;
+  display: block;
+}
 
 .chat .chat-messages {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 200px; }
+  max-height: 200px;
+}
 
 .chat .chat-messages .chat-message {
   padding: 10px;
@@ -12,25 +19,30 @@
   margin-left: 20%;
   margin-right: 20px;
   margin-bottom: 4px;
-  position: relative; }
+  position: relative;
+}
 
 .chat .chat-messages .chat-message.mine {
   background-color: rgba(0, 149, 255, 0.1);
   margin-right: 20%;
-  margin-left: 20px; }
+  margin-left: 20px;
+}
 
 .chat .chat-messages .chat-message .chat-message-header .chat-message-info,
 .chat .chat-messages .chat-message .chat-message-header .chat-message-time {
   font-variant: small-caps;
   font-size: .8em;
-  color: #999; }
+  color: #999;
+}
 
 .chat .chat-messages .chat-message .chat-message-header .chat-message-time {
-  margin-right: 20px; }
+  margin-right: 20px;
+}
 
 .chat .chat-messages .chat-message .chat-message-text {
   word-wrap: break-word;
-  white-space: pre-wrap; }
+  white-space: pre-wrap;
+}
 
 .chat .chat-messages .chat-message .left-triangle,
 .chat .chat-messages .chat-message .right-triangle {
@@ -54,10 +66,32 @@
 }
 
 .chat .chat-message-editor {
-  min-height: 100px;
+  min-height: 90px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding-right: 600px;
 }
 
 .chat .chat-message-editor icon-chooser,
 .chat .chat-message-editor .md-button {
   margin-bottom: 24px;
+}
+
+@media (max-width: 1200px) {
+  .chat {
+    padding: 0 200px;
+  }
+  .chat .chat-message-editor {
+    padding-right: 400px;
+  }
+}
+
+@media (max-width: 550px) {
+  .chat {
+    padding: 0;
+  }
+  .chat .chat-message-editor {
+    padding-right: 0;
+  }
 }

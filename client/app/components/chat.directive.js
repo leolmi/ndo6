@@ -2,27 +2,20 @@
 'use strict';
 
 angular.module('ndo6App')
-  .directive('chat',['$timeout',
-    function ($timeout) {
+  .directive('chat',['$timeout','ndo6',
+    function ($timeout,ndo6) {
       return {
         restrict: 'E',
         templateUrl: 'app/components/chat.html',
         scope: { options:'=' },
         link: function(scope, ele, atr) {
-          scope.options = scope.options || {};
-          _.defaults(scope.options, {
+          scope.chatOptions = scope.options || {};
+          _.defaults(scope.chatOptions, {
             maxlength: 300,
             timeout: 1000,
-            enter: true,
-            messages: [{
-              attributes:'i',
-              time: new Date(),
-              user: '',
-              icon: '',
-              text: ''
-            }]
+            enter: true
           });
-          scope.user = ndo6.session.user;
+          //scope.messages = ndo6.data.messages;
           scope.iconOptions = {
             description: false
           };
@@ -30,31 +23,26 @@ angular.module('ndo6App')
 
           function reset() {
             scope.message = {
-              attributes: '',
-              time: new Date(),
-              user: scope.user.name,
               icon: '',
-              text: ''
+              text: '',
+              type: '',
+              action: ''
             };
           }
 
           function send() {
-            if (_sendTimeout || !_.isFunction(scope.options.send) || !scope.message.text) {
-              return;
-            }
+            if (_sendTimeout || !scope.message.text) return;
             var msg = _.clone(scope.message);
             _sendTimeout = $timeout(function() {
-              msg.time = new Date();
-              msg.user = scope.user.name;
-              scope.options.send(msg);
+              ndo6.share('message', msg);
               _sendTimeout = null;
-            }, scope.options.timeout);
+            }, scope.chatOptions.timeout);
             reset();
           }
 
           function scroll() {
             var $container = $('.chat-messages', ele);
-            var $last = $(".chat-messages>.chat-message:last-child", ele);
+            var $last = $(".chat-messages > .chat-message:last-child", ele);
             if ($last.length) {
               var top = $last.offset().top + $container.scrollTop();
               $container.animate({scrollTop: top}, 1000);
@@ -63,19 +51,16 @@ angular.module('ndo6App')
 
           scope.getDate = function(d) {
             var now = new Date();
-            return (now.toLocaleDateString() == d.toLocaleDateString()) ?
-              d.toLocaleTimeString() : d.toLocaleString();
-          };
-
-          scope.isImportant = function(m) {
-            return m && m.attributes.indexOf('i')>-1;
+            var date = new Date(d);
+            return (now.toLocaleDateString() == date.toLocaleDateString()) ?
+              date.toLocaleTimeString() : date.toLocaleString();
           };
 
           var _shift = false;
           ele.bind("keydown keypress", function (e) {
             if (e.which === 16)
               _shift = true;
-            if(!_shift && e.which === 13 && scope.options.enter) {
+            if(!_shift && e.which === 13 && scope.chatOptions.enter) {
               send();
               e.preventDefault();
               e.stopPropagation();
@@ -86,8 +71,9 @@ angular.module('ndo6App')
               _shift = false;
           });
 
-          scope.$watch(function(){ return scope.options.messages; }, function(){
-            scroll();
+          scope.$watch(function(){ return ndo6.data.messages; }, function(){
+            scope.messages = ndo6.data.messages;
+            $timeout(scroll, 200);
           }, true);
 
           scope.sendMessage = function() {
@@ -95,6 +81,7 @@ angular.module('ndo6App')
           };
 
           reset();
+          //$timeout(scroll, 500);
         }
       }
     }]);

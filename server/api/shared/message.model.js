@@ -7,6 +7,7 @@ var MessageSchema = new Schema({
   id: String,
   type: String,
   map: String,
+  icon: String,
   user: String,
   text: String,
   timestamp: Number,
