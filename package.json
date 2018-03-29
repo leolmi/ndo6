@@ -41,8 +41,8 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "server": "node server/ndo6-server.js",
-    "start": "node server/ndo6-server.js",
+    "server": "node server/ndo6-service.js",
+    "start": "node server/ndo6-service.js",
     "prestart": "start http://localhost:6001"
   }
 }
