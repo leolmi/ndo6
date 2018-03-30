@@ -71,7 +71,7 @@
 /* WEBPACK VAR INJECTION */(function(__dirname) {
 const path = __webpack_require__(6);
 const _ = __webpack_require__(2);
-const root = path.normalize(__dirname + '/../../..');
+const root = path.normalize(__dirname + '/..');
 
 
 function _checkValues(s) {
@@ -878,7 +878,9 @@ module.exports = function(app) {
     store: new mongoStore({ mongooseConnection: mongoose.connection })
   }));
 
-  app.use(express.static(path.join(config.root, client_path)));
+  const cp = path.join(config.root, client_path);
+  console.log(cp);
+  app.use(express.static(cp));
   app.set('appPath', client_path);
 
   app.use(morgan('dev'));
