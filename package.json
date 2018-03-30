@@ -42,7 +42,6 @@
     "npm": "5.3.0"
   },
   "scripts": {
-    "server": "node server/ndo6-service.js",
     "start": "node server/ndo6-service.js"
   }
 }
