@@ -43,7 +43,6 @@
   },
   "scripts": {
     "server": "node server/ndo6-service.js",
-    "start": "node server/ndo6-service.js",
-    "prestart": "start http://localhost:6001"
+    "start": "node server/ndo6-service.js"
   }
 }
