@@ -39,7 +39,7 @@ var fadeAnimation = Object(__WEBPACK_IMPORTED_MODULE_0__angular_animations__["l"
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"loading\">\n  <div class=\"loader\"></div>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<button *ngIf=\"debug && !u.overpage.type\" class=\"settings-button\" mat-icon-button matTooltip=\"settings\" (click)=\"settings()\">\n  <mat-icon>settings</mat-icon>\n</button>\n\n\n<!-- OVERPAGES -->\n<app-overpages></app-overpages>\n\n<!--<div *ngIf=\"debug\" class=\"debug\">{{info_str}}</div>-->\n"
+module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"loading\">\n  <div class=\"loader\"></div>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"ndo6.followPos ? 'accent' : ''\" mat-icon-button matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div flex></div>\n  <!--<button *ngIf=\"debug && !u.overpage.type\" class=\"settings-button\" mat-icon-button matTooltip=\"settings\" (click)=\"settings()\">-->\n    <!--<mat-icon>settings</mat-icon>-->\n  <!--</button>-->\n</div>\n\n\n<!-- OVERPAGES -->\n<app-overpages></app-overpages>\n"
 
 /***/ }),
 
@@ -132,6 +132,10 @@ var AppComponent = (function () {
     AppComponent.prototype.clickOnMarker = function (m) {
         console.log('Click on marker: ', m);
     };
+    AppComponent.prototype.location = function () {
+        this.ndo6.followPos = this.ndo6.followPos ? null : this.ndo6.last;
+        this.ndo6.checkPos();
+    };
     AppComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'app-root',
@@ -165,10 +169,12 @@ var AppComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_interaction_service__ = __webpack_require__("../../../../../src/app/services/interaction.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_user_settings_service__ = __webpack_require__("../../../../../src/app/services/user-settings.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__services_utils_service__ = __webpack_require__("../../../../../src/app/services/utils.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__services_maps_service__ = __webpack_require__("../../../../../src/app/services/maps.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__services_ndo6_service__ = __webpack_require__("../../../../../src/app/services/ndo6.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__components_confirm_dialog_confirm_dialog_component__ = __webpack_require__("../../../../../src/app/components/confirm-dialog/confirm-dialog.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__components_overpages_overpages_component__ = __webpack_require__("../../../../../src/app/components/overpages/overpages.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__services_log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__services_maps_service__ = __webpack_require__("../../../../../src/app/services/maps.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__services_ndo6_service__ = __webpack_require__("../../../../../src/app/services/ndo6.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__components_confirm_dialog_confirm_dialog_component__ = __webpack_require__("../../../../../src/app/components/confirm-dialog/confirm-dialog.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_overpages_overpages_component__ = __webpack_require__("../../../../../src/app/components/overpages/overpages.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_log_monitor_log_monitor_component__ = __webpack_require__("../../../../../src/app/components/log-monitor/log-monitor.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -188,7 +194,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
+
 // COMPONENTS
+
 
 
 var AppModule = (function () {
@@ -198,9 +206,10 @@ var AppModule = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_2__angular_core__["H" /* NgModule */])({
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */],
-                __WEBPACK_IMPORTED_MODULE_12__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */],
-                __WEBPACK_IMPORTED_MODULE_13__components_overpages_overpages_component__["b" /* OverpagesComponent */],
-                __WEBPACK_IMPORTED_MODULE_13__components_overpages_overpages_component__["a" /* OverpageSettingsComponent */]
+                __WEBPACK_IMPORTED_MODULE_13__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */],
+                __WEBPACK_IMPORTED_MODULE_14__components_overpages_overpages_component__["b" /* OverpagesComponent */],
+                __WEBPACK_IMPORTED_MODULE_14__components_overpages_overpages_component__["a" /* OverpageSettingsComponent */],
+                __WEBPACK_IMPORTED_MODULE_15__components_log_monitor_log_monitor_component__["a" /* LogMonitorComponent */]
             ],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
@@ -236,13 +245,14 @@ var AppModule = (function () {
             ],
             providers: [
                 __WEBPACK_IMPORTED_MODULE_9__services_utils_service__["a" /* UtilsService */],
+                __WEBPACK_IMPORTED_MODULE_10__services_log_service__["a" /* LogService */],
                 __WEBPACK_IMPORTED_MODULE_8__services_user_settings_service__["a" /* UserSettingsService */],
                 __WEBPACK_IMPORTED_MODULE_7__services_interaction_service__["a" /* InteractionService */],
-                __WEBPACK_IMPORTED_MODULE_10__services_maps_service__["a" /* MapsService */],
-                __WEBPACK_IMPORTED_MODULE_11__services_ndo6_service__["a" /* Ndo6Service */]
+                __WEBPACK_IMPORTED_MODULE_11__services_maps_service__["a" /* MapsService */],
+                __WEBPACK_IMPORTED_MODULE_12__services_ndo6_service__["a" /* Ndo6Service */]
             ],
             entryComponents: [
-                __WEBPACK_IMPORTED_MODULE_12__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */]
+                __WEBPACK_IMPORTED_MODULE_13__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */]
             ],
             bootstrap: [
                 __WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */]
@@ -302,6 +312,51 @@ var ConfirmDialogComponent = (function () {
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_material__["i" /* MatDialogRef */], Object])
     ], ConfirmDialogComponent);
     return ConfirmDialogComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/components/log-monitor/log-monitor.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"log-monitor\">\n  <div class=\"log-line\" *ngFor=\"let line of log.lines\">{{line}}</div>\n</div>\n"
+
+/***/ }),
+
+/***/ "../../../../../src/app/components/log-monitor/log-monitor.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LogMonitorComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var LogMonitorComponent = (function () {
+    function LogMonitorComponent(log) {
+        this.log = log;
+    }
+    LogMonitorComponent.prototype.ngOnInit = function () {
+    };
+    LogMonitorComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'app-log-monitor',
+            template: __webpack_require__("../../../../../src/app/components/log-monitor/log-monitor.component.html")
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_log_service__["a" /* LogService */]])
+    ], LogMonitorComponent);
+    return LogMonitorComponent;
 }());
 
 
@@ -452,6 +507,52 @@ var InteractionService = (function () {
 
 /***/ }),
 
+/***/ "../../../../../src/app/services/log.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LogService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_service__ = __webpack_require__("../../../../../src/app/services/utils.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var LogService = (function () {
+    function LogService(u) {
+        this.u = u;
+        this.lines = [];
+    }
+    LogService.prototype.add = function (txt) {
+        var now = new Date();
+        var line = '[' + now.getTime() + '] > ' + txt;
+        this.lines.push(line);
+        console.log(line);
+    };
+    LogService.prototype.error = function (err) {
+        this.add(this.u.getErrorMessage(err));
+    };
+    LogService.prototype.info = function (txt) {
+        this.add(txt);
+    };
+    LogService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__utils_service__["a" /* UtilsService */]])
+    ], LogService);
+    return LogService;
+}());
+
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/services/maps.service.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -554,8 +655,9 @@ var MapsService = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__maps_service__ = __webpack_require__("../../../../../src/app/services/maps.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__user_settings_service__ = __webpack_require__("../../../../../src/app/services/user-settings.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_service__ = __webpack_require__("../../../../../src/app/services/utils.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -565,6 +667,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -633,11 +736,17 @@ var Position = (function () {
     return Position;
 }());
 
+var GEOLOCATION_OPTIONS = {
+    maximumAge: 10,
+    enableHighAccuracy: false,
+    timeout: 1000
+};
 var Ndo6Service = (function () {
-    function Ndo6Service(maps, user, u) {
+    function Ndo6Service(maps, user, u, log) {
         this.maps = maps;
         this.user = user;
         this.u = u;
+        this.log = log;
         this.positionChecker = null;
         this.last = null;
         this.session = {
@@ -645,7 +754,10 @@ var Ndo6Service = (function () {
             map: null,
             context: null
         };
+        this.followPos = null;
+        this.watchId = null;
         this.active = false;
+        this.center = false;
         this.posErrorCounter = 0;
         this.clickOnMarker = null;
     }
@@ -663,6 +775,8 @@ var Ndo6Service = (function () {
      * centra la mappa
      */
     Ndo6Service.prototype.centerMap = function (pos, zoom, finder) {
+        if (zoom === void 0) { zoom = null; }
+        if (finder === void 0) { finder = null; }
         var self = this;
         if (!self.session.context || !pos) {
             return;
@@ -687,16 +801,47 @@ var Ndo6Service = (function () {
         }
         self.setZoom(zoom);
     };
+    Ndo6Service.prototype.watchGeo = function (cb) {
+        var self = this;
+        self.watchId = navigator.geolocation.watchPosition(cb, function (err) {
+            switch (err.code) {
+                case 1:
+                    self.log.error('Geolocation permission denied');
+                    break;
+                case 2:
+                    self.log.error('Geolocation position unavailable');
+                    break;
+                case 3:
+                    self.log.error('Geolocation timed out');
+                    break;
+                default: self.log.error(err);
+            }
+        }, GEOLOCATION_OPTIONS);
+    };
     Ndo6Service.prototype.checkGeo = function () {
+        var self = this;
         return new Promise(function (resolve, reject) {
             if (!navigator.geolocation) {
-                return reject('Geolocation is not supported by this browser.');
+                var err = 'Geolocation is not supported by this browser.';
+                self.log.error(err);
+                return reject(err);
             }
             else {
                 navigator.geolocation.getCurrentPosition(resolve, function (err) {
-                    console.error(err);
-                    reject('Geolocation is not available.');
-                });
+                    switch (err.code) {
+                        case 1:
+                            self.log.error('Geolocation permission denied');
+                            break;
+                        case 2:
+                            self.log.error('Geolocation position unavailable');
+                            break;
+                        case 3:
+                            self.log.error('Geolocation timed out');
+                            break;
+                        default: self.log.error(err);
+                    }
+                    reject(err);
+                }, GEOLOCATION_OPTIONS);
             }
         });
     };
@@ -706,6 +851,9 @@ var Ndo6Service = (function () {
         }
         this.active = false;
         this.clickOnMarker = null;
+    };
+    Ndo6Service.prototype.samePos = function (p1, p2) {
+        return p1 && p2 && p1 === p2;
     };
     Ndo6Service.prototype.setPos = function (pos) {
         var self = this;
@@ -723,6 +871,11 @@ var Ndo6Service = (function () {
         if (!self.last.sameOf(npos) && npos.isValid()) {
             var latlng = npos.getLatLng();
             self.last.marker.setPosition(latlng);
+            var center = self.center || self.samePos(self.followPos, self.last);
+            if (center === true) {
+                self.centerMap(npos);
+                self.center = false;
+            }
         }
     };
     Ndo6Service.prototype.checkPos = function () {
@@ -730,25 +883,47 @@ var Ndo6Service = (function () {
         self.positionChecker = setTimeout(function () {
             self.checkGeo()
                 .then(function (pos) {
+                self.posErrorCounter = 0;
+                self.log.info('read position: ' + self.u.format('{latitude},{longitude}', pos.coords));
                 self.setPos(pos);
                 if (self.active) {
                     self.checkPos();
                 }
             }, function (err) {
-                console.error(err);
-                self.posErrorCounter++;
-                if (self.posErrorCounter < 4) {
-                    self.checkPos();
+                if (err) {
+                    self.posErrorCounter++;
                 }
+                self.checkPos();
             });
         }, self.user.settings.delay || 1000);
+    };
+    Ndo6Service.prototype.clearGeo = function () {
+        var self = this;
+        if (self.positionChecker) {
+            clearTimeout(self.positionChecker);
+        }
+    };
+    Ndo6Service.prototype.stopGeo = function () {
+        var self = this;
+        if (self.watchId) {
+            navigator.geolocation.clearWatch(self.watchId);
+        }
+    };
+    Ndo6Service.prototype.activateW = function (context) {
+        var self = this;
+        self.session.context = context;
+        self.stopGeo();
+        self.center = true;
+        self.watchGeo(function (pos) {
+            self.setPos(pos);
+        });
+        self.active = true;
     };
     Ndo6Service.prototype.activate = function (context) {
         var self = this;
         self.session.context = context;
-        if (self.positionChecker) {
-            clearTimeout(self.positionChecker);
-        }
+        self.clearGeo();
+        self.center = true;
         self.checkPos();
         self.active = true;
     };
@@ -778,9 +953,9 @@ var Ndo6Service = (function () {
         m.ndo6 = {
             id: self.u.guid()
         };
-        __WEBPACK_IMPORTED_MODULE_4_lodash___default.a.extend(m.ndo6, info);
+        __WEBPACK_IMPORTED_MODULE_5_lodash___default.a.extend(m.ndo6, info);
         google.maps.event.addListener(m, 'click', function () {
-            if (__WEBPACK_IMPORTED_MODULE_4_lodash___default.a.isFunction(self.clickOnMarker)) {
+            if (__WEBPACK_IMPORTED_MODULE_5_lodash___default.a.isFunction(self.clickOnMarker)) {
                 self.clickOnMarker(m);
             }
         });
@@ -790,7 +965,8 @@ var Ndo6Service = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__maps_service__["a" /* MapsService */],
             __WEBPACK_IMPORTED_MODULE_2__user_settings_service__["a" /* UserSettingsService */],
-            __WEBPACK_IMPORTED_MODULE_3__utils_service__["a" /* UtilsService */]])
+            __WEBPACK_IMPORTED_MODULE_3__utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_4__log_service__["a" /* LogService */]])
     ], Ndo6Service);
     return Ndo6Service;
 }());
@@ -958,7 +1134,7 @@ var UtilsService = (function () {
     UtilsService.prototype.format = function (str, o) {
         if (o === void 0) { o = {}; }
         str = str || '';
-        __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.keys(o).forEach(function (pn) {
+        __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.keysIn(o).forEach(function (pn) {
             var rgx = new RegExp('{' + pn + '}', 'g');
             str = str.replace(rgx, o[pn] || '');
         });
