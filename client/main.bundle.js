@@ -39,7 +39,7 @@ var fadeAnimation = Object(__WEBPACK_IMPORTED_MODULE_0__angular_animations__["l"
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"loading\">\n  <div class=\"loader\"></div>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.last&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div flex></div>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"map()\">\n    <mat-icon>map</mat-icon>\n  </button>\n  <!--<button *ngIf=\"debug && !u.overpage.type\" class=\"settings-button\" mat-icon-button matTooltip=\"settings\" (click)=\"settings()\">-->\n    <!--<mat-icon>settings</mat-icon>-->\n  <!--</button>-->\n  <div>{{counter}}</div>\n</div>\n\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n    <mat-icon>close</mat-icon>\n  </button>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n</div>\n"
+module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"loading\">\n  <div class=\"loader\"></div>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.last&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div flex></div>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"map()\">\n    <mat-icon>map</mat-icon>\n  </button>\n  <!--<button *ngIf=\"debug && !u.overpage.type\" class=\"settings-button\" mat-icon-button matTooltip=\"settings\" (click)=\"settings()\">-->\n    <!--<mat-icon>settings</mat-icon>-->\n  <!--</button>-->\n</div>\n\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n    <mat-icon>close</mat-icon>\n  </button>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n</div>\n"
 
 /***/ }),
 
@@ -87,21 +87,16 @@ var initializer = {
     }
 };
 var AppComponent = (function () {
-    function AppComponent(interaction, u, maps, ndo6, cdRef, app, zone) {
+    function AppComponent(interaction, u, maps, ndo6, zone) {
         this.interaction = interaction;
         this.u = u;
         this.maps = maps;
         this.ndo6 = ndo6;
-        this.cdRef = cdRef;
-        this.app = app;
         this.zone = zone;
         this.initialized = false;
         this.loading = true;
         this.info = {};
-        this.counter = 0;
-        // info_str = '';
         this.debug = !__WEBPACK_IMPORTED_MODULE_1__environments_environment__["a" /* environment */].production;
-        // const self = this;
     }
     AppComponent.prototype.refresh = function () {
         var self = this;
@@ -135,9 +130,7 @@ var AppComponent = (function () {
                     self.zone.run(function () { return self.clickOnMarker(e.data); });
                     break;
                 case 'firstpos':
-                    self.zone.run(function () {
-                        self.initialized = !!self.ndo6.last || !!self.ndo6.followMarker;
-                    });
+                    self.zone.run(function () { return self.initialized = !!self.ndo6.last || !!self.ndo6.followMarker; });
                     break;
             }
         });
@@ -187,8 +180,6 @@ var AppComponent = (function () {
             __WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
             __WEBPACK_IMPORTED_MODULE_5__services_maps_service__["a" /* MapsService */],
             __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["f" /* ApplicationRef */],
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["L" /* NgZone */]])
     ], AppComponent);
     return AppComponent;
