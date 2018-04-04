@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -69,12 +69,12 @@
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(__dirname) {
-const fs = __webpack_require__(11);
+const fs = __webpack_require__(10);
 const path = __webpack_require__(7);
 const _ = __webpack_require__(1);
 const root = path.normalize(__dirname + '/../../..');
 const locals_path = path.join(root, 'local.env.js');
-const u = __webpack_require__(12);
+const u = __webpack_require__(11);
 const locals = fs.existsSync(locals_path) ? u.use(locals_path) : {};
 
 _.extend(process.env, locals);
@@ -117,7 +117,7 @@ const settings = {
   // Path del client
   clientPath: '',
   // Token expires in minutes
-  tokenExpiration: 5,
+  tokenExpiration: 10,
   // MongoDB connection options
   mongo: {
     uri:  process.env.MONGODB_URI ||
@@ -144,12 +144,6 @@ module.exports = require("lodash");
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
-
-module.exports = require("express");
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -157,7 +151,7 @@ module.exports = require("express");
 
 const mongoose = __webpack_require__(4);
 const Schema = mongoose.Schema;
-const crypto = __webpack_require__(14);
+const crypto = __webpack_require__(13);
 const _ = __webpack_require__(1);
 
 function _notBlankValidator(v) {
@@ -311,6 +305,12 @@ module.exports = mongoose.model('View', ViewSchema);
 
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+module.exports = require("express");
+
+/***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
@@ -334,13 +334,22 @@ const config = __webpack_require__(0);
 const jwt = __webpack_require__(32);
 const expressJwt = __webpack_require__(33);
 const compose = __webpack_require__(34);
-const View = __webpack_require__(9);
+const View = __webpack_require__(2);
 const validateJwt = expressJwt({ secret: config.secrets.session });
 
 
 function _owner(req, res, next) {
   req.owner = (req.body||{}).owner || (req.params||{}).owner;
   next();
+}
+
+function _view(req, res, next) {
+  View.findOne({_id:(req.user||{}).id}, function (err, view) {
+    if (err) {return next(err);}
+    if (!view) {return res.send(404);}
+    req.view = view;
+    next();
+  });
 }
 
 function owner() {
@@ -354,27 +363,9 @@ function isOnView() {
     // Attach owner to request
     .use(_owner)
     // Validate jwt
-    .use(function (req, res, next) {
-      var token = '';
-      if (req.query && req.query.hasOwnProperty('access_token')) token = req.query.access_token;
-      if (req.body && req.body.hasOwnProperty('token')) token = req.body.token;
-      if (token) (req.headers||{}).authorization = 'Bearer ' + token;
-      validateJwt(req, res, next);
-    })
+    .use(validateJwt)
     // Attach view to request
-    .use(function (req, res, next) {
-      if (req.auth) {
-        console.log('DEBUG >>>> [auth.isOnView] request:', req);
-        View.find((req.user||req.view)._id, function (err, view) {
-          if (err) {return next(err);}
-          if (!view) {return res.send(404);}
-          req.view = view;
-          next();
-        });
-      } else {
-        next();
-      }
-    });
+    .use(_view);
 }
 
 
@@ -382,23 +373,10 @@ function isOnView() {
  * Returns a jwt token signed by the app secret
  */
 function signToken(id, owner) {
-  const et = 60*(config.tokenExpiration||5);
-  console.log('Expiration time:%ssec', et);
-  return jwt.sign({ _id: id, owner: owner }, config.secrets.session, { expiresIn: et });
+  return jwt.sign({ id: id, owner: owner }, config.secrets.session, { expiresIn: 60*(config.tokenExpiration||10) });
 }
 
-// /**
-//  * Set token cookie directly for oAuth strategies
-//  */
-// function setTokenCookie(req, res) {
-//   if (!req.user) {return res.json(404, { message: 'Something went wrong, please try again.'});}
-//   var token = signToken(req.user._id, req.user.role);
-//   res.cookie('token', JSON.stringify(token));
-//   res.redirect('/');
-// }
-
 exports.signToken = signToken;
-// exports.setTokenCookie = setTokenCookie;
 exports.owner = owner;
 exports.isOnView = isOnView;
 
@@ -454,7 +432,420 @@ exports.register = function(handler) {
 "use strict";
 
 
-const View = __webpack_require__(3);
+console.log(' _  _ ___   ___   __\n'+
+            '| \\| |   \\ / _ \\ / / \n'+
+            '| .` | |) | (_) / _ \\\n'+
+            '|_|\\_|___/ \\___/\\___/     by Leo\n');
+
+console.log('-----------------------------------------------\nNDO6 starting...');
+const express = __webpack_require__(3);
+const mongoose = __webpack_require__(4);
+const config = __webpack_require__(0);
+
+// Connect to database
+mongoose.connect(config.mongo.uri, config.mongo.options);
+
+// Populate DB with sample data
+// if(config.seedDB) { require('./config/seed'); }
+if(process.env.NDO6_RESETDB === 'true' || !!config.resetdb) { __webpack_require__(12); }
+
+// Setup server
+const app = express();
+const server = __webpack_require__(14).createServer(app);
+const socketio = __webpack_require__(15)(server, {
+  serveClient: (config.env !== 'production'),
+  path: '/socket.io'
+});
+
+__webpack_require__(16)(socketio);
+__webpack_require__(17)(app);
+__webpack_require__(28)(app);
+
+// Start server
+server.listen(config.port, config.ip, function () {
+  console.log('NDO6 listening on %d\n-----------------------------------------------', config.port);
+});
+
+// Expose app
+exports = module.exports = app;
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const _use =  true ? require : require;
+exports.use = _use;
+exports.noop = function() {};
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const View = __webpack_require__(2);
+
+View.find({}).remove(function() {
+  console.log('finished clearing views');
+});
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+module.exports = require("crypto");
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+module.exports = require("http");
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+module.exports = require("socket.io");
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const _ = __webpack_require__(1);
+const View = __webpack_require__(2);
+const handler = {
+  views: {},
+  emit: function(view, verb, obj) {
+    (this.views[view._id]||[]).forEach(function(s){
+      s.emit(verb, obj);
+    });
+  },
+  add: function(view, socket) {
+    this.views[view._id] = this.views[view._id] || [];
+    this.views[view._id].push(socket);
+  },
+  remove: function(socket) {
+    _.keys(this.views) .forEach(function(v){
+      _.remove(v, function(s){
+        return s === socket;
+      });
+    });
+  }
+};
+
+__webpack_require__(8).register(handler);
+
+function _log(message) {
+  const now = new Date();
+  return {
+    time: now,
+    time_str: now.toLocaleTimeString(),
+    type: 'info',
+    message: message
+  };
+}
+
+// When the user disconnects.. perform this
+function onDisconnect(socket) {
+  socket.emit('log', _log('"'+socket.address+'" leave ndo6!'));
+  handler.remove(socket);
+}
+
+// When the user connects.. perform this
+function onConnect(socket) {
+  // When the client emits 'info', this listens and executes
+  socket.on('info', function (data) {
+    console.info('[%s] %s (by socket)', socket.address, JSON.stringify(data, null, 2));
+  });
+  socket.on('login', function(data){
+    console.log('DEBUG >>>> SOCKET login data:', data);
+    handler.remove(socket);
+    const name = data.name||data.user||data.view;
+    View.find({name: name}, function(err, view) {
+      if (err) return console.error('[SOCKET.IO] view not found', socket.address);
+      handler.add(view, socket);
+    });
+  });
+  // require('../api/view/view.socket').register(clients);
+
+  socket.emit('log', _log('Wellcome "'+socket.address+'" to ndo6!'));
+}
+
+module.exports = function (io) {
+  // socket.io (v1.x.x) is powered by debug.
+  // In order to see all the debug output, set DEBUG (in server/config/local.env.js) to including the desired scope.
+  //
+  // ex: DEBUG: "http*,socket.io:socket"
+
+  // We can authenticate socket.io users and access their token through socket.handshake.decoded_token
+  //
+  // 1. You will need to send the token in `client/components/socket/socket.service.js`
+  //
+  // 2. Require authentication here:
+  // socketio.use(require('socketio-jwt').authorize({
+  //   secret: config.secrets.session,
+  //   handshake: true
+  // }));
+
+  io.on('connection', function (socket) {
+    const hs = socket.handshake.address||{};
+    socket.address = hs.address ? hs.address + ':' + hs.port : hs;
+    //console.log('handshake:', socket.handshake);
+
+    socket.connectedAt = new Date();
+    // Call onDisconnect.
+    socket.on('disconnect', function () {
+      onDisconnect(socket);
+      console.info('[SOCKET.IO on %s] DISCONNECTED', socket.address);
+    });
+
+    // Call onConnect.
+    onConnect(socket);
+    console.info('[SOCKET.IO on %s] CONNECTED', socket.address);
+  });
+
+  io.on('error', function (err) {
+    console.error(err);
+  });
+};
+
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const express = __webpack_require__(3);
+const favicon = __webpack_require__(18);
+const morgan = __webpack_require__(19);
+const compression = __webpack_require__(20);
+const bodyParser = __webpack_require__(21);
+const methodOverride = __webpack_require__(22);
+const cookieParser = __webpack_require__(23);
+const errorHandler = __webpack_require__(24);
+const path = __webpack_require__(7);
+const config = __webpack_require__(0);
+const client_path = config.clientPath||'client';
+const passport = __webpack_require__(5);
+const session = __webpack_require__(25);
+const mongoStore = __webpack_require__(26)(session);
+const mongoose = __webpack_require__(4);
+
+var _counter = 0;
+
+// CORS middleware
+var allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+};
+
+// LOG middleware
+var serverLog = function(req, res, next) {
+  _counter++;
+  console.log('Echo-Service request n°%s [%s %s]',_counter, req.method, req.url);
+  next();
+};
+
+module.exports = function(app) {
+  var env = app.get('env');
+
+  app.set('views', path.join(config.serverPath, 'views'));
+  app.engine('html', __webpack_require__(27).renderFile);
+  app.set('view engine', 'html');
+  app.use(compression());
+
+  app.use(bodyParser.json({limit: '100mb'}));
+  app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
+
+  app.use(methodOverride());
+  app.use(allowCrossDomain);
+  app.use(cookieParser());
+  app.use(passport.initialize());
+  app.use(serverLog);
+
+  // Persist sessions with mongoStore
+  app.use(session({
+    secret: config.secrets.session,
+    resave: true,
+    saveUninitialized: true,
+    store: new mongoStore({ mongooseConnection: mongoose.connection })
+  }));
+
+  app.use(express.static(path.join(config.root, client_path)));
+  app.set('appPath', client_path);
+
+  app.use(morgan('dev'));
+  app.use(errorHandler()); // Error handler - has to be last
+};
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = require("serve-favicon");
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+module.exports = require("morgan");
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+module.exports = require("compression");
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+module.exports = require("body-parser");
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
+module.exports = require("method-override");
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports) {
+
+module.exports = require("cookie-parser");
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports) {
+
+module.exports = require("errorhandler");
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports) {
+
+module.exports = require("express-session");
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+module.exports = require("connect-mongo");
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports) {
+
+module.exports = require("ejs");
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var errors = __webpack_require__(29);
+
+module.exports = function(app) {
+  app.use('/api/view', __webpack_require__(30));
+  app.use('/auth', __webpack_require__(36));
+  // All undefined asset or api routes should return a 404
+  app.route('/:url(api|auth|components|app|assets)/*')
+   .get(errors[404]);
+
+  // All other routes should redirect to the index.html
+  app.route('/*')
+    .get(function(req, res) {
+      res.sendfile(app.get('appPath') + '/index.html');
+    });
+};
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Error responses
+ */
+
+
+
+module.exports[404] = function pageNotFound(req, res) {
+  var viewFilePath = '404';
+  var statusCode = 404;
+  var result = {
+    status: statusCode
+  };
+
+  res.status(result.status);
+  res.render(viewFilePath, function (err) {
+    if (err) { return res.json(result, result.status); }
+
+    res.render(viewFilePath);
+  });
+};
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var express = __webpack_require__(3);
+var controller = __webpack_require__(31);
+var auth = __webpack_require__(6);
+
+var router = express.Router();
+
+router.get('/', controller.index);
+router.get('/info', controller.info);
+// router.get('/positions/:owner', auth.isOnView(), controller.positions);
+// router.get('/messages/:owner', auth.isOnView(), controller.messages);
+// router.get('/elements/:owner', auth.isOnView(), controller.elements);
+
+router.post('/', auth.isOnView(), controller.view);
+router.post('/create', auth.owner(), controller.create);
+router.post('/delete', auth.isOnView(), controller.destroy);
+router.post('/password', auth.isOnView(), controller.changePassword);
+router.post('/position', auth.isOnView(), controller.position);
+router.post('/message', auth.isOnView(), controller.message);
+router.post('/element', auth.isOnView(), controller.element);
+router.post('/remove', auth.isOnView(), controller.removeElement);
+
+module.exports = router;
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const View = __webpack_require__(2);
 const config = __webpack_require__(0);
 // const jwt = require('jsonwebtoken');
 const auth = __webpack_require__(6);
@@ -680,419 +1071,6 @@ exports.messages = function(req, res) {
 
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-console.log(' _  _ ___   ___   __\n'+
-            '| \\| |   \\ / _ \\ / / \n'+
-            '| .` | |) | (_) / _ \\\n'+
-            '|_|\\_|___/ \\___/\\___/     by Leo\n');
-
-console.log('-----------------------------------------------\nNDO6 starting...');
-const express = __webpack_require__(2);
-const mongoose = __webpack_require__(4);
-const config = __webpack_require__(0);
-
-// Connect to database
-mongoose.connect(config.mongo.uri, config.mongo.options);
-
-// Populate DB with sample data
-// if(config.seedDB) { require('./config/seed'); }
-if(process.env.NDO6_RESETDB === 'true' || !!config.resetdb) { __webpack_require__(13); }
-
-// Setup server
-const app = express();
-const server = __webpack_require__(15).createServer(app);
-const socketio = __webpack_require__(16)(server, {
-  serveClient: (config.env !== 'production'),
-  path: '/socket.io'
-});
-
-__webpack_require__(17)(socketio);
-__webpack_require__(18)(app);
-__webpack_require__(29)(app);
-
-// Start server
-server.listen(config.port, config.ip, function () {
-  console.log('NDO6 listening on %d\n-----------------------------------------------', config.port);
-});
-
-// Expose app
-exports = module.exports = app;
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-module.exports = require("fs");
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const _use =  true ? require : require;
-exports.use = _use;
-exports.noop = function() {};
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const View = __webpack_require__(3);
-
-View.find({}).remove(function() {
-  console.log('finished clearing views');
-});
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports) {
-
-module.exports = require("crypto");
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports) {
-
-module.exports = require("http");
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports) {
-
-module.exports = require("socket.io");
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const _ = __webpack_require__(1);
-const View = __webpack_require__(3);
-const handler = {
-  views: {},
-  emit: function(view, verb, obj) {
-    (this.views[view._id]||[]).forEach(function(s){
-      s.emit(verb, obj);
-    });
-  },
-  add: function(view, socket) {
-    this.views[view._id] = this.views[view._id] || [];
-    this.views[view._id].push(socket);
-  },
-  remove: function(socket) {
-    _.keys(this.views) .forEach(function(v){
-      _.remove(v, function(s){
-        return s === socket;
-      });
-    });
-  }
-};
-
-__webpack_require__(8).register(handler);
-
-function _log(message) {
-  const now = new Date();
-  return {
-    time: now,
-    time_str: now.toLocaleTimeString(),
-    type: 'info',
-    message: message
-  };
-}
-
-// When the user disconnects.. perform this
-function onDisconnect(socket) {
-  socket.emit('log', _log('"'+socket.address+'" leave ndo6!'));
-  handler.remove(socket);
-}
-
-// When the user connects.. perform this
-function onConnect(socket) {
-  // When the client emits 'info', this listens and executes
-  socket.on('info', function (data) {
-    console.info('[%s] %s (by socket)', socket.address, JSON.stringify(data, null, 2));
-  });
-  socket.on('login', function(data){
-    console.log('DEBUG >>>> SOCKET login data:', data);
-    handler.remove(socket);
-    const name = data.name||data.user||data.view;
-    View.find({name: name}, function(err, view) {
-      if (err) return console.error('[SOCKET.IO] view not found', socket.address);
-      handler.add(view, socket);
-    });
-  });
-  // require('../api/view/view.socket').register(clients);
-
-  socket.emit('log', _log('Wellcome "'+socket.address+'" to ndo6!'));
-}
-
-module.exports = function (io) {
-  // socket.io (v1.x.x) is powered by debug.
-  // In order to see all the debug output, set DEBUG (in server/config/local.env.js) to including the desired scope.
-  //
-  // ex: DEBUG: "http*,socket.io:socket"
-
-  // We can authenticate socket.io users and access their token through socket.handshake.decoded_token
-  //
-  // 1. You will need to send the token in `client/components/socket/socket.service.js`
-  //
-  // 2. Require authentication here:
-  // socketio.use(require('socketio-jwt').authorize({
-  //   secret: config.secrets.session,
-  //   handshake: true
-  // }));
-
-  io.on('connection', function (socket) {
-    const hs = socket.handshake.address||{};
-    socket.address = hs.address ? hs.address + ':' + hs.port : hs;
-    //console.log('handshake:', socket.handshake);
-
-    socket.connectedAt = new Date();
-    // Call onDisconnect.
-    socket.on('disconnect', function () {
-      onDisconnect(socket);
-      console.info('[SOCKET.IO on %s] DISCONNECTED', socket.address);
-    });
-
-    // Call onConnect.
-    onConnect(socket);
-    console.info('[SOCKET.IO on %s] CONNECTED', socket.address);
-  });
-
-  io.on('error', function (err) {
-    console.error(err);
-  });
-};
-
-
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const express = __webpack_require__(2);
-const favicon = __webpack_require__(19);
-const morgan = __webpack_require__(20);
-const compression = __webpack_require__(21);
-const bodyParser = __webpack_require__(22);
-const methodOverride = __webpack_require__(23);
-const cookieParser = __webpack_require__(24);
-const errorHandler = __webpack_require__(25);
-const path = __webpack_require__(7);
-const config = __webpack_require__(0);
-const client_path = config.clientPath||'client';
-const passport = __webpack_require__(5);
-const session = __webpack_require__(26);
-const mongoStore = __webpack_require__(27)(session);
-const mongoose = __webpack_require__(4);
-
-var _counter = 0;
-
-// CORS middleware
-var allowCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-};
-
-// LOG middleware
-var serverLog = function(req, res, next) {
-  _counter++;
-  console.log('Echo-Service request n°%s [%s %s]',_counter, req.method, req.url);
-  next();
-};
-
-module.exports = function(app) {
-  var env = app.get('env');
-
-  app.set('views', path.join(config.serverPath, 'views'));
-  app.engine('html', __webpack_require__(28).renderFile);
-  app.set('view engine', 'html');
-  app.use(compression());
-
-  app.use(bodyParser.json({limit: '100mb'}));
-  app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
-
-  app.use(methodOverride());
-  app.use(allowCrossDomain);
-  app.use(cookieParser());
-  app.use(passport.initialize());
-  app.use(serverLog);
-
-  // Persist sessions with mongoStore
-  app.use(session({
-    secret: config.secrets.session,
-    resave: true,
-    saveUninitialized: true,
-    store: new mongoStore({ mongooseConnection: mongoose.connection })
-  }));
-
-  app.use(express.static(path.join(config.root, client_path)));
-  app.set('appPath', client_path);
-
-  app.use(morgan('dev'));
-  app.use(errorHandler()); // Error handler - has to be last
-};
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-module.exports = require("serve-favicon");
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-module.exports = require("morgan");
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports) {
-
-module.exports = require("compression");
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
-module.exports = require("body-parser");
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports) {
-
-module.exports = require("method-override");
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports) {
-
-module.exports = require("cookie-parser");
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports) {
-
-module.exports = require("errorhandler");
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports) {
-
-module.exports = require("express-session");
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports) {
-
-module.exports = require("connect-mongo");
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports) {
-
-module.exports = require("ejs");
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var errors = __webpack_require__(30);
-
-module.exports = function(app) {
-  app.use('/api/view', __webpack_require__(31));
-  app.use('/auth', __webpack_require__(36));
-  // All undefined asset or api routes should return a 404
-  app.route('/:url(api|auth|components|app|assets)/*')
-   .get(errors[404]);
-
-  // All other routes should redirect to the index.html
-  app.route('/*')
-    .get(function(req, res) {
-      res.sendfile(app.get('appPath') + '/index.html');
-    });
-};
-
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Error responses
- */
-
-
-
-module.exports[404] = function pageNotFound(req, res) {
-  var viewFilePath = '404';
-  var statusCode = 404;
-  var result = {
-    status: statusCode
-  };
-
-  res.status(result.status);
-  res.render(viewFilePath, function (err) {
-    if (err) { return res.json(result, result.status); }
-
-    res.render(viewFilePath);
-  });
-};
-
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var express = __webpack_require__(2);
-var controller = __webpack_require__(9);
-var auth = __webpack_require__(6);
-
-var router = express.Router();
-
-router.get('/', controller.index);
-router.get('/info', controller.info);
-// router.get('/positions/:owner', auth.isOnView(), controller.positions);
-// router.get('/messages/:owner', auth.isOnView(), controller.messages);
-// router.get('/elements/:owner', auth.isOnView(), controller.elements);
-
-router.post('/', auth.isOnView(), controller.view);
-router.post('/create', auth.owner(), controller.create);
-router.post('/delete', auth.isOnView(), controller.destroy);
-router.post('/password', auth.isOnView(), controller.changePassword);
-router.post('/position', auth.isOnView(), controller.position);
-router.post('/message', auth.isOnView(), controller.message);
-router.post('/element', auth.isOnView(), controller.element);
-router.post('/remove', auth.isOnView(), controller.removeElement);
-
-module.exports = router;
-
-
-/***/ }),
 /* 32 */
 /***/ (function(module, exports) {
 
@@ -1133,11 +1111,11 @@ exports.infos = {
 "use strict";
 
 
-const express = __webpack_require__(2);
+const express = __webpack_require__(3);
 const passport = __webpack_require__(5);
 const config = __webpack_require__(0);
 const auth = __webpack_require__(6);
-const View = __webpack_require__(3);
+const View = __webpack_require__(2);
 // const socket = require('../config/socketio');
 
 // Passport Configuration
@@ -1157,6 +1135,7 @@ router.post('/login', function(req, res, next) {
     if (!view) return res.json(404, {message: 'Something went wrong, please try again.'});
 
     const token = auth.signToken(view._id, data.owner);
+    console.log('TOKEN=', token);
     res.json({token: token});
   })(req, res, next);
 });
