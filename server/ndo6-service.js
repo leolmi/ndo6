@@ -72,7 +72,7 @@
 const fs = __webpack_require__(12);
 const path = __webpack_require__(7);
 const _ = __webpack_require__(1);
-const root = path.normalize(__dirname + '/../../..');
+const root = path.normalize(__dirname + '/..');
 const locals_path = path.join(root, 'local.env.js');
 const u = __webpack_require__(8);
 const locals = fs.existsSync(locals_path) ? u.use(locals_path) : {};
