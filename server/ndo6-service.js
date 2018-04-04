@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -69,11 +69,15 @@
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(__dirname) {
-const path = __webpack_require__(6);
-const _ = __webpack_require__(2);
-const _is_release = typeof __webpack_require__ === "function";
-const root = path.normalize(__dirname + (_is_release ? '/..' : '/../../..'));
+const fs = __webpack_require__(11);
+const path = __webpack_require__(7);
+const _ = __webpack_require__(1);
+const root = path.normalize(__dirname + '/../../..');
+const locals_path = path.join(root, 'local.env.js');
+const u = __webpack_require__(12);
+const locals = fs.existsSync(locals_path) ? u.use(locals_path) : {};
 
+_.extend(process.env, locals);
 
 function _checkValues(s) {
   s.port = parseInt(s.port||6001);
@@ -136,39 +140,327 @@ module.exports = settings;
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = require("express");
+module.exports = require("lodash");
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("lodash");
+module.exports = require("express");
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports) {
-
-module.exports = require("mongoose");
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-module.exports = require("passport");
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const View = __webpack_require__(7);
+const mongoose = __webpack_require__(4);
+const Schema = mongoose.Schema;
+const crypto = __webpack_require__(14);
+const _ = __webpack_require__(1);
+
+function _notBlankValidator(v) {
+  return !!(v || '').length;
+}
+
+var ViewSchemaElement = new Schema({
+  owner: String,
+  name: String,
+  type: String,
+  content: Schema.Types.Mixed
+});
+
+var ViewSchemaPosition = new Schema({
+  owner: String,
+  latitude: Number,
+  longitude: Number,
+  timestamp: Number
+});
+
+var ViewSchemaMessage = new Schema({
+  owner: String,
+  text: String,
+  icon: String
+});
+
+var ViewSchema = new Schema({
+  name: {
+    type: String,
+    validate: {
+      isAsync: true,
+      validator: function(v, cb) {
+        var self = this;
+        self.constructor.findOne({name: v}, function(err, view) {
+          if(err) throw err;
+          if(view) {
+            if(self.id === view.id) return cb(true);
+            return cb(false);
+          }
+          cb(true);
+        });
+      },
+      message: 'The specified name is already in use.'
+    },
+    required: [true, 'Map name cannot be blank']
+  },
+  owner: {
+    type: String,
+    validate: {
+      validator: _notBlankValidator,
+      message: 'Owner cannot be blank'
+    },
+    required: [true, 'Owner cannot be blank']
+  },
+  center: String,
+  hashedPassword: {
+    type: String,
+    validate: {
+      validator: _notBlankValidator,
+      message: 'Password cannot be blank'
+    }
+  },
+  salt: String,
+  elements: [ViewSchemaElement],
+  positions: [ViewSchemaPosition],
+  messages: [ViewSchemaMessage]
+}, { versionKey: false });
+
+/**
+ * Virtuals
+ */
+ViewSchema
+  .virtual('password')
+  .set(function(password) {
+    this._password = password;
+    this.salt = this.makeSalt();
+    this.hashedPassword = this.encryptPassword(password);
+  })
+  .get(function() {
+    return this._password;
+  });
+
+
+// Non-sensitive info we'll be putting in the token
+ViewSchema
+  .virtual('token')
+  .get(function() {
+    return {
+      '_id': this._id
+    };
+  });
+
+var validatePresenceOf = function(value) {
+  return value && value.length;
+};
+
+/**
+ * Pre-save hook
+ */
+ViewSchema
+  .pre('save', function(next) {
+    if (!this.isNew) return next();
+
+    if (!validatePresenceOf(this.hashedPassword)) {
+      next(new Error('Invalid password'));
+    } else {
+      next();
+    }
+  });
+
+/**
+ * Methods
+ */
+ViewSchema.method({
+  /**
+   * Authenticate - check if the passwords are the same
+   *
+   * @param {String} plainText
+   * @return {Boolean}
+   * @api public
+   */
+  authenticate: function(plainText) {
+    return this.encryptPassword(plainText) === this.hashedPassword;
+  },
+
+  /**
+   * Make salt
+   *
+   * @return {String}
+   * @api public
+   */
+  makeSalt: function() {
+    return crypto.randomBytes(16).toString('base64');
+  },
+
+  /**
+   * Encrypt password
+   *
+   * @param {String} password
+   * @return {String}
+   * @api public
+   */
+  encryptPassword: function(password) {
+    if (!password || !this.salt) return '';
+    var salt = new Buffer(this.salt, 'base64');
+    return crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha1').toString('base64');
+  }
+});
+
+module.exports = mongoose.model('View', ViewSchema);
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+module.exports = require("mongoose");
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = require("passport");
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const _ = __webpack_require__(1);
 const config = __webpack_require__(0);
-const jwt = __webpack_require__(9);
+const jwt = __webpack_require__(32);
+const expressJwt = __webpack_require__(33);
+const compose = __webpack_require__(34);
+const View = __webpack_require__(9);
+const validateJwt = expressJwt({ secret: config.secrets.session });
+
+
+function _owner(req, res, next) {
+  req.owner = (req.body||{}).owner || (req.params||{}).owner;
+  next();
+}
+
+function owner() {
+  return compose()
+    // Attach owner to request
+    .use(_owner);
+}
+
+function isOnView() {
+  return compose()
+    // Attach owner to request
+    .use(_owner)
+    // Validate jwt
+    .use(function (req, res, next) {
+      var token = '';
+      if (req.query && req.query.hasOwnProperty('access_token')) token = req.query.access_token;
+      if (req.body && req.body.hasOwnProperty('token')) token = req.body.token;
+      if (token) (req.headers||{}).authorization = 'Bearer ' + token;
+      validateJwt(req, res, next);
+    })
+    // Attach view to request
+    .use(function (req, res, next) {
+      if (req.auth) {
+        console.log('DEBUG >>>> [auth.isOnView] request:', req);
+        View.find((req.user||req.view)._id, function (err, view) {
+          if (err) {return next(err);}
+          if (!view) {return res.send(404);}
+          req.view = view;
+          next();
+        });
+      } else {
+        next();
+      }
+    });
+}
+
+
+/**
+ * Returns a jwt token signed by the app secret
+ */
+function signToken(id, owner) {
+  const et = 60*(config.tokenExpiration||5);
+  console.log('Expiration time:%ssec', et);
+  return jwt.sign({ _id: id, owner: owner }, config.secrets.session, { expiresIn: et });
+}
+
+// /**
+//  * Set token cookie directly for oAuth strategies
+//  */
+// function setTokenCookie(req, res) {
+//   if (!req.user) {return res.json(404, { message: 'Something went wrong, please try again.'});}
+//   var token = signToken(req.user._id, req.user.role);
+//   res.cookie('token', JSON.stringify(token));
+//   res.redirect('/');
+// }
+
+exports.signToken = signToken;
+// exports.setTokenCookie = setTokenCookie;
+exports.owner = owner;
+exports.isOnView = isOnView;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var _handler=  null;
+const _events = {
+  onPosition: function(view, pos) {
+    if (!_handler) return console.warn('NOT registered events (%s)', pos);
+    _handler.emit(view, 'position', pos);
+    console.log('SOCKET EMIT view position', pos);
+  },
+  onElement: function(view, ele) {
+    if (!_handler) return console.warn('NOT registered events (%s)', ele);
+    _handler.emit(view, 'element', ele);
+    console.log('SOCKET EMIT view element', ele);
+  },
+  onRemoveElement: function(view, ele) {
+    if (!_handler) return console.warn('NOT registered events (%s)', ele);
+    _handler.emit(view, 'element.remove', ele);
+    console.log('SOCKET EMIT remove view element', ele);
+  },
+  onMessage: function(view, msg) {
+    if (!_handler) return console.warn('NOT registered events (%s)', msg);
+    _handler.emit(view, 'message', msg);
+    console.log('SOCKET EMIT view message', msg);
+  }
+};
+
+exports.events = _events;
+
+exports.register = function(handler) {
+  _handler = handler;
+  console.log('NDO6 socket ready');
+};
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const View = __webpack_require__(3);
+const config = __webpack_require__(0);
+// const jwt = require('jsonwebtoken');
+const auth = __webpack_require__(6);
 const socket = __webpack_require__(8);
-const _ = __webpack_require__(2);
-const version = __webpack_require__(30);
+const _ = __webpack_require__(1);
+const version = __webpack_require__(35);
 
 function _validationError(res, err) {
   return res.json(422, err);
@@ -205,12 +497,14 @@ exports.info = function(req, res) {
  */
 exports.create = function (req, res, next) {
   if (!req.owner) return res.send(500, 'Undefined owner');
-  var newView = new View(req.body);
+  const newView = new View(req.body);
   newView.elements = newView.elements || [];
   newView.owner = req.owner;
+  console.log('Nuova view: ', newView);
+
   newView.save(function(err, view) {
     if (err) return _validationError(res, err);
-    var token = jwt.sign({_id: view._id }, config.secrets.session, { expiresInMinutes: 60*(config.tokenExpiration||5) });
+    const token = auth.signToken(view._id, req.owner);
     res.json({ token: token });
   });
 };
@@ -284,9 +578,6 @@ exports.view = function(req, res, next) {
 
 
 
-
-
-
 function _update(req, res, obj, smethod) {
   req.view.save(function(err){
     if (err) return res.send(500, err);
@@ -313,6 +604,14 @@ exports.position = function(req, res) {
 };
 
 /**
+ * Gets the list of positions for view
+ */
+exports.positions = function(req, res) {
+  if (!_validate(req, res)) return;
+  res.json(200, req.view.positions);
+};
+
+/**
  * Insert element
  */
 exports.element = function(req, res) {
@@ -331,6 +630,14 @@ exports.element = function(req, res) {
   };
   req.view.elements.push(ele);
   _update(req, res, ele, 'onElement');
+};
+
+/**
+ * Gets the list of elements for view
+ */
+exports.elements = function(req, res) {
+  if (!_validate(req, res)) return;
+  res.json(200, req.view.elements);
 };
 
 /**
@@ -363,217 +670,14 @@ exports.message = function(req, res) {
   _update(req, res, msg, 'onMessage');
 };
 
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-module.exports = require("path");
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-'use strict';
-
-var mongoose = __webpack_require__(3);
-var Schema = mongoose.Schema;
-var crypto = __webpack_require__(15);
-
-var ViewSchemaElement = new Schema({
-  owner: String,
-  name: String,
-  type: String,
-  content: Schema.Types.Mixed
-});
-
-var ViewSchemaPosition = new Schema({
-  owner: String,
-  latitude: Number,
-  longitude: Number,
-  timestamp: Number
-});
-
-var ViewSchemaMessage = new Schema({
-  owner: String,
-  text: String,
-  icon: String
-});
-
-var ViewSchema = new Schema({
-  name: String,
-  owner: String,
-  center: String,
-  hashedPassword: String,
-  salt: String,
-  elements: [ViewSchemaElement],
-  positions: [ViewSchemaPosition],
-  messages: [ViewSchemaMessage]
-}, { versionKey: false });
-
 /**
- * Virtuals
+ * Gets the list of messages for view
  */
-ViewSchema
-  .virtual('password')
-  .set(function(password) {
-    this._password = password;
-    this.salt = this.makeSalt();
-    this.hashedPassword = this.encryptPassword(password);
-  })
-  .get(function() {
-    return this._password;
-  });
-
-
-// Non-sensitive info we'll be putting in the token
-ViewSchema
-  .virtual('token')
-  .get(function() {
-    return {
-      '_id': this._id
-    };
-  });
-
-/**
- * Validations
- */
-// Validate empty name
-ViewSchema
-  .path('name')
-  .validate(function(name) {
-    return name.length;
-  }, 'Name cannot be blank');
-
-// Validate empty password
-ViewSchema
-  .path('hashedPassword')
-  .validate(function(hashedPassword) {
-    return hashedPassword.length;
-  }, 'Password cannot be blank');
-
-// Validate name is not taken
-ViewSchema
-  .path('name')
-  .validate(function(value, respond) {
-    var self = this;
-    this.constructor.findOne({name: value}, function(err, view) {
-      if(err) throw err;
-      if(view) {
-        if(self.id === view.id) return respond(true);
-        return respond(false);
-      }
-      respond(true);
-    });
-  }, 'The specified name is already in use.');
-
-var validatePresenceOf = function(value) {
-  return value && value.length;
+exports.messages = function(req, res) {
+  if (!_validate(req, res)) return;
+  res.json(200, req.view.messages);
 };
 
-/**
- * Pre-save hook
- */
-ViewSchema
-  .pre('save', function(next) {
-    if (!this.isNew) return next();
-
-    if (!validatePresenceOf(this.hashedPassword)) {
-      next(new Error('Invalid password'));
-    } else {
-      next();
-    }
-  });
-
-/**
- * Methods
- */
-ViewSchema.methods = {
-  /**
-   * Authenticate - check if the passwords are the same
-   *
-   * @param {String} plainText
-   * @return {Boolean}
-   * @api public
-   */
-  authenticate: function(plainText) {
-    return this.encryptPassword(plainText) === this.hashedPassword;
-  },
-
-  /**
-   * Make salt
-   *
-   * @return {String}
-   * @api public
-   */
-  makeSalt: function() {
-    return crypto.randomBytes(16).toString('base64');
-  },
-
-  /**
-   * Encrypt password
-   *
-   * @param {String} password
-   * @return {String}
-   * @api public
-   */
-  encryptPassword: function(password) {
-    if (!password || !this.salt) return '';
-    var salt = new Buffer(this.salt, 'base64');
-    return crypto.pbkdf2Sync(password, salt, 10000, 64).toString('base64');
-  }
-};
-
-module.exports = mongoose.model('View', ViewSchema);
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var _handler=  null;
-const _events = {
-  onPosition: function(view, pos) {
-    if (!_handler) return console.warn('NOT registered events (%s)', pos);
-    _handler.emit(view, 'position', pos);
-    console.log('SOCKET EMIT view position', pos);
-  },
-  onElement: function(view, ele) {
-    if (!_handler) return console.warn('NOT registered events (%s)', ele);
-    _handler.emit(view, 'element', ele);
-    console.log('SOCKET EMIT view element', ele);
-  },
-  onRemoveElement: function(view, ele) {
-    if (!_handler) return console.warn('NOT registered events (%s)', ele);
-    _handler.emit(view, 'element.remove', ele);
-    console.log('SOCKET EMIT remove view element', ele);
-  },
-  onMessage: function(view, msg) {
-    if (!_handler) return console.warn('NOT registered events (%s)', msg);
-    _handler.emit(view, 'message', msg);
-    console.log('SOCKET EMIT view message', msg);
-  }
-};
-
-exports.events = _events;
-
-exports.register = function(handler) {
-  _handler = handler;
-  console.log('Registered events');
-};
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports) {
-
-module.exports = require("jsonwebtoken");
 
 /***/ }),
 /* 10 */
@@ -582,86 +686,14 @@ module.exports = require("jsonwebtoken");
 "use strict";
 
 
-const _ = __webpack_require__(2);
-const config = __webpack_require__(0);
-const jwt = __webpack_require__(9);
-const expressJwt = __webpack_require__(31);
-const compose = __webpack_require__(32);
-const View = __webpack_require__(5);
-const validateJwt = expressJwt({ secret: config.secrets.session });
+console.log(' _  _ ___   ___   __\n'+
+            '| \\| |   \\ / _ \\ / / \n'+
+            '| .` | |) | (_) / _ \\\n'+
+            '|_|\\_|___/ \\___/\\___/     by Leo\n');
 
-function owner() {
-  return compose()
-    // Attach owner to request
-    .use(function (req, res, next) {
-      req.owner = (req.body||{}).owner;
-      next();
-    });
-}
-
-function isOnView() {
-  return compose()
-    // Attach owner to request
-    .use(function (req, res, next) {
-      req.owner = (req.body||{}).owner;
-      next();
-    })
-    // Validate jwt
-    .use(function (req, res, next) {
-      if (req.query && req.query.hasOwnProperty('access_token')) {
-        (req.headers||{}).authorization = 'Bearer ' + req.query.access_token;
-      }
-      validateJwt(req, res, next);
-    })
-    // Attach view to request
-    .use(function (req, res, next) {
-      if (req.auth) {
-        console.log('DEBUG >>>> [auth.isOnView] request:', req);
-        View.find((req.user||req.view)._id, function (err, view) {
-          if (err) {return next(err);}
-          if (!view) {return res.send(404);}
-          req.view = view;
-          next();
-        });
-      } else {
-        next();
-      }
-    });
-}
-
-
-/**
- * Returns a jwt token signed by the app secret
- */
-function signToken(id, owner) {
-  return jwt.sign({ _id: id, owner: owner }, config.secrets.session, { expiresInMinutes: 60*(config.tokenExpiration||5) });
-}
-
-// /**
-//  * Set token cookie directly for oAuth strategies
-//  */
-// function setTokenCookie(req, res) {
-//   if (!req.user) {return res.json(404, { message: 'Something went wrong, please try again.'});}
-//   var token = signToken(req.user._id, req.user.role);
-//   res.cookie('token', JSON.stringify(token));
-//   res.redirect('/');
-// }
-
-exports.signToken = signToken;
-// exports.setTokenCookie = setTokenCookie;
-exports.owner = owner;
-exports.isOnView = isOnView;
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-console.log('-----------------------------------------------\nNDO6-SERVICE starting...');
-const express = __webpack_require__(1);
-const mongoose = __webpack_require__(3);
+console.log('-----------------------------------------------\nNDO6 starting...');
+const express = __webpack_require__(2);
+const mongoose = __webpack_require__(4);
 const config = __webpack_require__(0);
 
 // Connect to database
@@ -669,22 +701,23 @@ mongoose.connect(config.mongo.uri, config.mongo.options);
 
 // Populate DB with sample data
 // if(config.seedDB) { require('./config/seed'); }
+if(process.env.NDO6_RESETDB === 'true' || !!config.resetdb) { __webpack_require__(13); }
 
 // Setup server
 const app = express();
-const server = __webpack_require__(12).createServer(app);
-const socketio = __webpack_require__(13)(server, {
+const server = __webpack_require__(15).createServer(app);
+const socketio = __webpack_require__(16)(server, {
   serveClient: (config.env !== 'production'),
   path: '/socket.io'
 });
 
-__webpack_require__(14)(socketio);
-__webpack_require__(16)(app);
-__webpack_require__(27)(app);
+__webpack_require__(17)(socketio);
+__webpack_require__(18)(app);
+__webpack_require__(29)(app);
 
 // Start server
 server.listen(config.port, config.ip, function () {
-  console.log('NDO6-SERVICE listening on %d\n-----------------------------------------------', config.port);
+  console.log('NDO6 listening on %d\n-----------------------------------------------', config.port);
 });
 
 // Expose app
@@ -692,25 +725,62 @@ exports = module.exports = app;
 
 
 /***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
+
+/***/ }),
 /* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const _use =  true ? require : require;
+exports.use = _use;
+exports.noop = function() {};
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const View = __webpack_require__(3);
+
+View.find({}).remove(function() {
+  console.log('finished clearing views');
+});
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+module.exports = require("crypto");
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("socket.io");
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-const _ = __webpack_require__(2);
-const View = __webpack_require__(7);
+const _ = __webpack_require__(1);
+const View = __webpack_require__(3);
 const handler = {
   views: {},
   emit: function(view, verb, obj) {
@@ -810,32 +880,26 @@ module.exports = function (io) {
 
 
 /***/ }),
-/* 15 */
-/***/ (function(module, exports) {
-
-module.exports = require("crypto");
-
-/***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-const express = __webpack_require__(1);
-const favicon = __webpack_require__(17);
-const morgan = __webpack_require__(18);
-const compression = __webpack_require__(19);
-const bodyParser = __webpack_require__(20);
-const methodOverride = __webpack_require__(21);
-const cookieParser = __webpack_require__(22);
-const errorHandler = __webpack_require__(23);
-const path = __webpack_require__(6);
+const express = __webpack_require__(2);
+const favicon = __webpack_require__(19);
+const morgan = __webpack_require__(20);
+const compression = __webpack_require__(21);
+const bodyParser = __webpack_require__(22);
+const methodOverride = __webpack_require__(23);
+const cookieParser = __webpack_require__(24);
+const errorHandler = __webpack_require__(25);
+const path = __webpack_require__(7);
 const config = __webpack_require__(0);
 const client_path = config.clientPath||'client';
-var passport = __webpack_require__(4);
-var session = __webpack_require__(24);
-var mongoStore = __webpack_require__(25)(session);
-var mongoose = __webpack_require__(3);
+const passport = __webpack_require__(5);
+const session = __webpack_require__(26);
+const mongoStore = __webpack_require__(27)(session);
+const mongoose = __webpack_require__(4);
 
 var _counter = 0;
 
@@ -858,7 +922,7 @@ module.exports = function(app) {
   var env = app.get('env');
 
   app.set('views', path.join(config.serverPath, 'views'));
-  app.engine('html', __webpack_require__(26).renderFile);
+  app.engine('html', __webpack_require__(28).renderFile);
   app.set('view engine', 'html');
   app.use(compression());
 
@@ -888,76 +952,76 @@ module.exports = function(app) {
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = require("serve-favicon");
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("morgan");
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("compression");
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("method-override");
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = require("cookie-parser");
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("errorhandler");
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = require("connect-mongo");
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = require("ejs");
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var errors = __webpack_require__(28);
+var errors = __webpack_require__(30);
 
 module.exports = function(app) {
-  app.use('/api/view', __webpack_require__(29));
-  app.use('/auth', __webpack_require__(33));
+  app.use('/api/view', __webpack_require__(31));
+  app.use('/auth', __webpack_require__(36));
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|assets)/*')
    .get(errors[404]);
@@ -971,7 +1035,7 @@ module.exports = function(app) {
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -998,22 +1062,26 @@ module.exports[404] = function pageNotFound(req, res) {
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var express = __webpack_require__(1);
-var controller = __webpack_require__(5);
-var auth = __webpack_require__(10);
+var express = __webpack_require__(2);
+var controller = __webpack_require__(9);
+var auth = __webpack_require__(6);
 
 var router = express.Router();
 
 router.get('/', controller.index);
 router.get('/info', controller.info);
+// router.get('/positions/:owner', auth.isOnView(), controller.positions);
+// router.get('/messages/:owner', auth.isOnView(), controller.messages);
+// router.get('/elements/:owner', auth.isOnView(), controller.elements);
 
-router.post('/', auth.owner(), controller.create);
+router.post('/', auth.isOnView(), controller.view);
+router.post('/create', auth.owner(), controller.create);
 router.post('/delete', auth.isOnView(), controller.destroy);
 router.post('/password', auth.isOnView(), controller.changePassword);
 router.post('/position', auth.isOnView(), controller.position);
@@ -1025,7 +1093,25 @@ module.exports = router;
 
 
 /***/ }),
-/* 30 */
+/* 32 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsonwebtoken");
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+module.exports = require("express-jwt");
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+module.exports = require("composable-middleware");
+
+/***/ }),
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1041,33 +1127,21 @@ exports.infos = {
 
 
 /***/ }),
-/* 31 */
-/***/ (function(module, exports) {
-
-module.exports = require("express-jwt");
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports) {
-
-module.exports = require("composable-middleware");
-
-/***/ }),
-/* 33 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const express = __webpack_require__(1);
-const passport = __webpack_require__(4);
+const express = __webpack_require__(2);
+const passport = __webpack_require__(5);
 const config = __webpack_require__(0);
-const auth = __webpack_require__(10);
-const View = __webpack_require__(5);
+const auth = __webpack_require__(6);
+const View = __webpack_require__(3);
 // const socket = require('../config/socketio');
 
 // Passport Configuration
-__webpack_require__(34).setup(View, config);
+__webpack_require__(37).setup(View, config);
 
 const router = express.Router();
 
@@ -1078,11 +1152,11 @@ router.post('/login', function(req, res, next) {
   if (!data.owner) return res.send(500, 'Undefined nickname');
 
   passport.authenticate('local', function (err, view, info) {
-    var error = err || info;
+    const error = err || info;
     if (error) return res.json(401, error);
     if (!view) return res.json(404, {message: 'Something went wrong, please try again.'});
 
-    var token = auth.signToken(view._id, data.owner);
+    const token = auth.signToken(view._id, data.owner);
     res.json({token: token});
   })(req, res, next);
 });
@@ -1090,17 +1164,18 @@ router.post('/login', function(req, res, next) {
 
 router.post('/logout', function(req, res, next) {
   // TODO....
+  res.json(200);
 });
 
 module.exports = router;
 
 
 /***/ }),
-/* 34 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var passport = __webpack_require__(4);
-var LocalStrategy = __webpack_require__(35).Strategy;
+var passport = __webpack_require__(5);
+var LocalStrategy = __webpack_require__(38).Strategy;
 
 exports.setup = function (View, config) {
   passport.use(new LocalStrategy({
@@ -1108,7 +1183,7 @@ exports.setup = function (View, config) {
       passwordField: 'password' // this is the virtual field on the model
     },
     function(name, password, done) {
-      View.find({
+      View.findOne({
         name: name
       }, function(err, view) {
         if (err) {return done(err);}
@@ -1127,7 +1202,7 @@ exports.setup = function (View, config) {
 
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-local");
