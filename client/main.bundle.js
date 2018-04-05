@@ -1636,6 +1636,10 @@ var UtilsService = (function () {
             if (err.statusText) {
                 return err.status ? err.status + ' - ' + err.statusText : err.statusText;
             }
+            try {
+                return JSON.stringify(err) || def;
+            }
+            catch (ex) { }
         }
         return def;
     };
