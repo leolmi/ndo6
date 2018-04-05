@@ -150,6 +150,7 @@ var AppComponent = (function () {
                                 longitude: e.data.longitude,
                                 timestamp: (new Date()).getTime()
                             }, function (err) {
+                                self.log.error(err);
                                 self.user.logdata();
                             });
                         }
@@ -450,7 +451,7 @@ module.exports = "<div class=\"overpage-content\">\r\n  <!-- TODO: user settings
 /***/ "../../../../../src/app/components/overpages/overpage-test.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-test\" layout-col>\r\n  <h1>Test page</h1>\r\n  <mat-form-field>\r\n    <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n  </mat-form-field>\r\n  <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n  <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n  <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send position</button>\r\n  <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of log.lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-col>\r\n    <h1>Test page</h1>\r\n    <mat-form-field>\r\n      <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n    </mat-form-field>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n    <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n    <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send position</button>\r\n    <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n  </div>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"console-options\" layout-row>\r\n    <mat-checkbox [(ngModel)]=\"types.error\" (change)=\"updateFilter()\">Errors</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.info\" (change)=\"updateFilter()\">Infos</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.warning\" (change)=\"updateFilter()\">Warnings</mat-checkbox>\r\n    <div flex></div>\r\n  </div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -540,8 +541,25 @@ var OverpageTestComponent = (function () {
         //   timestamp: 1231543265
         // }];
         this.positions = [];
+        this.lines = [];
+        this.types = {
+            error: true,
+            info: false,
+            warning: false
+        };
     }
+    OverpageTestComponent.prototype.updateFilter = function () {
+        var self = this;
+        var types = [];
+        __WEBPACK_IMPORTED_MODULE_9_lodash___default.a.keys(self.types).forEach(function (t) {
+            if (self.types[t]) {
+                types.push(t);
+            }
+        });
+        self.lines = __WEBPACK_IMPORTED_MODULE_9_lodash___default.a.filter(self.log.lines, function (l) { return types.indexOf(l.type) > -1; });
+    };
     OverpageTestComponent.prototype.ngOnInit = function () {
+        this.updateFilter();
     };
     OverpageTestComponent.prototype.updateSettings = function () {
         this.user.update();
