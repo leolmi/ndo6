@@ -150,8 +150,13 @@ var AppComponent = (function () {
                                 longitude: e.data.longitude,
                                 timestamp: (new Date()).getTime()
                             }, function (err) {
-                                self.log.error(err);
-                                self.user.logdata();
+                                if (err) {
+                                    self.log.error(err);
+                                    self.user.logdata();
+                                }
+                                else {
+                                    self.log.info('Position sending successfully');
+                                }
                             });
                         }
                         break;
@@ -888,13 +893,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+var LOGTYPES = {
+    error: 'error',
+    warning: 'warning',
+    info: 'info'
+};
 var LogService = (function () {
     function LogService(u) {
         this.u = u;
         this.lines = [];
     }
     LogService.prototype.add = function (txt, type) {
-        if (type === void 0) { type = 'info'; }
+        if (type === void 0) { type = LOGTYPES.info; }
         var now = new Date();
         var line = {
             time: now.getTime(),
@@ -906,11 +916,15 @@ var LogService = (function () {
     };
     LogService.prototype.error = function (err, show) {
         if (show === void 0) { show = false; }
-        this.add(this.u.getErrorMessage(err), 'error');
+        this.add(this.u.getErrorMessage(err), LOGTYPES.error);
         console.error(err);
         if (show) {
             this.u.error(err);
         }
+    };
+    LogService.prototype.warning = function (txt) {
+        this.add(txt, LOGTYPES.warning);
+        console.warn(txt);
     };
     LogService.prototype.info = function (txt, obj) {
         if (obj === void 0) { obj = null; }
@@ -1202,7 +1216,7 @@ var Ndo6Service = (function () {
                     self.log.error('Geolocation position unavailable');
                     break;
                 case 3:
-                    self.log.error('Geolocation timed out');
+                    self.log.warning('Geolocation timed out');
                     break;
                 default: self.log.error(err);
             }
@@ -1226,7 +1240,7 @@ var Ndo6Service = (function () {
                             self.log.error('Geolocation position unavailable');
                             break;
                         case 3:
-                            self.log.error('Geolocation timed out');
+                            self.log.warning('Geolocation timed out');
                             break;
                         default: self.log.error(err);
                     }
