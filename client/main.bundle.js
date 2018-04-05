@@ -39,7 +39,7 @@ var fadeAnimation = Object(__WEBPACK_IMPORTED_MODULE_0__angular_animations__["l"
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idle\">\n<!--<div class=\"loader-container\">-->\n  <div class=\"loader\"></div>\n</div>\n\n<!-- HEADER -->\n<div class=\"map-header\" *ngIf=\"!u.overpage.type && user.settings.token && user.settings.map\" layout-row>\n  <div class=\"map-name\" flex>{{user.settings.map}}</div>\n  <div class=\"map-owner\">{{user.settings.nick}}</div>\n  <mat-icon class=\"map-owner-icon\">person</mat-icon>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.last&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div flex></div>\n  <button *ngIf=\"develop\" class=\"right-margin\" mat-fab matTooltip=\"test\" (click)=\"overpage('test')\">\n    <mat-icon>bug_report</mat-icon>\n  </button>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"overpage('map')\">\n    <mat-icon>map</mat-icon>\n  </button>\n</div>\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n    <mat-icon>close</mat-icon>\n  </button>\n  <app-overpage-test *ngSwitchCase=\"'test'\"></app-overpage-test>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n</div>\n"
+module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idle\">\n<!--<div class=\"loader-container\">-->\n  <div class=\"loader\"></div>\n</div>\n\n<!-- HEADER -->\n<div class=\"map-header\" *ngIf=\"!u.overpage.type && user.settings.token && user.settings.map\" layout-row>\n  <div class=\"map-name\" flex>{{user.settings.map}}</div>\n  <div class=\"map-owner\">{{user.settings.nick}}</div>\n  <mat-icon class=\"map-owner-icon\">person</mat-icon>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.last&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div flex></div>\n  <button *ngIf=\"debug\" class=\"right-margin\" mat-fab matTooltip=\"test\" (click)=\"overpage('test')\">\n    <mat-icon>bug_report</mat-icon>\n  </button>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"overpage('map')\">\n    <mat-icon>map</mat-icon>\n  </button>\n</div>\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n    <mat-icon>close</mat-icon>\n  </button>\n  <app-overpage-test *ngSwitchCase=\"'test'\"></app-overpage-test>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n</div>\n"
 
 /***/ }),
 
@@ -56,6 +56,7 @@ module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_utils_service__ = __webpack_require__("../../../../../src/app/services/utils.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_maps_service__ = __webpack_require__("../../../../../src/app/services/maps.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_ndo6_service__ = __webpack_require__("../../../../../src/app/services/ndo6.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -73,6 +74,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var GOOGLE_MAP_URL = 'https://maps.googleapis.com/maps/api/js?key={URL}&libraries=geometry,places&callback={CALLBACK}';
 var GOOGLE_CALLBACK_NAME = 'googleMapsInitialized';
 var initializer = {
@@ -81,7 +83,7 @@ var initializer = {
             window[GOOGLE_CALLBACK_NAME] = resolve;
             var url = GOOGLE_MAP_URL.replace(/\{URL\}/g, info.googleKey);
             url = url.replace(/\{CALLBACK\}/g, GOOGLE_CALLBACK_NAME);
-            console.log('URL: %s', url);
+            // console.log('URL: %s', url);
             var script = document.createElement('script');
             script.src = url;
             document.body.appendChild(script);
@@ -89,8 +91,9 @@ var initializer = {
     }
 };
 var AppComponent = (function () {
-    function AppComponent(interaction, user, u, maps, ndo6, zone) {
+    function AppComponent(interaction, log, user, u, maps, ndo6, zone) {
         this.interaction = interaction;
+        this.log = log;
         this.user = user;
         this.u = u;
         this.maps = maps;
@@ -98,17 +101,19 @@ var AppComponent = (function () {
         this.zone = zone;
         this.initialized = false;
         this.info = {};
-        this.develop = !__WEBPACK_IMPORTED_MODULE_1__environments_environment__["a" /* environment */].production;
+        this.debug = !__WEBPACK_IMPORTED_MODULE_1__environments_environment__["a" /* environment */].production;
         this.u.idle = true;
     }
     AppComponent.prototype.refresh = function () {
-        var _this = this;
         var self = this;
         self.u.err = null;
         self.info = {};
         self.ndo6.reset();
         self.interaction.getInfo().subscribe(function (data) {
             self.info = data;
+            if (data.debug === true) {
+                self.debug = true;
+            }
             initializer.run(data).then(function () {
                 self.maps.create(function (ctx) {
                     self.ndo6.clickOnMarker = function (m) {
@@ -116,14 +121,14 @@ var AppComponent = (function () {
                     };
                     self.ndo6.activate(ctx);
                 });
-                _this.u.idle = false;
+                self.u.idle = false;
             }, function (err) {
-                self.u.error(err);
-                _this.u.idle = false;
+                self.log.error(err, true);
+                self.u.idle = false;
             });
         }, function (err) {
-            self.u.error(err);
-            _this.u.idle = false;
+            self.log.error(err, true);
+            self.u.idle = false;
         });
     };
     AppComponent.prototype.ngOnInit = function () {
@@ -139,7 +144,7 @@ var AppComponent = (function () {
                         break;
                     case 'changepos':
                         if (!!self.user.settings.token) {
-                            console.log('SEND POSITION - event: ', e);
+                            self.log.info('SEND POSITION - event: ', e);
                             self.interaction.position({
                                 latitude: e.data.latitude,
                                 longitude: e.data.longitude,
@@ -187,6 +192,7 @@ var AppComponent = (function () {
             animations: [__WEBPACK_IMPORTED_MODULE_2__app_animations__["a" /* fadeAnimation */]]
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__services_interaction_service__["a" /* InteractionService */],
+            __WEBPACK_IMPORTED_MODULE_8__services_log_service__["a" /* LogService */],
             __WEBPACK_IMPORTED_MODULE_4__services_user_settings_service__["a" /* UserSettingsService */],
             __WEBPACK_IMPORTED_MODULE_5__services_utils_service__["a" /* UtilsService */],
             __WEBPACK_IMPORTED_MODULE_6__services_maps_service__["a" /* MapsService */],
@@ -444,7 +450,7 @@ module.exports = "<div class=\"overpage-content\">\r\n  <!-- TODO: user settings
 /***/ "../../../../../src/app/components/overpages/overpage-test.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-test\" layout-col>\r\n  <h1>Test page</h1>\r\n  <mat-form-field>\r\n    <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n  </mat-form-field>\r\n  <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n  <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send position</button>\r\n  <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n  <div label>Monitor</div>\r\n  <div class=\"events-monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-test\" layout-col>\r\n  <h1>Test page</h1>\r\n  <mat-form-field>\r\n    <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n  </mat-form-field>\r\n  <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n  <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n  <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send position</button>\r\n  <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of log.lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -464,8 +470,9 @@ module.exports = "<div class=\"overpage-content page-test\" layout-col>\r\n  <h1
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__ = __webpack_require__("../../../../../src/app/services/user-settings.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__ = __webpack_require__("../../../../../src/app/services/ndo6.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_interaction_service__ = __webpack_require__("../../../../../src/app/services/interaction.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -484,6 +491,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+/*
+(function () {
+  var log = console.log;
+  console.log = function () {
+    log.call(this, 'My Console!!!');
+    log.apply(this, Array.prototype.slice.call(arguments));
+  };
+}());
+*/
 var OverpageSettingsComponent = (function () {
     function OverpageSettingsComponent(user) {
         this.user = user;
@@ -501,9 +518,11 @@ var OverpageSettingsComponent = (function () {
 }());
 
 var OverpageTestComponent = (function () {
-    function OverpageTestComponent(user, interaction) {
+    function OverpageTestComponent(user, interaction, u, log) {
         this.user = user;
         this.interaction = interaction;
+        this.u = u;
+        this.log = log;
         // positions = [{
         //   owner: 'ciccio',
         //   latitude: 11.15346546453,
@@ -535,12 +554,19 @@ var OverpageTestComponent = (function () {
             timestamp: (new Date()).getTime()
         }, function (err) {
             if (err) {
-                console.error(err);
+                self.log.error(err);
             }
             else {
-                console.log('Position sending successfully');
+                self.log.info('Position sending successfully');
             }
         });
+    };
+    OverpageTestComponent.prototype.testStorage = function () {
+        var self = this;
+        var test_key = 'NDO6_TEST_STORAGE_KEY';
+        self.u.storage.set(test_key, { name: 'test-object', value: 123.63437 });
+        var o = self.u.storage.get(test_key);
+        self.log.info('STORAGGE TEST: ', o || 'undefined');
     };
     OverpageTestComponent.prototype.test = function () {
         var self = this;
@@ -549,7 +575,7 @@ var OverpageTestComponent = (function () {
                 console.error(err);
             }
             else {
-                console.log('Server test successfully');
+                self.log.info('Server test successfully');
             }
         });
     };
@@ -559,7 +585,9 @@ var OverpageTestComponent = (function () {
             template: __webpack_require__("../../../../../src/app/components/overpages/overpage-test.html")
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__["a" /* UserSettingsService */],
-            __WEBPACK_IMPORTED_MODULE_7__services_interaction_service__["a" /* InteractionService */]])
+            __WEBPACK_IMPORTED_MODULE_7__services_interaction_service__["a" /* InteractionService */],
+            __WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_8__services_log_service__["a" /* LogService */]])
     ], OverpageTestComponent);
     return OverpageTestComponent;
 }());
@@ -594,8 +622,9 @@ var OverpageMarkerComponent = (function () {
 }());
 
 var OverpageMapComponent = (function () {
-    function OverpageMapComponent(u, user, interaction, ndo6) {
+    function OverpageMapComponent(u, log, user, interaction, ndo6) {
         this.u = u;
+        this.log = log;
         this.user = user;
         this.interaction = interaction;
         this.ndo6 = ndo6;
@@ -613,7 +642,7 @@ var OverpageMapComponent = (function () {
         self.logged = !!self.user.settings.token;
         self.data.name = self.user.settings.map || self.data.name;
         self.data.nick = self.user.settings.nick || self.data.nick;
-        self.interaction.getMaps(function (err, maps) { return self.options = __WEBPACK_IMPORTED_MODULE_8_lodash___default.a.map(maps || [], function (m) { return m.name; }); });
+        self.interaction.getMaps(function (err, maps) { return self.options = __WEBPACK_IMPORTED_MODULE_9_lodash___default.a.map(maps || [], function (m) { return m.name; }); });
         self.filteredOptions = self.mapName.valueChanges
             .pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators_startWith__["a" /* startWith */])(''), Object(__WEBPACK_IMPORTED_MODULE_3_rxjs_operators_map__["a" /* map */])(function (val) { return self.filter(val); }));
     };
@@ -677,7 +706,7 @@ var OverpageMapComponent = (function () {
                 return;
             }
             delete _this.data.password;
-            console.log('CREATE', result);
+            _this.log.info('CREATE', result);
             _this.user.logdata(result.token, _this.data);
             _this.u.closeOverpage();
         });
@@ -688,6 +717,7 @@ var OverpageMapComponent = (function () {
             template: __webpack_require__("../../../../../src/app/components/overpages/overpage-map.html")
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_8__services_log_service__["a" /* LogService */],
             __WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__["a" /* UserSettingsService */],
             __WEBPACK_IMPORTED_MODULE_7__services_interaction_service__["a" /* InteractionService */],
             __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */]])
@@ -709,6 +739,7 @@ var OverpageMapComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__user_settings_service__ = __webpack_require__("../../../../../src/app/services/user-settings.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_service__ = __webpack_require__("../../../../../src/app/services/utils.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -722,6 +753,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var InteractionEvent = (function () {
     function InteractionEvent(type) {
         this.type = type;
@@ -730,17 +762,18 @@ var InteractionEvent = (function () {
 }());
 
 var InteractionService = (function () {
-    function InteractionService(http, user, u) {
+    function InteractionService(http, user, u, log) {
         this.http = http;
         this.user = user;
         this.u = u;
+        this.log = log;
         this.events = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* EventEmitter */]();
     }
-    InteractionService_1 = InteractionService;
-    InteractionService._err = function (cb) {
+    InteractionService.prototype._err = function (cb) {
+        var self = this;
         return function (err) {
             if (err) {
-                console.error(err);
+                self.log.error(err);
             }
             if (cb) {
                 cb(err);
@@ -753,11 +786,12 @@ var InteractionService = (function () {
         return data;
     };
     InteractionService.prototype.ngOnInit = function () {
-        if (this.user.settings.token) {
-            this.getInfo().subscribe(function (r) {
+        var self = this;
+        if (self.user.settings.token) {
+            self.getInfo().subscribe(function (r) {
                 // è loggato inizializza le info di mappa
-                console.log('getInfo: ', r);
-            }, InteractionService_1._err(function () {
+                self.log.info('getInfo: ', r);
+            }, self._err(function () {
                 // reset data login
             }));
         }
@@ -767,48 +801,48 @@ var InteractionService = (function () {
     };
     InteractionService.prototype.getMaps = function (cb) {
         this.http.get(this.user.getUrl('api/view'))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.login = function (data, cb) {
         this.http.post(this.user.getUrl('auth/login'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.logout = function (data, cb) {
         this.http.post(this.user.getUrl('auth/logout'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.getState = function (data, cb) {
         this.http.post(this.user.getUrl('api/view'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.create = function (data, cb) {
         this.http.post(this.user.getUrl('api/view/create'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.position = function (data, cb) {
         this.http.post(this.user.getUrl('api/view/position'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.message = function (data, cb) {
         this.http.post(this.user.getUrl('api/view/message'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.element = function (data, cb) {
         this.http.post(this.user.getUrl('api/view/element'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.test = function (cb) {
         this.http.post(this.user.getUrl('api/view/test'), this._check({}))
-            .subscribe(function (r) { return cb(null, r); }, InteractionService_1._err(cb));
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
-    InteractionService = InteractionService_1 = __decorate([
+    InteractionService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */],
             __WEBPACK_IMPORTED_MODULE_2__user_settings_service__["a" /* UserSettingsService */],
-            __WEBPACK_IMPORTED_MODULE_3__utils_service__["a" /* UtilsService */]])
+            __WEBPACK_IMPORTED_MODULE_3__utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_4__log_service__["a" /* LogService */]])
     ], InteractionService);
     return InteractionService;
-    var InteractionService_1;
 }());
 
 
@@ -822,6 +856,8 @@ var InteractionService = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LogService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_service__ = __webpack_require__("../../../../../src/app/services/utils.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -833,21 +869,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
 var LogService = (function () {
     function LogService(u) {
         this.u = u;
         this.lines = [];
     }
-    LogService.prototype.add = function (txt) {
+    LogService.prototype.add = function (txt, type) {
+        if (type === void 0) { type = 'info'; }
         var now = new Date();
-        var line = '[' + now.getTime() + '] > ' + txt;
+        var line = {
+            time: now.getTime(),
+            type: type,
+            text: txt
+        };
         this.lines.push(line);
         console.log(line);
     };
-    LogService.prototype.error = function (err) {
-        this.add(this.u.getErrorMessage(err));
+    LogService.prototype.error = function (err, show) {
+        if (show === void 0) { show = false; }
+        this.add(this.u.getErrorMessage(err), 'error');
+        console.error(err);
+        if (show) {
+            this.u.error(err);
+        }
     };
-    LogService.prototype.info = function (txt) {
+    LogService.prototype.info = function (txt, obj) {
+        if (obj === void 0) { obj = null; }
+        if (__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isObject(obj)) {
+            console.log(txt, obj);
+            txt = txt + ' ' + JSON.stringify(obj);
+        }
         this.add(txt);
     };
     LogService = __decorate([
@@ -1191,11 +1243,11 @@ var Ndo6Service = (function () {
         if (!self.last.marker) {
             self.last.marker = self.getMarker(self.last);
         }
-        console.log('POSITION: ', npos);
+        self.log.info('POSITION: ', npos);
         if (!self.last.sameOf(npos) && npos.isValid()) {
             var latlng = npos.getLatLng();
             self.last.marker.setPosition(latlng);
-            console.log('EMIT POSITION: ', npos);
+            self.log.info('EMIT POSITION: ', npos);
             self.events.emit(new Ndo6Event('changepos', {
                 latitude: npos.latitude,
                 longitude: npos.longitude
@@ -1709,7 +1761,7 @@ var UtilsService = (function () {
         if (!err) {
             return;
         }
-        console.error(err);
+        // console.error(err);
         this.err = this.getErrorMessage(err);
     };
     UtilsService.prototype.getOrigin = function () {

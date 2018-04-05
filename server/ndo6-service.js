@@ -72,7 +72,8 @@
 const fs = __webpack_require__(12);
 const path = __webpack_require__(7);
 const _ = __webpack_require__(1);
-const root = path.normalize(__dirname + '/..');
+const _is_release = typeof __webpack_require__ === "function";
+const root = path.normalize(__dirname + (_is_release ? '/..' : '/../../..'));
 const locals_path = path.join(root, 'local.env.js');
 const u = __webpack_require__(8);
 const locals = fs.existsSync(locals_path) ? u.use(locals_path) : {};
@@ -104,6 +105,8 @@ const settings = {
   secrets: {
     session: 'ndo6-secret'
   },
+  // debug mode
+  debug: process.env.NDO6_DEBUG_ACTIVE === 'true',
   // Log options
   log: {
     // Enabled log on file (server-side)
@@ -480,6 +483,7 @@ exports.index = function(req, res) {
 exports.info = function(req, res) {
   const info = _.clone(version.infos);
   info.googleKey = config.google.key;
+  info.debug = !!config.debug;
   res.json(200, info);
 };
 
