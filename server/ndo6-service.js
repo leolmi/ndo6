@@ -121,6 +121,8 @@ const settings = {
   clientPath: '',
   // Token expires in minutes
   tokenExpiration: 10,
+  // Positions expires in seconds
+  positionExpirationAge: 900,
   // MongoDB connection options
   mongo: {
     uri:  process.env.MONGODB_URI ||
@@ -170,6 +172,7 @@ var ViewSchemaElement = new Schema({
 
 var ViewSchemaPosition = new Schema({
   owner: String,
+  id: String,
   latitude: Number,
   longitude: Number,
   timestamp: Number
@@ -569,9 +572,24 @@ exports.view = function(req, res, next) {
   });
 };
 
+function _checkExpired(view) {
+  const now = Date.now();
+  _.pull(view.positions, function(p){
+    return (now - p._update) > ((config.positionExpirationAge || 900) * 1000);
+  });
+}
 
 function _setPosition(view, pos, cb) {
-  view.positions.push(pos);
+  const exp = _.find(view.positions, function(p) {
+    return p.id === pos.id;
+  });
+  pos._update = Date.now();
+  if (exp) {
+    _.extend(exp, pos);
+  } else {
+    view.positions.push(pos);
+  }
+  _checkExpired(view);
   view.save(function(err){
     if (err) return cb(err);
     socket.events.onPosition(view, pos);
@@ -595,12 +613,13 @@ function _update(req, res, obj, smethod) {
 exports.position = function(req, res) {
   if (!_validate(req, res)) return;
   const p = req.body;
-  if (!p || !p.latitude || !p.longitude || !p.timestamp) {
+  if (!p || !p.latitude || !p.longitude || !p.timestamp || !p.id) {
     console.error('Invalid position:', p);
     return res.send(500, 'Undefined position');
   }
   const pos = {
     owner: req.owner,
+    id: p.id,
     latitude: p.latitude,
     longitude: p.longitude,
     timestamp: p.timestamp
