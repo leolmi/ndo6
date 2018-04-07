@@ -366,10 +366,10 @@ function owner() {
 
 function isOnView() {
   return compose()
-    // Attach owner to request
-    .use(_owner)
     // Validate jwt
     .use(validateJwt)
+    // Attach owner to request
+    .use(_owner)
     // Attach view to request
     .use(_view);
 }
@@ -710,12 +710,22 @@ exports.messages = function(req, res) {
 exports.test = function(req, res) {
   // inserisce una rilevazione casuale sulla mappa corrente
   if (!_validate(req, res)) return;
-  const names = ['ugo','franco','gino'];
+  const party = [{
+    name:'ugo',
+    id: 'test_id_001'
+  }, {
+    name:'franco',
+    id: 'test_id_002'
+  }, {
+    name:'gino',
+    id: 'test_id_003'
+  }];
   const n = u.random(0,2);
 
   console.log('Random n=%s', n+'');
   const pos = {
-    owner: names[n],
+    owner: party[n].name,
+    id: party[n].id,
     latitude: 11.0 + Math.random(),
     longitude: 43.0 + Math.random(),
     timestamp: Date.now()
@@ -1141,7 +1151,7 @@ router.post('/element', auth.isOnView(), controller.element);
 router.post('/remove', auth.isOnView(), controller.removeElement);
 
 
-//router.post('/test', auth.isOnView(), controller.test);
+router.post('/test', auth.isOnView(), controller.test);
 
 module.exports = router;
 

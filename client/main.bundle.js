@@ -147,9 +147,10 @@ var AppComponent = (function () {
                             self.log.info('SEND POSITION - event: ', e);
                             self.interaction.position({
                                 id: e.data.id,
+                                type: self.ndo6.markers.owner,
                                 latitude: e.data.latitude,
                                 longitude: e.data.longitude,
-                                timestamp: (new Date()).getTime()
+                                timestamp: Date.now()
                             }, function (err) {
                                 if (err) {
                                     self.log.error(err);
@@ -465,7 +466,7 @@ module.exports = "<div class=\"overpage-content\">\r\n  <!-- TODO: user settings
 /***/ "../../../../../src/app/components/overpages/overpage-test.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-col>\r\n    <h1>Test page</h1>\r\n    <mat-form-field>\r\n      <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n    </mat-form-field>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.socketMode\" (change)=\"updateSettings()\">Socket active</mat-slide-toggle>\r\n    <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n    <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send position</button>\r\n    <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n  </div>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"console-options\" layout-row>\r\n    <mat-checkbox [(ngModel)]=\"types.error\" (change)=\"updateFilter()\">Errors</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.info\" (change)=\"updateFilter()\">Infos</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.warning\" (change)=\"updateFilter()\">Warnings</mat-checkbox>\r\n    <div flex></div>\r\n  </div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-col>\r\n    <h1>Test page</h1>\r\n    <mat-form-field>\r\n      <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n    </mat-form-field>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.socketMode\" (change)=\"updateSettings()\">Socket active</mat-slide-toggle>\r\n    <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n    <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send my position</button>\r\n    <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n  </div>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"console-options button-row\" layout-row>\r\n    <mat-checkbox [(ngModel)]=\"types.error\" (change)=\"updateFilter()\">Errors</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.info\" (change)=\"updateFilter()\">Infos</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.warning\" (change)=\"updateFilter()\">Warnings</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.special\" (change)=\"updateFilter()\">X</mat-checkbox>\r\n    <div flex></div>\r\n    <button mat-mini-fab (click)=\"clearLog()\">\r\n      <mat-icon>delete</mat-icon>\r\n    </button>\r\n  </div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -532,28 +533,13 @@ var OverpageTestComponent = (function () {
         this.interaction = interaction;
         this.u = u;
         this.log = log;
-        // positions = [{
-        //   owner: 'ciccio',
-        //   latitude: 11.15346546453,
-        //   longitude: 43.13636346,
-        //   timestamp: 1231543265
-        // }, {
-        //   owner: 'franco',
-        //   latitude: 11.15346546453,
-        //   longitude: 43.13636346,
-        //   timestamp: 1231543265
-        // }, {
-        //   owner: 'ugo',
-        //   latitude: 11.15346546453,
-        //   longitude: 43.13636346,
-        //   timestamp: 1231543265
-        // }];
         this.positions = [];
         this.lines = [];
         this.types = {
             error: true,
             info: false,
-            warning: false
+            warning: false,
+            special: false
         };
     }
     OverpageTestComponent.prototype.updateFilter = function () {
@@ -566,6 +552,9 @@ var OverpageTestComponent = (function () {
         });
         self.lines = __WEBPACK_IMPORTED_MODULE_10_lodash___default.a.filter(self.log.lines, function (l) { return types.indexOf(l.type) > -1; });
     };
+    OverpageTestComponent.prototype.clearLog = function () {
+        this.log.clear();
+    };
     OverpageTestComponent.prototype.ngOnInit = function () {
         this.updateFilter();
     };
@@ -577,7 +566,7 @@ var OverpageTestComponent = (function () {
         self.interaction.position({
             latitude: 11.4363463,
             longitude: 43.52164346,
-            timestamp: (new Date()).getTime()
+            timestamp: Date.now()
         }, function (err) {
             if (err) {
                 self.log.error(err);
@@ -946,13 +935,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var LOGTYPES = {
     error: 'error',
     warning: 'warning',
-    info: 'info'
+    info: 'info',
+    special: 'special'
 };
 var LogService = (function () {
     function LogService(u) {
         this.u = u;
         this.lines = [];
         this.active = true;
+        this.types = LOGTYPES;
     }
     LogService.prototype.add = function (txt, type) {
         if (type === void 0) { type = LOGTYPES.info; }
@@ -979,13 +970,17 @@ var LogService = (function () {
         this.add(txt, LOGTYPES.warning);
         console.warn(txt);
     };
-    LogService.prototype.info = function (txt, obj) {
+    LogService.prototype.info = function (txt, obj, type) {
         if (obj === void 0) { obj = null; }
+        if (type === void 0) { type = LOGTYPES.info; }
         if (__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isObject(obj)) {
             console.log(txt, obj);
             txt = txt + ' ' + JSON.stringify(obj);
         }
-        this.add(txt);
+        this.add(txt, type);
+    };
+    LogService.prototype.clear = function () {
+        this.lines.splice(0);
     };
     LogService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
@@ -1410,24 +1405,23 @@ var Ndo6Service = (function () {
     };
     Ndo6Service.prototype.checkState = function () {
         var self = this;
-        // TODO: ....
         // se esiste il token attiva il pool oppure connette il socket (secondo lo impostazioni)
         if (!!self.user.settings.token) {
             if (self.user.settings.socketMode) {
                 // TODO: se non connesso connette il socket
             }
-            else {
+            else if (!self.pooling) {
                 // se non attivo accende il pooling
-                if (!self.pooling) {
-                    self.pooling = setInterval(function () {
-                        self.interaction.getState(function (r) {
-                            r = r || {};
-                            self.checkPositions(r.positions);
-                            self.checkElements(r.elements);
-                            self.checkMessages(r.messages);
-                        });
-                    }, self.user.settings.poolingTime || 1000);
-                }
+                self.pooling = setInterval(function () {
+                    self.interaction.getState(function (err, res) {
+                        if (err)
+                            return self.log.error(err);
+                        res = res || {};
+                        self.checkPositions(res.positions);
+                        self.checkElements(res.elements);
+                        self.checkMessages(res.messages);
+                    });
+                }, self.user.settings.poolingTime || 1000);
             }
         }
         else {
