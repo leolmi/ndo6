@@ -537,7 +537,7 @@ exports.destroy = function(req, res) {
 /**
  * Change a view password
  */
-exports.changePassword = function(req, res, next) {
+exports.changePassword = function(req, res) {
   if (!_validate(req, res)) return;
   const viewId = req.view._id;
   const oldPass = String(req.body.oldPassword);
@@ -562,12 +562,15 @@ exports.changePassword = function(req, res, next) {
 /**
  * Get current view info
  */
-exports.view = function(req, res, next) {
+exports.view = function(req, res) {
+  console.log('READ STATE ....');
+  if (!_validate(req, res)) return;
   View.findOne({
     _id: req.view._id
   }, '-salt -hashedPassword', function(err, view) {
-    if (err) return next(err);
-    if (!view) return res.json(401);
+    console.log('READ STATE view: ', view);
+    if (err) return res.send(500, err);
+    if (!view) return res.send(401);
     res.json(view);
   });
 };
@@ -709,6 +712,7 @@ exports.messages = function(req, res) {
 
 exports.test = function(req, res) {
   // inserisce una rilevazione casuale sulla mappa corrente
+
   if (!_validate(req, res)) return;
   const party = [{
     name:'ugo',
@@ -733,6 +737,14 @@ exports.test = function(req, res) {
   _setPosition(req.view, pos, function(err, p){
     if (err) return res.send(500, err);
     res.send(200, p);
+  });
+};
+
+exports.reset = function(req, res) {
+  if (!_validate(req, res)) return;
+  View.find({}).remove(function() {
+    console.log('Cleared views.');
+    res.send(200);
   });
 };
 
@@ -1150,7 +1162,7 @@ router.post('/message', auth.isOnView(), controller.message);
 router.post('/element', auth.isOnView(), controller.element);
 router.post('/remove', auth.isOnView(), controller.removeElement);
 
-
+router.post('/reset', auth.isOnView(), controller.reset);
 router.post('/test', auth.isOnView(), controller.test);
 
 module.exports = router;

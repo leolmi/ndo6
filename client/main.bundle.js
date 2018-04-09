@@ -187,7 +187,7 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.location = function () {
         if (this.ndo6.last) {
-            this.ndo6.centerMap(this.ndo6.last.marker.position);
+            this.ndo6.centerMap(this.ndo6.last);
         }
     };
     AppComponent.prototype.closeOverpage = function () {
@@ -445,7 +445,7 @@ module.exports = "<div class=\"overpage-content page-elements\" [ngSwitch]=\"sta
 /***/ "../../../../../src/app/components/overpages/overpage-map.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"primary\" (click)=\"addElement()\">\r\n        <mat-icon>add_location</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.type}}</div>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(data.nick)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"primary\" (click)=\"addElement()\">\r\n        <mat-icon>add_location</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.type}}</div>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.last)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -466,7 +466,7 @@ module.exports = "<div class=\"overpage-content\">\r\n  <!-- TODO: user settings
 /***/ "../../../../../src/app/components/overpages/overpage-test.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-col>\r\n    <h1>Test page</h1>\r\n    <mat-form-field>\r\n      <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n    </mat-form-field>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.socketMode\" (change)=\"updateSettings()\">Socket active</mat-slide-toggle>\r\n    <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n    <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send my position</button>\r\n    <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n  </div>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"console-options button-row\" layout-row>\r\n    <mat-checkbox [(ngModel)]=\"types.error\" (change)=\"updateFilter()\">Errors</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.info\" (change)=\"updateFilter()\">Infos</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.warning\" (change)=\"updateFilter()\">Warnings</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.special\" (change)=\"updateFilter()\">X</mat-checkbox>\r\n    <div flex></div>\r\n    <button mat-mini-fab (click)=\"clearLog()\">\r\n      <mat-icon>delete</mat-icon>\r\n    </button>\r\n  </div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-col>\r\n    <h1>Test page</h1>\r\n    <mat-form-field>\r\n      <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n    </mat-form-field>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.socketMode\" (change)=\"updateSettings()\">Socket active</mat-slide-toggle>\r\n    <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n    <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send my position</button>\r\n    <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n    <button mat-raised-button (click)=\"resetDb()\" color=\"warn\" [disabled]=\"!user.settings.token\">Reset db</button>\r\n  </div>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"console-options button-row\" layout-row>\r\n    <mat-checkbox [(ngModel)]=\"types.error\" (change)=\"updateFilter()\">Errors</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.info\" (change)=\"updateFilter()\">Infos</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.warning\" (change)=\"updateFilter()\">Warnings</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.special\" (change)=\"updateFilter()\">X</mat-checkbox>\r\n    <div flex></div>\r\n    <button mat-mini-fab (click)=\"clearLog()\">\r\n      <mat-icon>delete</mat-icon>\r\n    </button>\r\n  </div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -576,6 +576,9 @@ var OverpageTestComponent = (function () {
             }
         });
     };
+    OverpageTestComponent.prototype.resetDb = function () {
+        this.interaction.resetDb();
+    };
     OverpageTestComponent.prototype.testStorage = function () {
         var self = this;
         var test_key = 'NDO6_TEST_STORAGE_KEY';
@@ -666,10 +669,18 @@ var OverpageMapComponent = (function () {
         self.maps.elements.forEach(function (e) {
             switch (e.ndo6.type) {
                 case self.ndo6.markers.owner:
-                    self.owners.push(e);
+                    if (e.ndo6.owner !== self.user.settings.nick) {
+                        self.owners.push({
+                            name: e.ndo6.owner,
+                            marker: e
+                        });
+                    }
                     break;
                 case self.ndo6.markers.point:
-                    self.elements.push(e);
+                    self.owners.push({
+                        name: e.ndo6.name,
+                        marker: e
+                    });
                     break;
             }
         });
@@ -691,9 +702,7 @@ var OverpageMapComponent = (function () {
         var _this = this;
         this.u.idle = true;
         this.interaction.logout({}, function (err) {
-            _this.user.logdata();
-            _this.u.closeOverpage();
-            _this.ndo6.checkState();
+            _this.ndo6.logout();
         });
     };
     OverpageMapComponent.prototype.handleErr = function (err) {
@@ -725,6 +734,7 @@ var OverpageMapComponent = (function () {
     };
     OverpageMapComponent.prototype.create = function () {
         var _this = this;
+        this.error = '';
         var info = {
             name: this.data.name,
             owner: this.data.nick,
@@ -739,11 +749,16 @@ var OverpageMapComponent = (function () {
             _this.log.info('CREATE', result);
             _this.user.logdata(result.token, _this.data);
             _this.u.closeOverpage();
+            _this.ndo6.checkState();
         });
     };
     OverpageMapComponent.prototype.addElement = function () {
         this.u.overpage.options = {};
         this.u.overpage.type = 'elements';
+    };
+    OverpageMapComponent.prototype.find = function (m) {
+        this.ndo6.centerMap(m);
+        this.u.closeOverpage();
     };
     OverpageMapComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -816,8 +831,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var InteractionEvent = (function () {
-    function InteractionEvent(type) {
-        this.type = type;
+    function InteractionEvent(code) {
+        this.code = code;
     }
     return InteractionEvent;
 }());
@@ -835,6 +850,9 @@ var InteractionService = (function () {
         return function (err) {
             if (err) {
                 self.log.error(err);
+            }
+            if ((err || {}).state === 401) {
+                self.events.emit(new InteractionEvent(401));
             }
             if (cb) {
                 cb(err);
@@ -897,6 +915,10 @@ var InteractionService = (function () {
         this.http.post(this.user.getUrl('api/view/test'), this._check({}))
             .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
+    InteractionService.prototype.resetDb = function () {
+        this.http.post(this.user.getUrl('api/view/reset'), this._check({}))
+            .subscribe(function (r) { }, this._err());
+    };
     InteractionService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */],
@@ -956,7 +978,7 @@ var LogService = (function () {
         if (this.active) {
             this.lines.push(line);
         }
-        console.log(line);
+        // console.log(line);
     };
     LogService.prototype.error = function (err, show) {
         if (show === void 0) { show = false; }
@@ -1070,6 +1092,9 @@ var MapsService = (function () {
      */
     MapsService.prototype.getLatLng = function (pos) {
         if (pos) {
+            if (pos.coords) {
+                pos = pos.coords;
+            }
             var lat = pos.latitude ? pos.latitude : (pos.G ? pos.G : (__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isFunction(pos.lat) ? pos.lat() : undefined));
             var lng = pos.longitude ? pos.longitude : (pos.K ? pos.K : (__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isFunction(pos.lng) ? pos.lng() : undefined));
             return new google.maps.LatLng(lat, lng);
@@ -1095,7 +1120,6 @@ var MapsService = (function () {
 
 "use strict";
 /* unused harmony export Ndo6Event */
-/* unused harmony export Position */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Ndo6Service; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__maps_service__ = __webpack_require__("../../../../../src/app/services/maps.service.ts");
@@ -1128,69 +1152,6 @@ var Ndo6Event = (function () {
         this.data = data;
     }
     return Ndo6Event;
-}());
-
-var Position = (function () {
-    function Position(info, data) {
-        if (info === void 0) { info = null; }
-        if (data === void 0) { data = null; }
-        this.info = info;
-        this.data = data;
-        this.last = false;
-        this.latitude = null;
-        this.longitude = null;
-        this.altitude = null;
-        this.accuracy = null;
-        this.altitudeAccuracy = null;
-        this.heading = null;
-        this.speed = null;
-        this.timestamp = null;
-        this.marker = null;
-        this.keep(info);
-        this.id = data ? data.id : '';
-        this.title = data ? data.title : '';
-        this.label = data ? data.label : '';
-        this.type = data ? data.type : '';
-    }
-    Position.prototype.isValid = function () {
-        return (this.latitude && this.longitude);
-    };
-    Position.prototype.getLatLng = function () {
-        return new google.maps.LatLng(this.latitude, this.longitude);
-    };
-    Position.prototype.sameOf = function (pos) {
-        return pos &&
-            pos.latitude === this.latitude &&
-            pos.longitude === this.longitude &&
-            pos.altitude === this.altitude;
-    };
-    Position.prototype.keep = function (pos) {
-        if (pos) {
-            this.id = pos.id;
-            this.title = pos.title;
-            this.label = pos.label;
-            this.type = pos.type;
-            if (pos.timestamp) {
-                this.timestamp = pos.timestamp;
-            }
-            if (pos.coords) {
-                pos = pos.coords;
-            }
-            this.latitude = pos.latitude;
-            this.longitude = pos.longitude;
-            this.altitude = pos.altitude;
-            this.accuracy = pos.accuracy;
-            this.altitudeAccuracy = pos.altitudeAccuracy;
-            this.heading = pos.heading;
-            this.speed = pos.speed;
-        }
-    };
-    Position.prototype.dispose = function () {
-        if (this.marker) {
-            this.marker.setMap(null);
-        }
-    };
-    return Position;
 }());
 
 var GEOLOCATION_OPTIONS = {
@@ -1226,6 +1187,14 @@ var Ndo6Service = (function () {
         this.clickOnMarker = null;
         this.pooling = null;
         this.markers = MARKERS;
+        var self = this;
+        self.interaction.events.subscribe(function (e) {
+            switch (e.code) {
+                case 401:
+                    self.logout();
+                    break;
+            }
+        });
     }
     Ndo6Service.prototype.setZoom = function (zoom) {
         var self = this;
@@ -1253,10 +1222,8 @@ var Ndo6Service = (function () {
         if (!bounds) {
             return;
         }
-        // Calcola le coordinate del centro
-        var gpos = self.maps.getLatLng(pos);
         // Imposta il centro della mappa
-        self.session.context.map.setCenter(gpos);
+        self.session.context.map.setCenter(pos.position);
         var mrk = finder ? finder() : null;
         if (mrk) {
             // Se ha trovato il marker lo anima
@@ -1314,36 +1281,43 @@ var Ndo6Service = (function () {
     Ndo6Service.prototype.samePos = function (p1, p2) {
         return p1 && p2 && p1 === p2;
     };
+    Ndo6Service.prototype.samePosOf = function (m, pos) {
+        return (m && pos && m.position.lat() === pos.latitude && m.position.lng() === pos.longitude);
+    };
+    Ndo6Service.prototype.validMarkerPos = function (m) {
+        return m && m.position.lat() !== 0 && m.position.lng() !== 0;
+    };
+    Ndo6Service.prototype.validPos = function (pos) {
+        if ((pos || {}).coords) {
+            pos = pos.coords;
+        }
+        return pos && pos.latitude !== 0 && pos.longitude !== 0;
+    };
     Ndo6Service.prototype.setPos = function (pos) {
         var self = this;
-        var nick = (self.session.user.nick || 'self');
-        var npos = new Position(pos, {
-            source: 'user@' + nick,
-            title: nick,
-            label: nick.slice(0, 1),
-            type: 'user'
-        });
         if (!self.last) {
-            self.last = new Position();
-            self.last.id = self.u.guid();
             self.onfirstpos = true;
+            self.last = self.getMarker({
+                type: 'user',
+                label: self.user.settings.nick[0],
+                nick: self.user.settings.nick,
+                owner: self.user.settings.nick,
+                id: self.user.settings.id
+            });
         }
-        if (!self.last.marker) {
-            self.last.marker = self.getMarker(self.last);
-        }
-        self.log.info('POSITION: ', npos);
-        if (!self.last.sameOf(npos) && npos.isValid()) {
-            var latlng = npos.getLatLng();
-            self.last.marker.setPosition(latlng);
-            self.log.info('EMIT POSITION: ', npos);
+        self.log.info('POSITION: ', pos);
+        if (!self.samePosOf(self.last, pos) && self.validPos(pos)) {
+            var latlng = self.maps.getLatLng(pos);
+            self.last.setPosition(latlng);
+            self.log.info('EMIT POSITION: ', pos);
             self.events.emit(new Ndo6Event('changepos', {
-                latitude: npos.latitude,
-                longitude: npos.longitude,
-                id: self.last.id
+                latitude: pos.latitude,
+                longitude: pos.longitude,
+                id: self.last.ndo6.id
             }));
-            var center = self.center || self.samePos(self.followMarker, self.last.marker);
+            var center = self.center || self.samePos(self.followMarker, self.last);
             if (center === true) {
-                self.centerMap(npos);
+                self.centerMap(self.last);
                 self.center = false;
             }
             if (self.onfirstpos) {
@@ -1403,6 +1377,11 @@ var Ndo6Service = (function () {
         self.active = true;
         self.checkState();
     };
+    Ndo6Service.prototype.logout = function () {
+        this.user.logdata();
+        this.u.closeOverpage();
+        this.checkState();
+    };
     Ndo6Service.prototype.checkState = function () {
         var self = this;
         // se esiste il token attiva il pool oppure connette il socket (secondo lo impostazioni)
@@ -1414,8 +1393,10 @@ var Ndo6Service = (function () {
                 // se non attivo accende il pooling
                 self.pooling = setInterval(function () {
                     self.interaction.getState(function (err, res) {
-                        if (err)
-                            return self.log.error(err);
+                        // self.log.info('read state: ', res, self.log.types.special);
+                        if (err) {
+                            return;
+                        }
                         res = res || {};
                         self.checkPositions(res.positions);
                         self.checkElements(res.elements);
@@ -1440,8 +1421,11 @@ var Ndo6Service = (function () {
             return;
         }
         var self = this;
+        var last = self.last || {};
         ps.forEach(function (pos) {
-            if (pos.id === self.last.id) {
+            // console.log('[CHECK POS]: pos=', pos);
+            // console.log('[CHECK POS]: last=', self.last);
+            if (pos.id === last.id || pos.owner === last.owner) {
                 return;
             }
             var ex = __WEBPACK_IMPORTED_MODULE_6_lodash___default.a.find(self.maps.elements, function (e) { return e.ndo6.owner === pos.owner && e.ndo6.type === MARKERS.owner; });
@@ -1489,7 +1473,7 @@ var Ndo6Service = (function () {
             map: self.session.context.map,
             label: info.label || 'P',
             position: latlnt,
-            title: info.title || info.description,
+            title: info.title || info.description || info.nick,
             icon: self.getMarkerIcon(info.icon)
         });
         m.ndo6 = {};
@@ -1501,16 +1485,16 @@ var Ndo6Service = (function () {
         return m;
     };
     Ndo6Service.prototype.getNick = function (m) {
-        if (this.last && m === this.last.marker) {
+        if (m === this.last) {
             return this.user.settings.nick;
         }
-        return m.nick;
+        return m.ndo6.owner;
     };
     Ndo6Service.prototype.getLastPos = function () {
-        if (this.last && this.last.isValid()) {
+        if (this.validMarkerPos(this.last)) {
             return {
-                latitude: this.last.latitude,
-                longitude: this.last.longitude,
+                latitude: this.last.position.lat(),
+                longitude: this.last.position.lng(),
                 timestamp: this.last.timestamp
             };
         }
@@ -1566,6 +1550,7 @@ var UserSettingsService = (function () {
             debug: false,
             delay: 1000,
             nick: 'io',
+            id: u.guid(),
             map: '',
             token: '',
             socketMode: false,
