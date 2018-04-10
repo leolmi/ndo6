@@ -39,7 +39,7 @@ var fadeAnimation = Object(__WEBPACK_IMPORTED_MODULE_0__angular_animations__["l"
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idle\">\n<!--<div class=\"loader-container\">-->\n  <div class=\"loader\"></div>\n</div>\n\n<!-- HEADER -->\n<div class=\"map-header\" *ngIf=\"!u.overpage.type && user.settings.token && user.settings.map\" layout-row>\n  <div class=\"map-name\" flex>{{user.settings.map}}</div>\n  <div class=\"map-owner\">{{user.settings.nick}}</div>\n  <mat-icon class=\"map-owner-icon\">person</mat-icon>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.last&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div flex></div>\n  <button *ngIf=\"debug\" class=\"right-margin\" mat-fab matTooltip=\"test\" (click)=\"overpage('test')\">\n    <mat-icon>bug_report</mat-icon>\n  </button>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"overpage('map')\">\n    <mat-icon>map</mat-icon>\n  </button>\n</div>\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n    <mat-icon>close</mat-icon>\n  </button>\n  <app-overpage-test *ngSwitchCase=\"'test'\"></app-overpage-test>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n  <app-overpage-elements *ngSwitchCase=\"'elements'\"></app-overpage-elements>\n</div>\n"
+module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idle\">\n<!--<div class=\"loader-container\">-->\n  <div class=\"loader\"></div>\n</div>\n\n<!-- HEADER -->\n<div class=\"map-header\" *ngIf=\"!u.overpage.type && user.settings.token && user.settings.map\" layout-row>\n  <div class=\"map-name\" flex>{{user.settings.map}}</div>\n  <div class=\"map-owner\">{{user.settings.nick}}</div>\n  <mat-icon class=\"map-owner-icon\">person</mat-icon>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.last&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div flex></div>\n  <button *ngIf=\"debug || user.system.token\" class=\"right-margin\" mat-fab matTooltip=\"test\" (click)=\"overpage('test')\">\n    <mat-icon>bug_report</mat-icon>\n  </button>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"overpage('map')\">\n    <mat-icon>map</mat-icon>\n  </button>\n</div>\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <div class=\"overpage-toolbar\" layout-row>\n    <span flex></span>\n    <button *ngIf=\"u.overpage.back\" class=\"back-button\" mat-icon-button matTooltip=\"go back\" (click)=\"backOverpage()\">\n      <mat-icon>chevron_left</mat-icon>\n    </button>\n    <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n      <mat-icon>close</mat-icon>\n    </button>\n  </div>\n  <app-overpage-test *ngSwitchCase=\"'test'\"></app-overpage-test>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n  <app-overpage-elements *ngSwitchCase=\"'elements'\"></app-overpage-elements>\n</div>\n"
 
 /***/ }),
 
@@ -170,8 +170,7 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.overpage = function (type, o) {
         if (o === void 0) { o = null; }
-        this.u.overpage.options = o;
-        this.u.overpage.type = type;
+        this.u.openOverpage(type, o);
     };
     AppComponent.prototype.hideError = function () {
         this.u.err = null;
@@ -180,7 +179,6 @@ var AppComponent = (function () {
         var self = this;
         self.overpage('marker', {
             marker: m,
-            nick: self.ndo6.getNick(m),
             latitude: m.position.lat(),
             longitude: m.position.lng()
         });
@@ -192,6 +190,9 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.closeOverpage = function () {
         this.u.closeOverpage();
+    };
+    AppComponent.prototype.backOverpage = function () {
+        this.u.backOverpage();
     };
     AppComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -233,9 +234,10 @@ var AppComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__services_log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__services_maps_service__ = __webpack_require__("../../../../../src/app/services/maps.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__services_ndo6_service__ = __webpack_require__("../../../../../src/app/services/ndo6.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__components_confirm_dialog_confirm_dialog_component__ = __webpack_require__("../../../../../src/app/components/confirm-dialog/confirm-dialog.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_overpages_overpages_component__ = __webpack_require__("../../../../../src/app/components/overpages/overpages.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_log_monitor_log_monitor_component__ = __webpack_require__("../../../../../src/app/components/log-monitor/log-monitor.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__services_ndo6_icons_service__ = __webpack_require__("../../../../../src/app/services/ndo6-icons.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__components_confirm_dialog_confirm_dialog_component__ = __webpack_require__("../../../../../src/app/components/confirm-dialog/confirm-dialog.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__ = __webpack_require__("../../../../../src/app/components/overpages/overpages.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__components_log_monitor_log_monitor_component__ = __webpack_require__("../../../../../src/app/components/log-monitor/log-monitor.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -258,6 +260,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
+
 // COMPONENTS
 
 
@@ -269,13 +272,15 @@ var AppModule = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_2__angular_core__["H" /* NgModule */])({
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */],
-                __WEBPACK_IMPORTED_MODULE_14__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */],
-                __WEBPACK_IMPORTED_MODULE_15__components_overpages_overpages_component__["e" /* OverpageTestComponent */],
-                __WEBPACK_IMPORTED_MODULE_15__components_overpages_overpages_component__["c" /* OverpageMarkerComponent */],
-                __WEBPACK_IMPORTED_MODULE_15__components_overpages_overpages_component__["d" /* OverpageSettingsComponent */],
-                __WEBPACK_IMPORTED_MODULE_15__components_overpages_overpages_component__["b" /* OverpageMapComponent */],
-                __WEBPACK_IMPORTED_MODULE_15__components_overpages_overpages_component__["a" /* OverpageElementsComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_log_monitor_log_monitor_component__["a" /* LogMonitorComponent */]
+                __WEBPACK_IMPORTED_MODULE_15__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["g" /* OverpageTestComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["e" /* OverpageMarkerComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["f" /* OverpageSettingsComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["d" /* OverpageMapComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["c" /* OverpageElementsComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["a" /* MapElementPointComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["b" /* MapElementWayComponent */],
+                __WEBPACK_IMPORTED_MODULE_17__components_log_monitor_log_monitor_component__["a" /* LogMonitorComponent */]
             ],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
@@ -321,10 +326,11 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_9__services_user_settings_service__["a" /* UserSettingsService */],
                 __WEBPACK_IMPORTED_MODULE_8__services_interaction_service__["a" /* InteractionService */],
                 __WEBPACK_IMPORTED_MODULE_12__services_maps_service__["a" /* MapsService */],
-                __WEBPACK_IMPORTED_MODULE_13__services_ndo6_service__["a" /* Ndo6Service */]
+                __WEBPACK_IMPORTED_MODULE_13__services_ndo6_service__["a" /* Ndo6Service */],
+                __WEBPACK_IMPORTED_MODULE_14__services_ndo6_icons_service__["a" /* Ndo6IconsService */]
             ],
             entryComponents: [
-                __WEBPACK_IMPORTED_MODULE_14__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */]
+                __WEBPACK_IMPORTED_MODULE_15__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */]
             ],
             bootstrap: [
                 __WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */]
@@ -435,24 +441,38 @@ var LogMonitorComponent = (function () {
 
 /***/ }),
 
+/***/ "../../../../../src/app/components/overpages/elements/element-point.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"map-element-editor\" layout-col>\r\n  <div layout-row>\r\n    <button mat-icon-button [matMenuTriggerFor]=\"colorMenu\">\r\n      <mat-icon>{{u.overpage.options.element.content.icon.code}}</mat-icon>\r\n    </button>\r\n    <mat-menu #colorMenu=\"matMenu\">\r\n      <button mat-menu-item *ngFor=\"let idef of graph.icons\" (click)=\"setIcon(idef)\">\r\n        <mat-icon class=\"'color-' + {{u.overpage.options.element.content.icon.color}}\">{{idef.code}}</mat-icon>\r\n        <span>{{idef.name}}</span>\r\n      </button>\r\n    </mat-menu>\r\n    <mat-form-field flex>\r\n      <input matInput [(ngModel)]=\"u.overpage.options.element.name\" placeholder=\"Name\">\r\n    </mat-form-field>\r\n  </div>\r\n  <mat-form-field>\r\n    <input matInput [(ngModel)]=\"u.overpage.options.element.content.desc\" placeholder=\"Description\">\r\n  </mat-form-field>\r\n</div>\r\n"
+
+/***/ }),
+
+/***/ "../../../../../src/app/components/overpages/elements/element-way.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"map-element-editor\" layout-col>\r\n  <div layout-row>\r\n    <mat-icon>timeline</mat-icon>\r\n    <mat-form-field flex>\r\n      <input matInput [(ngModel)]=\"info.name\" placeholder=\"Name\">\r\n    </mat-form-field>\r\n  </div>\r\n  <mat-form-field>\r\n    <input matInput [(ngModel)]=\"info.content.desc\" placeholder=\"Description\">\r\n  </mat-form-field>\r\n\r\n  <p>TODO....</p>\r\n  <!-- TODO: way fields... -->\r\n\r\n</div>\r\n"
+
+/***/ }),
+
 /***/ "../../../../../src/app/components/overpages/overpage-elements.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-elements\" [ngSwitch]=\"state\">\r\n  <div *ngSwitchCase=\"''\">\r\n    <div class=\"map-element\" *ngFor=\"let ele of elements\" layout-row>\r\n      <div class=\"map-element-info\" flex>\r\n        <div class=\"title\">{{ele.title}}</div>\r\n        <div class=\"desc\">{{ele.desc}}</div>\r\n      </div>\r\n      <button mat-mini-fab color=\"primary\" (click)=\"select(ele.type)\">\r\n        <mat-icon>add</mat-icon>\r\n      </button>\r\n    </div>\r\n  </div>\r\n  <!--<app-elements-way *ngSwitchCase=\"'way'\"></app-elements-way>-->\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-elements\" [ngSwitch]=\"u.overpage.options.elementType\">\r\n  <div *ngSwitchCase=\"''\">\r\n    <div class=\"map-element\" *ngFor=\"let ele of elements\" layout-row>\r\n      <div class=\"map-element-info\" flex>\r\n        <div class=\"title\">{{ele.title}}</div>\r\n        <div class=\"desc\">{{ele.desc}}</div>\r\n      </div>\r\n      <button mat-mini-fab color=\"primary\" (click)=\"select(ele.type)\">\r\n        <mat-icon>{{ele.icon}}</mat-icon>\r\n      </button>\r\n    </div>\r\n  </div>\r\n  <app-element-way *ngSwitchCase=\"'way'\"></app-element-way>\r\n  <app-element-point *ngSwitchCase=\"'point'\"></app-element-point>\r\n  <div *ngIf=\"!!u.overpage.options.elementType\" layout-row>\r\n    <span flex></span>\r\n    <button color=\"warn\" mat-raised-button (click)=\"addToMap()\">SHARE ON MAP</button>\r\n    <span flex></span>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
 /***/ "../../../../../src/app/components/overpages/overpage-map.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"primary\" (click)=\"addElement()\">\r\n        <mat-icon>add_location</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.type}}</div>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.last)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"addElement()\">\r\n        <mat-icon>add</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element button-row\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.name}}</div>\r\n        <button mat-icon-button (click)=\"find(ele.marker)\">\r\n          <mat-icon>{{ele.marker.ndo6.content.icon.code}}</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.last)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
 
 /***/ }),
 
 /***/ "../../../../../src/app/components/overpages/overpage-marker.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content\" layout-col>\r\n  <!-- DATA: nick e altre info -->\r\n  <div label>Data</div>\r\n  <div class=\"ndo6-property\"><span class=\"name\">Nick:</span><span class=\"value\">{{u.overpage.options.nick||'(unknown)'}}</span> </div>\r\n  <!-- POSITION -->\r\n  <div class=\"ndo6-property\"><span class=\"name\">Latitude:</span><span class=\"value\">{{u.overpage.options.latitude}}</span> </div>\r\n  <div class=\"ndo6-property\"><span class=\"name\">Longitude:</span><span class=\"value\">{{u.overpage.options.longitude}}</span> </div>\r\n  <!-- OPTIONS -->\r\n  <div label>Options</div>\r\n  <mat-slide-toggle color=\"accent\" [(ngModel)]=\"followed\" (change)=\"changeOption()\">Follow Me</mat-slide-toggle>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content\"  layout-col [ngSwitch]=\"marker.type\">\r\n  <!-- DATA: nick e altre info -->\r\n  <div label>Data</div>\r\n  <!-- TYPE: OWNER -->\r\n  <div *ngSwitchCase=\"'owner'\" class=\"ndo6-property\"><span class=\"name\">Nick:</span><span class=\"value\">{{marker.owner||'(unknown)'}}</span> </div>\r\n  <!-- TYPE: POINT -->\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Name:</span><span class=\"value\">{{marker.name||'(unknown)'}}</span> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Description:</span><span class=\"value\">{{marker.content.desc}}</span> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Author:</span><span class=\"value\">{{marker.owner||'(unknown)'}}</span> </div>\r\n  <!-- (TODO) TYPE: WAY -->\r\n  <!-- POSITION -->\r\n  <div class=\"ndo6-property\"><span class=\"name\">Latitude:</span><span class=\"value\">{{u.overpage.options.latitude}}</span> </div>\r\n  <div class=\"ndo6-property\"><span class=\"name\">Longitude:</span><span class=\"value\">{{u.overpage.options.longitude}}</span> </div>\r\n  <!-- OPTIONS -->\r\n  <div label>Options</div>\r\n  <mat-slide-toggle *ngSwitchCase=\"'owner'\" color=\"accent\" [(ngModel)]=\"followed\" (change)=\"changeOption()\">Follow Me</mat-slide-toggle>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -466,7 +486,7 @@ module.exports = "<div class=\"overpage-content\">\r\n  <!-- TODO: user settings
 /***/ "../../../../../src/app/components/overpages/overpage-test.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-col>\r\n    <h1>Test page</h1>\r\n    <mat-form-field>\r\n      <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n    </mat-form-field>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.socketMode\" (change)=\"updateSettings()\">Socket active</mat-slide-toggle>\r\n    <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n    <button mat-raised-button (click)=\"sendPos()\" [disabled]=\"!user.settings.token\">Test send my position</button>\r\n    <button mat-raised-button (click)=\"test()\" [disabled]=\"!user.settings.token\">Server test func</button>\r\n    <button mat-raised-button (click)=\"resetDb()\" color=\"warn\" [disabled]=\"!user.settings.token\">Reset db</button>\r\n  </div>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"console-options button-row\" layout-row>\r\n    <mat-checkbox [(ngModel)]=\"types.error\" (change)=\"updateFilter()\">Errors</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.info\" (change)=\"updateFilter()\">Infos</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.warning\" (change)=\"updateFilter()\">Warnings</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.special\" (change)=\"updateFilter()\">X</mat-checkbox>\r\n    <div flex></div>\r\n    <button mat-mini-fab (click)=\"clearLog()\">\r\n      <mat-icon>delete</mat-icon>\r\n    </button>\r\n  </div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-col>\r\n    <h1>Test page {{user.system.token ? ' (system)' : ''}}</h1>\r\n    <mat-form-field>\r\n      <input matInput [(ngModel)]=\"user.settings.host\" (blur)=\"updateSettings()\" placeholder=\"Server host\">\r\n    </mat-form-field>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.debug\" (change)=\"updateSettings()\">Debug mode</mat-slide-toggle>\r\n    <mat-slide-toggle color=\"accent\" [(ngModel)]=\"user.settings.socketMode\" (change)=\"updateSettings()\">Socket active</mat-slide-toggle>\r\n    <button mat-raised-button (click)=\"testStorage()\">Test storage functionality</button>\r\n    <button mat-raised-button (click)=\"sendPos()\" *ngIf=\"user.settings.token\">Test send my position</button>\r\n    <button mat-raised-button (click)=\"test()\" *ngIf=\"user.system.token && user.settings.token\">Server test func</button>\r\n    <button mat-raised-button (click)=\"deleteMap()\" color=\"warn\" *ngIf=\"user.system.token && user.settings.token\">Delete this Map</button>\r\n    <button mat-raised-button (click)=\"emptyMap()\" color=\"warn\" *ngIf=\"user.system.token && user.settings.token\">Empty Map</button>\r\n    <button mat-raised-button (click)=\"resetDb()\" color=\"warn\" *ngIf=\"user.system.token\">Reset db</button>\r\n  </div>\r\n  <div label>Monitor</div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let p of positions\">[{{p.timestamp}}] {{p.owner}}: {{p.latitude}},{{p.longitude}}</div>\r\n  </div>\r\n  <div label>Console</div>\r\n  <div class=\"console-options button-row\" layout-row>\r\n    <mat-checkbox [(ngModel)]=\"types.error\" (change)=\"updateFilter()\">Errors</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.info\" (change)=\"updateFilter()\">Infos</mat-checkbox>\r\n    <mat-checkbox [(ngModel)]=\"types.warning\" (change)=\"updateFilter()\">Warnings</mat-checkbox>\r\n    <!--<mat-checkbox [(ngModel)]=\"types.special\" (change)=\"updateFilter()\">X</mat-checkbox>-->\r\n    <div flex></div>\r\n    <button mat-mini-fab (click)=\"clearLog()\">\r\n      <mat-icon>delete</mat-icon>\r\n    </button>\r\n  </div>\r\n  <div class=\"monitor ndo6-scrollbar\">\r\n    <div *ngFor=\"let line of lines\" class=\"log-line\" [ngClass]=\"'line-'+line.type\">[{{line.time}}] {{line.type}}: {{line.text}}</div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -474,11 +494,13 @@ module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-co
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return OverpageSettingsComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return OverpageTestComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return OverpageMarkerComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return OverpageMapComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return OverpageElementsComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return OverpageSettingsComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return OverpageTestComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return OverpageMarkerComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return OverpageMapComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return OverpageElementsComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MapElementPointComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return MapElementWayComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_operators_startWith__ = __webpack_require__("../../../../rxjs/_esm5/operators/startWith.js");
@@ -486,11 +508,12 @@ module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-co
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_utils_service__ = __webpack_require__("../../../../../src/app/services/utils.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__ = __webpack_require__("../../../../../src/app/services/user-settings.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__ = __webpack_require__("../../../../../src/app/services/ndo6.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_maps_service__ = __webpack_require__("../../../../../src/app/services/maps.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_interaction_service__ = __webpack_require__("../../../../../src/app/services/interaction.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__services_log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_ndo6_icons_service__ = __webpack_require__("../../../../../src/app/services/ndo6-icons.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_maps_service__ = __webpack_require__("../../../../../src/app/services/maps.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__services_interaction_service__ = __webpack_require__("../../../../../src/app/services/interaction.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__services_log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -500,6 +523,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -545,12 +569,12 @@ var OverpageTestComponent = (function () {
     OverpageTestComponent.prototype.updateFilter = function () {
         var self = this;
         var types = [];
-        __WEBPACK_IMPORTED_MODULE_10_lodash___default.a.keys(self.types).forEach(function (t) {
+        __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.keys(self.types).forEach(function (t) {
             if (self.types[t]) {
                 types.push(t);
             }
         });
-        self.lines = __WEBPACK_IMPORTED_MODULE_10_lodash___default.a.filter(self.log.lines, function (l) { return types.indexOf(l.type) > -1; });
+        self.lines = __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.filter(self.log.lines, function (l) { return types.indexOf(l.type) > -1; });
     };
     OverpageTestComponent.prototype.clearLog = function () {
         this.log.clear();
@@ -576,9 +600,6 @@ var OverpageTestComponent = (function () {
             }
         });
     };
-    OverpageTestComponent.prototype.resetDb = function () {
-        this.interaction.resetDb();
-    };
     OverpageTestComponent.prototype.testStorage = function () {
         var self = this;
         var test_key = 'NDO6_TEST_STORAGE_KEY';
@@ -586,14 +607,23 @@ var OverpageTestComponent = (function () {
         var o = self.u.storage.get(test_key);
         self.log.info('STORAGGE TEST: ', o || 'undefined');
     };
+    OverpageTestComponent.prototype.deleteMap = function () {
+        this.interaction.deleteMap({ view: this.user.settings.map });
+    };
+    OverpageTestComponent.prototype.emptyMap = function () {
+        this.interaction.emptyMap({ view: this.user.settings.map });
+    };
+    OverpageTestComponent.prototype.resetDb = function () {
+        this.interaction.resetDb();
+    };
     OverpageTestComponent.prototype.test = function () {
         var self = this;
-        self.interaction.test(function (err) {
+        self.interaction.test({ view: this.user.settings.map }, function (err, result) {
             if (err) {
                 console.error(err);
             }
             else {
-                self.log.info('Server test successfully');
+                self.log.info('Server test successfully', result);
             }
         });
     };
@@ -603,9 +633,9 @@ var OverpageTestComponent = (function () {
             template: __webpack_require__("../../../../../src/app/components/overpages/overpage-test.html")
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__["a" /* UserSettingsService */],
-            __WEBPACK_IMPORTED_MODULE_8__services_interaction_service__["a" /* InteractionService */],
+            __WEBPACK_IMPORTED_MODULE_9__services_interaction_service__["a" /* InteractionService */],
             __WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
-            __WEBPACK_IMPORTED_MODULE_9__services_log_service__["a" /* LogService */]])
+            __WEBPACK_IMPORTED_MODULE_10__services_log_service__["a" /* LogService */]])
     ], OverpageTestComponent);
     return OverpageTestComponent;
 }());
@@ -615,9 +645,11 @@ var OverpageMarkerComponent = (function () {
         this.u = u;
         this.ndo6 = ndo6;
         this.followed = false;
+        this.marker = null;
     }
     OverpageMarkerComponent.prototype.ngOnInit = function () {
         this.followed = this.ndo6.followMarker === this.u.overpage.options.marker;
+        this.marker = (this.u.overpage.options.marker || {}).ndo6 || {};
     };
     OverpageMarkerComponent.prototype.changeOption = function () {
         if (this.followed) {
@@ -663,7 +695,7 @@ var OverpageMapComponent = (function () {
         self.logged = !!self.user.settings.token;
         self.data.name = self.user.settings.map || self.data.name;
         self.data.nick = self.user.settings.nick || self.data.nick;
-        self.interaction.getMaps(function (err, maps) { return self.options = __WEBPACK_IMPORTED_MODULE_10_lodash___default.a.map(maps || [], function (m) { return m.name; }); });
+        self.interaction.getMaps(function (err, maps) { return self.options = __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.map(maps || [], function (m) { return m.name; }); });
         self.filteredOptions = self.mapName.valueChanges
             .pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators_startWith__["a" /* startWith */])(''), Object(__WEBPACK_IMPORTED_MODULE_3_rxjs_operators_map__["a" /* map */])(function (val) { return self.filter(val); }));
         self.maps.elements.forEach(function (e) {
@@ -677,7 +709,7 @@ var OverpageMapComponent = (function () {
                     }
                     break;
                 case self.ndo6.markers.point:
-                    self.owners.push({
+                    self.elements.push({
                         name: e.ndo6.name,
                         marker: e
                     });
@@ -702,7 +734,7 @@ var OverpageMapComponent = (function () {
         var _this = this;
         this.u.idle = true;
         this.interaction.logout({}, function (err) {
-            _this.ndo6.logout();
+            _this.ndo6.logout(true);
         });
     };
     OverpageMapComponent.prototype.handleErr = function (err) {
@@ -727,9 +759,13 @@ var OverpageMapComponent = (function () {
                 return;
             }
             delete _this.data.password;
-            _this.user.logdata(result.token, _this.data);
-            _this.u.closeOverpage();
-            _this.ndo6.checkState();
+            if (result.system) {
+                _this.user.system.token = result.token;
+                _this.u.closeOverpage();
+            }
+            else {
+                _this.ndo6.login(result.token, _this.data);
+            }
         });
     };
     OverpageMapComponent.prototype.create = function () {
@@ -753,8 +789,7 @@ var OverpageMapComponent = (function () {
         });
     };
     OverpageMapComponent.prototype.addElement = function () {
-        this.u.overpage.options = {};
-        this.u.overpage.type = 'elements';
+        this.u.openOverpage('elements');
     };
     OverpageMapComponent.prototype.find = function (m) {
         this.ndo6.centerMap(m);
@@ -766,39 +801,128 @@ var OverpageMapComponent = (function () {
             template: __webpack_require__("../../../../../src/app/components/overpages/overpage-map.html")
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
-            __WEBPACK_IMPORTED_MODULE_9__services_log_service__["a" /* LogService */],
+            __WEBPACK_IMPORTED_MODULE_10__services_log_service__["a" /* LogService */],
             __WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__["a" /* UserSettingsService */],
-            __WEBPACK_IMPORTED_MODULE_8__services_interaction_service__["a" /* InteractionService */],
+            __WEBPACK_IMPORTED_MODULE_9__services_interaction_service__["a" /* InteractionService */],
             __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */],
-            __WEBPACK_IMPORTED_MODULE_7__services_maps_service__["a" /* MapsService */]])
+            __WEBPACK_IMPORTED_MODULE_8__services_maps_service__["a" /* MapsService */]])
     ], OverpageMapComponent);
     return OverpageMapComponent;
 }());
 
 var OverpageElementsComponent = (function () {
-    function OverpageElementsComponent(u) {
+    function OverpageElementsComponent(u, ndo6) {
         this.u = u;
+        this.ndo6 = ndo6;
         this.elements = [{
                 title: 'Point',
+                icon: 'place',
                 desc: 'Add new place marker in current position',
-                type: 'point'
-                // }, {
-                //   title: 'Way',
-                //   desc: 'Define a new way from a place to an other',
-                //   type: 'way'
+                type: this.ndo6.mapElements.point
+            }, {
+                title: 'Way',
+                icon: 'timeline',
+                desc: 'Define a new way from a place to an other',
+                type: this.ndo6.mapElements.way
             }];
-        this.state = '';
+        // this.u.overpage.back = { type: 'elements' };
     }
     OverpageElementsComponent.prototype.ngOnInit = function () {
+        this.u.overpage.options = this.u.overpage.options || {};
+        this.u.overpage.options.elementType = '';
+        this.u.overpage.options.element = {};
+        this.u.overpageBack({ type: 'map' });
+    };
+    OverpageElementsComponent.prototype.select = function (type) {
+        this.u.overpage.options.elementType = type;
+    };
+    OverpageElementsComponent.prototype.addToMap = function () {
+        this.ndo6.addToMap(this.u.overpage.options.element);
+        this.u.closeOverpage();
     };
     OverpageElementsComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'app-overpage-elements',
             template: __webpack_require__("../../../../../src/app/components/overpages/overpage-elements.html")
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */]])
     ], OverpageElementsComponent);
     return OverpageElementsComponent;
+}());
+
+var MapElementPointComponent = (function () {
+    function MapElementPointComponent(u, ndo6, graph) {
+        this.u = u;
+        this.ndo6 = ndo6;
+        this.graph = graph;
+        this.info = {
+            position: {},
+            type: '',
+            name: 'New Point',
+            content: {}
+        };
+    }
+    MapElementPointComponent.prototype.ngOnInit = function () {
+        var e = __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.clone(this.info);
+        e.type = this.ndo6.mapElements.point;
+        e.content.desc = '';
+        e.content.icon = this.graph.getDef('flag');
+        e.content.color = this.graph.defaults.color;
+        e.content.position = this.ndo6.getCurrentPos();
+        this.u.overpage.options.element = e;
+    };
+    MapElementPointComponent.prototype.setIcon = function (idef) {
+        var source = this.u.overpage.options.element.content;
+        var color = source.icon.color || this.graph.defaults.color;
+        source.icon = this.graph.getDef(idef.code);
+        if (source.icon.colors.indexOf(color) < 0) {
+            source.icon.color = this.graph.defaults.color;
+        }
+        else {
+            source.icon.color = color;
+        }
+    };
+    MapElementPointComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'app-element-point',
+            template: __webpack_require__("../../../../../src/app/components/overpages/elements/element-point.html")
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */],
+            __WEBPACK_IMPORTED_MODULE_7__services_ndo6_icons_service__["a" /* Ndo6IconsService */]])
+    ], MapElementPointComponent);
+    return MapElementPointComponent;
+}());
+
+var MapElementWayComponent = (function () {
+    function MapElementWayComponent(u, ndo6) {
+        this.u = u;
+        this.ndo6 = ndo6;
+        this.info = {
+            position: {},
+            type: '',
+            name: 'New Way',
+            content: {}
+        };
+    }
+    MapElementWayComponent.prototype.ngOnInit = function () {
+        var e = __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.clone(this.info);
+        e.type = this.ndo6.mapElements.way;
+        e.content.desc = '';
+        e.content.start = '';
+        e.content.end = '';
+        this.u.overpage.options.element = e;
+    };
+    MapElementWayComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'app-element-way',
+            template: __webpack_require__("../../../../../src/app/components/overpages/elements/element-way.html")
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */]])
+    ], MapElementWayComponent);
+    return MapElementWayComponent;
 }());
 
 
@@ -851,7 +975,7 @@ var InteractionService = (function () {
             if (err) {
                 self.log.error(err);
             }
-            if ((err || {}).state === 401) {
+            if ((err || {}).status === 401) {
                 self.events.emit(new InteractionEvent(401));
             }
             if (cb) {
@@ -862,6 +986,10 @@ var InteractionService = (function () {
     InteractionService.prototype._check = function (data) {
         data.owner = this.user.settings.nick;
         // data.token = this.user.settings.token;  // by interceptor
+        return data;
+    };
+    InteractionService.prototype._checkSystem = function (data) {
+        data._system = true;
         return data;
     };
     InteractionService.prototype.ngOnInit = function () {
@@ -911,12 +1039,23 @@ var InteractionService = (function () {
         this.http.post(this.user.getUrl('api/view/element'), this._check(data))
             .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
-    InteractionService.prototype.test = function (cb) {
-        this.http.post(this.user.getUrl('api/view/test'), this._check({}))
+    //////////////////////////////////////////////////////
+    // SYSTEM METHODS
+    //////////////////////////////////////////////////////
+    InteractionService.prototype.test = function (data, cb) {
+        this.http.post(this.user.getUrl('api/view/test'), this._checkSystem(data))
             .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.resetDb = function () {
-        this.http.post(this.user.getUrl('api/view/reset'), this._check({}))
+        this.http.post(this.user.getUrl('api/view/reset'), this._checkSystem({}))
+            .subscribe(function (r) { }, this._err());
+    };
+    InteractionService.prototype.deleteMap = function (data) {
+        this.http.post(this.user.getUrl('api/view/burn'), this._checkSystem(data))
+            .subscribe(function (r) { }, this._err());
+    };
+    InteractionService.prototype.emptyMap = function (data) {
+        this.http.post(this.user.getUrl('api/view/empty'), this._checkSystem(data))
             .subscribe(function (r) { }, this._err());
     };
     InteractionService = __decorate([
@@ -1115,6 +1254,315 @@ var MapsService = (function () {
 
 /***/ }),
 
+/***/ "../../../../../src/app/services/ndo6-icons.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Ndo6IconsService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash__);
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var Ndo6IconsService = (function () {
+    function Ndo6IconsService() {
+        this.defaults = {
+            anchor: {
+                x: 24,
+                y: 48
+            },
+            color: 'orange',
+            code: 'position',
+            personIcon: 'position',
+            placeIcon: 'flag'
+        };
+        this.icons = [
+            {
+                name: 'Palace',
+                code: 'account_balance',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Add Photo',
+                code: 'add_a_photo',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Adjust',
+                code: 'adjust',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Audio Track',
+                code: 'audiotrack',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Block',
+                code: 'block',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Build',
+                code: 'build',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Camera',
+                code: 'camera',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Error',
+                code: 'error',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Face',
+                code: 'face',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Favorite',
+                code: 'favorite',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Favorite Border',
+                code: 'favorite_border',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Feedback',
+                code: 'feedback',
+                colors: ['black', 'orange'],
+                anchor: { x: 4, y: 48 }
+            },
+            {
+                name: 'Point',
+                code: 'fiber_manual_record',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Flag',
+                code: 'flag',
+                anchor: { x: 4, y: 48 },
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Flash',
+                code: 'flash_on',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Flight',
+                code: 'flight_takeoff',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Star',
+                code: 'grade',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Help',
+                code: 'help',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Highlight',
+                code: 'highlight',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Emoticon',
+                code: 'insert_emoticon',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Lightbulb',
+                code: 'lightbulb_outline',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Location Off',
+                code: 'location_off',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Message',
+                code: 'message',
+                colors: ['black', 'orange'],
+                anchor: { x: 4, y: 48 }
+            },
+            {
+                name: 'Money',
+                code: 'monetization_on',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Pets',
+                code: 'pets',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Photo',
+                code: 'photo',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Rowing',
+                code: 'rowing',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Feed',
+                code: 'rss_feed',
+                colors: ['black', 'orange'],
+                anchor: { x: 4, y: 48 }
+            },
+            {
+                name: 'Settings',
+                code: 'settings',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Shopping',
+                code: 'shopping_cart',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Thumb Down',
+                code: 'thumb_down',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Thumb Up',
+                code: 'thumb_up',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Verified',
+                code: 'verified_user',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Visibility On',
+                code: 'visibility',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Visibility Off',
+                code: 'visibility_off',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Volume Off',
+                code: 'volume_off',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Volume Up',
+                code: 'volume_up',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Key',
+                code: 'vpn_key',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Warning',
+                code: 'warning',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Sunny',
+                code: 'wb_sunny',
+                colors: ['black', 'orange'],
+                anchor: { x: 24, y: 24 }
+            },
+            {
+                name: 'Position',
+                code: 'position',
+                colors: ['black', 'blue', 'green', 'orange', 'red']
+            },
+            {
+                name: 'Person',
+                code: 'person_pin_circle',
+                colors: ['black', 'orange']
+            },
+            {
+                name: 'Place',
+                code: 'place',
+                colors: ['black', 'orange']
+            }
+        ];
+    }
+    Ndo6IconsService.prototype.getDef = function (code) {
+        var ic = __WEBPACK_IMPORTED_MODULE_1_lodash___default.a.find(this.icons, function (i) { return i.code === code; });
+        return __WEBPACK_IMPORTED_MODULE_1_lodash___default.a.clone(ic);
+    };
+    Ndo6IconsService.prototype.getIcon = function (info) {
+        var ic = null;
+        if (__WEBPACK_IMPORTED_MODULE_1_lodash___default.a.isObject(info)) {
+            if (__WEBPACK_IMPORTED_MODULE_1_lodash___default.a.isObject(info.icon)) {
+                ic = this.getDef(info.icon.code);
+            }
+            else {
+                ic = this.getDef(info.icon || info.code);
+            }
+        }
+        else if (__WEBPACK_IMPORTED_MODULE_1_lodash___default.a.isString(info)) {
+            ic = this.getDef(info);
+        }
+        if (!ic) {
+            return console.error('Undefined icon info', info);
+        }
+        ic.color = ic.color || this.defaults.color;
+        ic.code = ic.code || ic.icon || this.defaults.code;
+        ic.anchor = ic.anchor || this.defaults.anchor;
+        return {
+            url: './assets/elements/' + ic.color + '/' + ic.code + '.png',
+            size: new google.maps.Size(48, 48),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(ic.anchor.x, ic.anchor.y)
+        };
+    };
+    Ndo6IconsService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
+        __metadata("design:paramtypes", [])
+    ], Ndo6IconsService);
+    return Ndo6IconsService;
+}());
+
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/services/ndo6.service.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1127,8 +1575,9 @@ var MapsService = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_service__ = __webpack_require__("../../../../../src/app/services/utils.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__log_service__ = __webpack_require__("../../../../../src/app/services/log.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__interaction_service__ = __webpack_require__("../../../../../src/app/services/interaction.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ndo6_icons_service__ = __webpack_require__("../../../../../src/app/services/ndo6-icons.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1138,6 +1587,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -1163,13 +1613,18 @@ var MARKERS = {
     owner: 'owner',
     point: 'point'
 };
+var MAP_ELEMENT_TYPES = {
+    point: 'point',
+    way: 'way'
+};
 var Ndo6Service = (function () {
-    function Ndo6Service(maps, user, u, log, interaction) {
+    function Ndo6Service(maps, user, u, log, interaction, icons) {
         this.maps = maps;
         this.user = user;
         this.u = u;
         this.log = log;
         this.interaction = interaction;
+        this.icons = icons;
         this.events = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* EventEmitter */]();
         this.positionChecker = null;
         this.last = null;
@@ -1187,6 +1642,7 @@ var Ndo6Service = (function () {
         this.clickOnMarker = null;
         this.pooling = null;
         this.markers = MARKERS;
+        this.mapElements = MAP_ELEMENT_TYPES;
         var self = this;
         self.interaction.events.subscribe(function (e) {
             switch (e.code) {
@@ -1299,6 +1755,7 @@ var Ndo6Service = (function () {
             self.onfirstpos = true;
             self.last = self.getMarker({
                 type: 'user',
+                icon: 'person_pin_circle',
                 label: self.user.settings.nick[0],
                 nick: self.user.settings.nick,
                 owner: self.user.settings.nick,
@@ -1377,8 +1834,16 @@ var Ndo6Service = (function () {
         self.active = true;
         self.checkState();
     };
-    Ndo6Service.prototype.logout = function () {
+    Ndo6Service.prototype.logout = function (close) {
+        if (close === void 0) { close = false; }
         this.user.logdata();
+        if (this.u.overpage.type !== 'map' || close) {
+            this.u.closeOverpage();
+        }
+        this.checkState();
+    };
+    Ndo6Service.prototype.login = function (token, data) {
+        this.user.logdata(token, data);
         this.u.closeOverpage();
         this.checkState();
     };
@@ -1417,7 +1882,7 @@ var Ndo6Service = (function () {
         }
     };
     Ndo6Service.prototype.checkPositions = function (ps) {
-        if (!__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.isArray(ps)) {
+        if (!__WEBPACK_IMPORTED_MODULE_7_lodash___default.a.isArray(ps)) {
             return;
         }
         var self = this;
@@ -1428,7 +1893,7 @@ var Ndo6Service = (function () {
             if (pos.id === last.id || pos.owner === last.owner) {
                 return;
             }
-            var ex = __WEBPACK_IMPORTED_MODULE_6_lodash___default.a.find(self.maps.elements, function (e) { return e.ndo6.owner === pos.owner && e.ndo6.type === MARKERS.owner; });
+            var ex = __WEBPACK_IMPORTED_MODULE_7_lodash___default.a.find(self.maps.elements, function (e) { return e.ndo6.owner === pos.owner && e.ndo6.type === MARKERS.owner; });
             if (ex) {
                 var latlng = self.maps.getLatLng(pos);
                 ex.setPosition(latlng);
@@ -1436,33 +1901,56 @@ var Ndo6Service = (function () {
             else {
                 pos.label = pos.owner[0] || '?';
                 pos.type = MARKERS.owner;
+                pos.icon = pos.icon || self.icons.defaults.personIcon;
                 ex = self.getMarker(pos);
                 self.maps.elements.push(ex);
             }
         });
     };
     Ndo6Service.prototype.checkElements = function (es) {
-        if (!__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.isArray(es)) {
+        if (!__WEBPACK_IMPORTED_MODULE_7_lodash___default.a.isArray(es)) {
             return;
         }
-        // TODO: elementi sulla mappa
+        var self = this;
+        es.forEach(function (ele) {
+            var ex = __WEBPACK_IMPORTED_MODULE_7_lodash___default.a.find(self.maps.elements, function (e) { return e.ndo6.type === ele.type && e.ndo6._id === ele._id; });
+            if (ex) {
+            }
+            else {
+                ele.latitude = ele.content.position.latitude;
+                ele.longitude = ele.content.position.longitude;
+                ele.icon = ele.content.icon || self.icons.defaults.placeIcon;
+                ex = self.getMarker(ele);
+                self.maps.elements.push(ex);
+            }
+        });
     };
     Ndo6Service.prototype.checkMessages = function (ms) {
-        if (!__WEBPACK_IMPORTED_MODULE_6_lodash___default.a.isArray(ms)) {
+        if (!__WEBPACK_IMPORTED_MODULE_7_lodash___default.a.isArray(ms)) {
             return;
         }
         // TODO: messaggi
     };
-    Ndo6Service.prototype.getMarkerIcon = function (url) {
-        if (url) {
-            return {
-                url: url,
-                size: new google.maps.Size(22, 40),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(11, 40)
-            };
-        }
-    };
+    // getMarkerIcon(info: any, color = this.icons.defaults.color) {
+    //   if (info) {
+    //     if (!_.isObject(info)) {
+    //       info = {
+    //         code: info,
+    //         color: color,
+    //         anchor: this.icons.defaults.anchor
+    //       };
+    //     }
+    //     info.color = info.color || this.icons.defaults.color;
+    //     info.code = info.code || info.icon || this.icons.defaults.code;
+    //     info.anchor = info.anchor || this.icons.defaults.anchor;
+    //     return {
+    //       url: './assets/elements/' + info.color + '/' + info.code + '.png',
+    //       size: new google.maps.Size(48, 48),
+    //       origin: new google.maps.Point(0, 0),
+    //       anchor: new google.maps.Point(info.anchor.x, info.anchor.y)
+    //     };
+    //   }
+    // }
     Ndo6Service.prototype.getMarker = function (info) {
         var self = this;
         if (!self.session.context) {
@@ -1471,13 +1959,13 @@ var Ndo6Service = (function () {
         var latlnt = self.maps.getLatLng(info);
         var m = new google.maps.Marker({
             map: self.session.context.map,
-            label: info.label || 'P',
+            label: info.label,
             position: latlnt,
             title: info.title || info.description || info.nick,
-            icon: self.getMarkerIcon(info.icon)
+            icon: self.icons.getIcon(info)
         });
         m.ndo6 = {};
-        __WEBPACK_IMPORTED_MODULE_6_lodash___default.a.extend(m.ndo6, info);
+        __WEBPACK_IMPORTED_MODULE_7_lodash___default.a.extend(m.ndo6, info);
         m.ndo6.id = m.ndo6.id || self.u.guid();
         google.maps.event.addListener(m, 'click', function () {
             self.events.emit(new Ndo6Event('marker', m));
@@ -1499,13 +1987,30 @@ var Ndo6Service = (function () {
             };
         }
     };
+    Ndo6Service.prototype.getCurrentPos = function () {
+        var pos = (this.session || {}).context ? this.session.context.map.getCenter() : null;
+        return pos ? {
+            latitude: pos.lat(),
+            longitude: pos.lng()
+        } : null;
+    };
+    Ndo6Service.prototype.addToMap = function (ele) {
+        var self = this;
+        console.log('NEW ELEMENT BY CLIENT:', ele);
+        self.interaction.element(ele, function (err) {
+            if (!err) {
+                self.u.snack('Element shared on map.');
+            }
+        });
+    };
     Ndo6Service = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__maps_service__["a" /* MapsService */],
             __WEBPACK_IMPORTED_MODULE_2__user_settings_service__["a" /* UserSettingsService */],
             __WEBPACK_IMPORTED_MODULE_3__utils_service__["a" /* UtilsService */],
             __WEBPACK_IMPORTED_MODULE_4__log_service__["a" /* LogService */],
-            __WEBPACK_IMPORTED_MODULE_5__interaction_service__["a" /* InteractionService */]])
+            __WEBPACK_IMPORTED_MODULE_5__interaction_service__["a" /* InteractionService */],
+            __WEBPACK_IMPORTED_MODULE_6__ndo6_icons_service__["a" /* Ndo6IconsService */]])
     ], Ndo6Service);
     return Ndo6Service;
 }());
@@ -1543,6 +2048,7 @@ var UserSettingsService = (function () {
     function UserSettingsService(u) {
         this.u = u;
         this.settings = {};
+        this.system = {};
         var sts = this.u.storage.get(STORE_KEY) || {};
         __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.extend(this.settings, sts);
         __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.defaults(this.settings, {
@@ -1671,10 +2177,30 @@ var UtilsService = (function () {
     UtilsService.prototype.raiseChange = function () {
         this.app.tick();
     };
-    UtilsService.prototype.closeOverpage = function () {
-        this.overpage.type = null;
-        this.overpage.options = {};
+    UtilsService.prototype.openOverpage = function (type, o) {
+        if (type === void 0) { type = null; }
+        if (o === void 0) { o = null; }
+        this.overpage.back = null;
+        this.overpage.type = type;
+        this.overpage.options = o || {};
         this.idle = false;
+    };
+    UtilsService.prototype.closeOverpage = function () {
+        this.openOverpage();
+    };
+    UtilsService.prototype.backOverpage = function () {
+        if (__WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isFunction(this.overpage.back)) {
+            this.overpage.back();
+        }
+        else if (__WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isObject(this.overpage.back)) {
+            this.openOverpage(this.overpage.back.type, this.overpage.back.options);
+        }
+    };
+    UtilsService.prototype.overpageBack = function (o) {
+        var self = this;
+        setTimeout(function () {
+            self.overpage.back = o;
+        }, 400);
     };
     UtilsService.prototype.noop = function () { };
     UtilsService.prototype.checkUrl = function () {
@@ -1960,9 +2486,12 @@ var TokenInterceptor = (function () {
         this.user = user;
     }
     TokenInterceptor.prototype.intercept = function (request, next) {
+        var sys = this.user.system;
+        var token = (request.body || {})._system && sys.token ? sys.token : this.user.settings.token;
+        sys.active = false;
         request = request.clone({
             setHeaders: {
-                Authorization: "Bearer " + this.user.settings.token
+                Authorization: "Bearer " + token
             }
         });
         return next.handle(request);

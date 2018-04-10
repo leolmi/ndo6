@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -69,13 +69,13 @@
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(__dirname) {
-const fs = __webpack_require__(12);
-const path = __webpack_require__(7);
+const fs = __webpack_require__(13);
+const path = __webpack_require__(8);
 const _ = __webpack_require__(1);
 const _is_release = typeof __webpack_require__ === "function";
 const root = path.normalize(__dirname + (_is_release ? '/..' : '/../../..'));
 const locals_path = path.join(root, 'local.env.js');
-const u = __webpack_require__(8);
+const u = __webpack_require__(5);
 const locals = fs.existsSync(locals_path) ? u.use(locals_path) : {};
 
 _.extend(process.env, locals);
@@ -104,6 +104,12 @@ const settings = {
   // Secret for session, you will want to change this and make it an environment variable
   secrets: {
     session: 'ndo6-secret'
+  },
+  // System
+  system: {
+    id: 'ndo6_system_user',
+    name: ':system',
+    password: process.env.NDO6_SYSTEMPASSWORD || 'ndo6'
   },
   // debug mode
   debug: process.env.NDO6_DEBUG_ACTIVE === 'true',
@@ -156,7 +162,8 @@ module.exports = require("lodash");
 
 const mongoose = __webpack_require__(4);
 const Schema = mongoose.Schema;
-const crypto = __webpack_require__(14);
+const crypto = __webpack_require__(9);
+const u = __webpack_require__(5);
 const _ = __webpack_require__(1);
 
 function _notBlankValidator(v) {
@@ -301,9 +308,7 @@ ViewSchema.method({
    * @api public
    */
   encryptPassword: function(password) {
-    if (!password || !this.salt) return '';
-    var salt = new Buffer(this.salt, 'base64');
-    return crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha1').toString('base64');
+    return u.encryptPassword(password, this.salt);
   }
 });
 
@@ -324,12 +329,36 @@ module.exports = require("mongoose");
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const crypto = __webpack_require__(9);
+const _use =  true ? require : require;
+
+exports.use = _use;
+exports.noop = function() {};
+exports.random = function(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+exports.error = function(res, err, status) {
+  res.status(status || 500).send({ error: err });
+};
+exports.encryptPassword =function(password, saltstr) {
+  if (!password || !saltstr) return '';
+  const salt = new Buffer(saltstr, 'base64');
+  return crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha1').toString('base64');
+};
+
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport");
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -343,19 +372,23 @@ const compose = __webpack_require__(34);
 const View = __webpack_require__(2);
 const validateJwt = expressJwt({ secret: config.secrets.session });
 
-
 function _owner(req, res, next) {
   req.owner = (req.body||{}).owner || (req.params||{}).owner;
   next();
 }
 
 function _view(req, res, next) {
-  View.findOne({_id:(req.user||{}).id}, function (err, view) {
-    if (err) {return next(err);}
-    if (!view) {return res.send(404);}
+  View.findOne({_id: (req.user || {}).id}, function (err, view) {
+    if (err) return next(err);
+    if (!view) return res.send(404);
     req.view = view;
     next();
   });
+}
+
+function _system(req, res, next) {
+  if ((req.user || {}).id !== config.system.id) return res.send(401);
+  next();
 }
 
 function owner() {
@@ -375,40 +408,41 @@ function isOnView() {
 }
 
 
+function isSystem() {
+  return compose()
+    // Validate jwt
+    .use(validateJwt)
+    // Attach system
+    .use(_system)
+}
+
 /**
  * Returns a jwt token signed by the app secret
  */
 function signToken(id, owner) {
-  return jwt.sign({ id: id, owner: owner }, config.secrets.session, { expiresIn: 60*(config.tokenExpiration||10) });
+  return jwt.sign({ id: id, owner: owner||'' }, config.secrets.session, { expiresIn: 60*(config.tokenExpiration||10) });
 }
 
 exports.signToken = signToken;
 exports.owner = owner;
 exports.isOnView = isOnView;
+exports.isSystem = isSystem;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 9 */
+/***/ (function(module, exports) {
 
-"use strict";
-
-const _use =  true ? require : require;
-exports.use = _use;
-exports.noop = function() {};
-exports.random = function(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
-};
-
+module.exports = require("crypto");
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -446,7 +480,7 @@ exports.register = function(handler) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -454,9 +488,9 @@ exports.register = function(handler) {
 
 const View = __webpack_require__(2);
 const config = __webpack_require__(0);
-const u = __webpack_require__(8);
-const auth = __webpack_require__(6);
-const socket = __webpack_require__(9);
+const u = __webpack_require__(5);
+const auth = __webpack_require__(7);
+const socket = __webpack_require__(10);
 const _ = __webpack_require__(1);
 const version = __webpack_require__(35);
 
@@ -465,8 +499,8 @@ function _validationError(res, err) {
 }
 
 function _validate(req, res) {
-  if (!req.owner) return res.send(500, 'Undefined owner');
-  if (!req.view) return res.send(500, 'Undefined view');
+  if (!req.owner) return u.error(res, 'Undefined owner');
+  if (!req.view) return u.error(res, 'Undefined view');
   return true;
 }
 
@@ -475,7 +509,7 @@ function _validate(req, res) {
  */
 exports.index = function(req, res) {
   View.find({}, '_id name', function (err, views) {
-    if(err) return res.send(500, err);
+    if(err) return u.error(res, err);
     res.json(200, views);
   });
 };
@@ -495,7 +529,7 @@ exports.info = function(req, res) {
  * Creates a new view
  */
 exports.create = function (req, res, next) {
-  if (!req.owner) return res.send(500, 'Undefined owner');
+  if (!req.owner) return u.error(res, 'Undefined owner');
   const newView = new View(req.body);
   newView.elements = newView.elements || [];
   newView.owner = req.owner;
@@ -512,7 +546,7 @@ exports.create = function (req, res, next) {
  * Get a single view
  */
 exports.show = function (req, res, next) {
-  if (!req.params.id) return res.send(500, 'Undefined view identity');
+  if (!req.params.id) return u.error(res, 'Undefined view identity');
   View.findById(req.params.id, function (err, view) {
     if (err) return next(err);
     if (!view) return res.send(401);
@@ -528,7 +562,7 @@ exports.destroy = function(req, res) {
   View.findById(req.view._id, function (err, view) {
     if (view.owner !== req.owner) return res.send(403);
     view.remove(function (err) {
-      if (err) return res.send(500, err);
+      if (err) return u.error(res, err);
       return res.send(204);
     });
   });
@@ -563,13 +597,13 @@ exports.changePassword = function(req, res) {
  * Get current view info
  */
 exports.view = function(req, res) {
-  console.log('READ STATE ....');
+  // console.log('READ STATE ....');
   if (!_validate(req, res)) return;
   View.findOne({
     _id: req.view._id
   }, '-salt -hashedPassword', function(err, view) {
-    console.log('READ STATE view: ', view);
-    if (err) return res.send(500, err);
+    // console.log('READ STATE view: ', view);
+    if (err) return u.error(res, err);
     if (!view) return res.send(401);
     res.json(view);
   });
@@ -577,7 +611,7 @@ exports.view = function(req, res) {
 
 function _checkExpired(view) {
   const now = Date.now();
-  _.pull(view.positions, function(p){
+  _.remove(view.positions, function(p){
     return (now - p._update) > ((config.positionExpirationAge || 900) * 1000);
   });
 }
@@ -601,10 +635,27 @@ function _setPosition(view, pos, cb) {
 }
 exports.setPosition = _setPosition;
 
+exports.clearPosition = function(req, cb) {
+  if (req.view && req.owner) {
+    _.remove(req.view.positions, function(p){
+      return p.owner === req.owner;
+    });
+    req.view.save(function(err) {
+      if (err) console.error(err);
+      cb();
+    });
+  } else {
+    cb();
+  }
+};
 
 function _update(req, res, obj, smethod) {
+  // console.log('save view', req.view);
   req.view.save(function(err){
-    if (err) return res.send(500, err);
+    if (err) {
+      console.error(err);
+      return u.error(res, err);
+    }
     res.send(200, obj);
     socket.events[smethod](req.view, obj);
   });
@@ -618,7 +669,7 @@ exports.position = function(req, res) {
   const p = req.body;
   if (!p || !p.latitude || !p.longitude || !p.timestamp || !p.id) {
     console.error('Invalid position:', p);
-    return res.send(500, 'Undefined position');
+    return u.error(res, 'Undefined position');
   }
   const pos = {
     owner: req.owner,
@@ -628,7 +679,7 @@ exports.position = function(req, res) {
     timestamp: p.timestamp
   };
   _setPosition(req.view, pos, function(err, p){
-    if (err) return res.send(500, err);
+    if (err) return u.error(res, err);
     res.send(200, p);
   });
 };
@@ -645,20 +696,26 @@ exports.positions = function(req, res) {
  * Insert element
  */
 exports.element = function(req, res) {
+  // console.log('ELEMENT: ', req.body);
   if (!_validate(req, res)) return;
   const e = req.body;
-  if (!e || !e.name || !e.type || !e.content) return res.send(500, 'Undefined element');
+  if (!e || !e.name || !e.type || !e.content) return u.error(res, 'Undefined element');
+  // console.log('search in req.view.elements', req.view.elements);
   const x = _.find(req.view.elements, function(xe) {
     return xe.name === e.name && xe.type === e.type;
   });
-  if (x) return res.send(500, 'Element already exists!');
+  // console.log('founded element:', x);
+  if (x) return u.error(res, 'Element already exists!');
+  // console.log('element not found ... insert new');
   const ele = {
     owner: req.owner,
     name: e.name,
     type: e.type,
     content: e.content
   };
+  // console.log('push new element', ele);
   req.view.elements.push(ele);
+  // console.log('notify update...');
   _update(req, res, ele, 'onElement');
 };
 
@@ -676,11 +733,11 @@ exports.elements = function(req, res) {
 exports.removeElement = function(req, res) {
   if (!_validate(req, res)) return;
   const e = req.body;
-  if (!e || !e.name || !e.type) return res.send(500, 'Unrecognized element');
+  if (!e || !e.name || !e.type) return u.error(res, 'Unrecognized element');
   const removed = _.remove(req.view.elements, function(xe){
     return xe.name === e.name && xe.type === e.type && (xe.owner === req.owner || req.view.owner === req.owner);
   });
-  if (!(removed||[]).length) return res.send(500, 'Element not found or you cannot remove it!');
+  if (!(removed||[]).length) return u.error(res, 'Element not found or you cannot remove it!');
   _update(req, res, removed[0], 'onRemoveElement');
 };
 
@@ -690,7 +747,7 @@ exports.removeElement = function(req, res) {
 exports.message = function(req, res) {
   if (!_validate(req, res)) return;
   const m = req.body;
-  if (!m || !m.text) return res.send(500, 'Undefined mesage');
+  if (!m || !m.text) return u.error(res, 'Undefined mesage');
   const msg = {
     owner: req.owner,
     text: m.text,
@@ -710,47 +767,91 @@ exports.messages = function(req, res) {
 
 
 
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+///         SYSTEM METHODS
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 exports.test = function(req, res) {
   // inserisce una rilevazione casuale sulla mappa corrente
-
-  if (!_validate(req, res)) return;
+  if (!req.body.view) return u.error(res, 'Undefined map');
   const party = [{
-    name:'ugo',
+    name: 'ugo',
     id: 'test_id_001'
   }, {
-    name:'franco',
+    name: 'franco',
     id: 'test_id_002'
   }, {
-    name:'gino',
+    name: 'gino',
     id: 'test_id_003'
   }];
-  const n = u.random(0,2);
+  const n = u.random(0, 2);
 
-  console.log('Random n=%s', n+'');
+  console.log('Random n=%s', n + '');
   const pos = {
     owner: party[n].name,
     id: party[n].id,
-    latitude: 11.0 + Math.random(),
-    longitude: 43.0 + Math.random(),
+    latitude: 43.0 + Math.random(),
+    longitude: 11.0 + Math.random(),
     timestamp: Date.now()
   };
-  _setPosition(req.view, pos, function(err, p){
-    if (err) return res.send(500, err);
-    res.send(200, p);
+  View.findOne({name: req.body.view}, function (err, view) {
+    if (err) return u.error(res, err);
+    if (!view) return u.error(res, 'View not found!');
+    _setPosition(view, pos, function (err, p) {
+      if (err) return u.error(res, err);
+      res.send(200, p);
+    });
   });
 };
 
 exports.reset = function(req, res) {
-  if (!_validate(req, res)) return;
+  // brasa il db
   View.find({}).remove(function() {
     console.log('Cleared views.');
     res.send(200);
   });
 };
 
+exports.empty = function(req, res) {
+  // elimina tutti gli elementi di una mappa
+  if (!req.body.view) return u.error(res, 'Undefined map');
+  View.findOne({name: req.body.view}, function (err, view) {
+    if (err) return u.error(res, err);
+    if (!view) return u.error(res, 'View not found!');
+    view.elements.splice(0);
+    view.positions.splice(0);
+    view.messages.splice(0);
+    view.save(function(err){
+      if (err) return u.error(res, err);
+      return res.send(200);
+    });
+  });
+};
+
+exports.burn = function(req, res) {
+  // elimina la mappa
+  if (!req.body.view) return u.error(res, 'Undefined map');
+  View.findOne({name: req.body.view}, function (err, view) {
+    if (err) return u.error(res, err);
+    if (!view) return u.error(res, 'View not found!');
+    view.remove(function (err) {
+      if (err) return u.error(res, err);
+      return res.send(204);
+    });
+  });
+};
+
+exports.log = function(req, res) {
+  // TODO: log server to client...
+};
+
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -771,7 +872,7 @@ mongoose.connect(config.mongo.uri, config.mongo.options);
 
 // Populate DB with sample data
 // if(config.seedDB) { require('./config/seed'); }
-if(process.env.NDO6_SEED === 'true') { __webpack_require__(13); }
+if(process.env.NDO6_SEED === 'true') { __webpack_require__(14); }
 
 // Setup server
 const app = express();
@@ -795,13 +896,13 @@ exports = module.exports = app;
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -827,12 +928,6 @@ View.find({}).remove(function() {
 //   });
 // });
 
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports) {
-
-module.exports = require("crypto");
 
 /***/ }),
 /* 15 */
@@ -874,7 +969,7 @@ const handler = {
   }
 };
 
-__webpack_require__(9).register(handler);
+__webpack_require__(10).register(handler);
 
 function _log(message) {
   const now = new Date();
@@ -966,10 +1061,10 @@ const bodyParser = __webpack_require__(22);
 const methodOverride = __webpack_require__(23);
 const cookieParser = __webpack_require__(24);
 const errorHandler = __webpack_require__(25);
-const path = __webpack_require__(7);
+const path = __webpack_require__(8);
 const config = __webpack_require__(0);
 const client_path = config.clientPath||'client';
-const passport = __webpack_require__(5);
+const passport = __webpack_require__(6);
 const session = __webpack_require__(26);
 const mongoStore = __webpack_require__(27)(session);
 const mongoose = __webpack_require__(4);
@@ -1142,8 +1237,8 @@ module.exports[404] = function pageNotFound(req, res) {
 
 
 var express = __webpack_require__(3);
-var controller = __webpack_require__(10);
-var auth = __webpack_require__(6);
+var controller = __webpack_require__(11);
+var auth = __webpack_require__(7);
 
 var router = express.Router();
 
@@ -1162,8 +1257,12 @@ router.post('/message', auth.isOnView(), controller.message);
 router.post('/element', auth.isOnView(), controller.element);
 router.post('/remove', auth.isOnView(), controller.removeElement);
 
-router.post('/reset', auth.isOnView(), controller.reset);
-router.post('/test', auth.isOnView(), controller.test);
+// SYSTEM METHODS
+router.post('/reset', auth.isSystem(), controller.reset);
+router.post('/empty', auth.isSystem(), controller.empty);
+router.post('/burn', auth.isSystem(), controller.burn);
+router.post('/test', auth.isSystem(), controller.test);
+router.post('/log', auth.isSystem(), controller.log);
 
 module.exports = router;
 
@@ -1210,15 +1309,16 @@ exports.infos = {
 
 
 const express = __webpack_require__(3);
-const passport = __webpack_require__(5);
+const passport = __webpack_require__(6);
 const config = __webpack_require__(0);
-const auth = __webpack_require__(6);
+const auth = __webpack_require__(7);
 const View = __webpack_require__(2);
-const controller = __webpack_require__(10);
+const controller = __webpack_require__(11);
 // const socket = require('../config/socketio');
+const system = __webpack_require__(37);
 
 // Passport Configuration
-__webpack_require__(37).setup(View, config);
+__webpack_require__(38).setup(View, config);
 
 const router = express.Router();
 
@@ -1227,6 +1327,11 @@ router.post('/login', function(req, res, next) {
   if (!data.name) return res.send(500, 'Undefined view');
   if (!data.password) return res.send(500, 'Undefined password');
   if (!data.owner) return res.send(500, 'Undefined nickname');
+
+  if (system.authenticate(data.name, data.password)) {
+    const token = auth.signToken(config.system.id, config.system.name);
+    return res.json(200, {token: token, system: true});
+  }
 
   passport.authenticate('local', function (err, view, info) {
     const error = err || info;
@@ -1247,8 +1352,9 @@ router.post('/login', function(req, res, next) {
 
 
 router.post('/logout', function(req, res, next) {
-  // TODO....
-  res.json(200);
+  controller.clearPosition(req, function() {
+    res.json(200);
+  });
 });
 
 module.exports = router;
@@ -1258,8 +1364,22 @@ module.exports = router;
 /* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var passport = __webpack_require__(5);
-var LocalStrategy = __webpack_require__(38).Strategy;
+"use strict";
+
+const config = __webpack_require__(0);
+
+exports.authenticate = function(name, password) {
+  if (name !== config.system.name) return false;
+  return password === config.system.password;
+};
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const passport = __webpack_require__(6);
+const LocalStrategy = __webpack_require__(39).Strategy;
 
 exports.setup = function (View, config) {
   passport.use(new LocalStrategy({
@@ -1286,7 +1406,7 @@ exports.setup = function (View, config) {
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-local");
