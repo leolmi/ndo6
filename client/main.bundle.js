@@ -588,6 +588,8 @@ var OverpageTestComponent = (function () {
     OverpageTestComponent.prototype.sendPos = function () {
         var self = this;
         self.interaction.position({
+            id: self.user.settings.id,
+            type: 'owner',
             latitude: 11.4363463,
             longitude: 43.52164346,
             timestamp: Date.now()
@@ -1224,20 +1226,25 @@ var MapsService = (function () {
         });
         return context;
     };
+    MapsService.prototype.getPosition = function (pos) {
+        if (pos) {
+            if (pos.coords) {
+                pos = pos.coords;
+            }
+            return {
+                latitude: pos.latitude ? pos.latitude : (__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isFunction(pos.lat) ? pos.lat() : null),
+                longitude: pos.longitude ? pos.longitude : (__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isFunction(pos.lng) ? pos.lng() : null)
+            };
+        }
+    };
     /**
      * Restituisce un latlng
      * @param pos
      * @returns {google.maps.LatLng}
      */
     MapsService.prototype.getLatLng = function (pos) {
-        if (pos) {
-            if (pos.coords) {
-                pos = pos.coords;
-            }
-            var lat = pos.latitude ? pos.latitude : (pos.G ? pos.G : (__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isFunction(pos.lat) ? pos.lat() : undefined));
-            var lng = pos.longitude ? pos.longitude : (pos.K ? pos.K : (__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isFunction(pos.lng) ? pos.lng() : undefined));
-            return new google.maps.LatLng(lat, lng);
-        }
+        var p = this.getPosition(pos);
+        return p ? new google.maps.LatLng(p.latitude, p.longitude) : null;
     };
     MapsService.prototype.clearMapElements = function () {
         this.elements.forEach(function (e) { return e.setMap(null); });
@@ -1754,8 +1761,8 @@ var Ndo6Service = (function () {
         if (!self.last) {
             self.onfirstpos = true;
             self.last = self.getMarker({
-                type: 'user',
-                icon: 'person_pin_circle',
+                type: MARKERS.owner,
+                icon: self.icons.defaults.personIcon,
                 label: self.user.settings.nick[0],
                 nick: self.user.settings.nick,
                 owner: self.user.settings.nick,
@@ -1767,10 +1774,11 @@ var Ndo6Service = (function () {
             var latlng = self.maps.getLatLng(pos);
             self.last.setPosition(latlng);
             self.log.info('EMIT POSITION: ', pos);
+            var p = self.maps.getPosition(pos);
             self.events.emit(new Ndo6Event('changepos', {
-                latitude: pos.latitude,
-                longitude: pos.longitude,
-                id: self.last.ndo6.id
+                latitude: p.latitude,
+                longitude: p.longitude,
+                id: self.user.settings.id
             }));
             var center = self.center || self.samePos(self.followMarker, self.last);
             if (center === true) {
@@ -2062,6 +2070,7 @@ var UserSettingsService = (function () {
             socketMode: false,
             poolingTime: 1000
         });
+        console.log('SETTINGS', this.settings);
     }
     UserSettingsService.prototype.keep = function (value, target) {
         if (value) {
