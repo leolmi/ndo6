@@ -444,7 +444,7 @@ var LogMonitorComponent = (function () {
 /***/ "../../../../../src/app/components/overpages/elements/element-point.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"map-element-editor\" layout-col>\r\n  <div layout-row>\r\n    <button mat-icon-button [matMenuTriggerFor]=\"colorMenu\">\r\n      <mat-icon>{{u.overpage.options.element.content.icon.code}}</mat-icon>\r\n    </button>\r\n    <mat-menu #colorMenu=\"matMenu\">\r\n      <button mat-menu-item *ngFor=\"let idef of graph.icons\" (click)=\"setIcon(idef)\">\r\n        <mat-icon class=\"'color-' + {{u.overpage.options.element.content.icon.color}}\">{{idef.code}}</mat-icon>\r\n        <span>{{idef.name}}</span>\r\n      </button>\r\n    </mat-menu>\r\n    <mat-form-field flex>\r\n      <input matInput [(ngModel)]=\"u.overpage.options.element.name\" placeholder=\"Name\">\r\n    </mat-form-field>\r\n  </div>\r\n  <mat-form-field>\r\n    <input matInput [(ngModel)]=\"u.overpage.options.element.content.desc\" placeholder=\"Description\">\r\n  </mat-form-field>\r\n</div>\r\n"
+module.exports = "<div class=\"map-element-editor\" layout-col>\r\n  <div layout-row>\r\n    <!-- ICON MENU -->\r\n    <button mat-icon-button [matMenuTriggerFor]=\"iconMenu\">\r\n      <mat-icon [ngClass]=\"'color-' + (info.content.icon.color || 'orange')\">{{info.content.icon._code||info.content.icon.code}}</mat-icon>\r\n    </button>\r\n    <mat-menu #iconMenu=\"matMenu\">\r\n      <button mat-menu-item *ngFor=\"let idef of graph.icons\" (click)=\"setIcon(idef)\">\r\n        <mat-icon [ngClass]=\"'color-' + (info.content.icon.color || 'orange')\">{{idef._code||idef.code}}</mat-icon>\r\n        <span>{{idef.name}}</span>\r\n      </button>\r\n    </mat-menu>\r\n    <!-- COLOR MENU -->\r\n    <button mat-icon-button [matMenuTriggerFor]=\"colorMenu\">\r\n      <mat-icon [ngClass]=\"'color-' + (info.content.icon.color || 'orange')\">lens</mat-icon>\r\n    </button>\r\n    <mat-menu #colorMenu=\"matMenu\">\r\n      <button mat-menu-item *ngFor=\"let clr of info.content.icon.colors\" (click)=\"setColor(clr)\">\r\n        <mat-icon [ngClass]=\"'color-' + clr\">lens</mat-icon>\r\n        <span>{{clr}}</span>\r\n      </button>\r\n    </mat-menu>\r\n    <!-- NAME -->\r\n    <mat-form-field flex>\r\n      <input matInput [(ngModel)]=\"info.name\" placeholder=\"Name\">\r\n    </mat-form-field>\r\n  </div>\r\n  <mat-form-field>\r\n    <input matInput [(ngModel)]=\"info.content.desc\" placeholder=\"Description\">\r\n  </mat-form-field>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -472,7 +472,7 @@ module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <for
 /***/ "../../../../../src/app/components/overpages/overpage-marker.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content\"  layout-col [ngSwitch]=\"marker.type\">\r\n  <!-- DATA: nick e altre info -->\r\n  <div label>Data</div>\r\n  <!-- TYPE: OWNER -->\r\n  <div *ngSwitchCase=\"'owner'\" class=\"ndo6-property\"><span class=\"name\">Nick:</span><span class=\"value\">{{marker.owner||'(unknown)'}}</span> </div>\r\n  <!-- TYPE: POINT -->\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Name:</span><span class=\"value\">{{marker.name||'(unknown)'}}</span> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Description:</span><span class=\"value\">{{marker.content.desc}}</span> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Author:</span><span class=\"value\">{{marker.owner||'(unknown)'}}</span> </div>\r\n  <!-- (TODO) TYPE: WAY -->\r\n  <!-- POSITION -->\r\n  <div class=\"ndo6-property\"><span class=\"name\">Latitude:</span><span class=\"value\">{{u.overpage.options.latitude}}</span> </div>\r\n  <div class=\"ndo6-property\"><span class=\"name\">Longitude:</span><span class=\"value\">{{u.overpage.options.longitude}}</span> </div>\r\n  <!-- OPTIONS -->\r\n  <div label>Options</div>\r\n  <mat-slide-toggle *ngSwitchCase=\"'owner'\" color=\"accent\" [(ngModel)]=\"followed\" (change)=\"changeOption()\">Follow Me</mat-slide-toggle>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content\"  layout-col [ngSwitch]=\"marker.type\">\r\n  <!-- DATA: nick e altre info -->\r\n  <div label>Data</div>\r\n  <!-- TYPE: OWNER -->\r\n  <div *ngSwitchCase=\"'owner'\" class=\"ndo6-property\"><span class=\"name\">Nick:</span><span class=\"value\">{{marker.owner||'(unknown)'}}</span> </div>\r\n  <!-- TYPE: POINT -->\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Name:</span><span class=\"value\">{{marker.name||'(unknown)'}}</span> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Description:</span><span class=\"value\">{{marker.content.desc}}</span> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\"><span class=\"name\">Author:</span><span class=\"value\">{{marker.owner||'(unknown)'}}</span> </div>\r\n  <!-- (TODO) TYPE: WAY -->\r\n  <!-- POSITION -->\r\n  <div class=\"ndo6-property\"><span class=\"name\">Latitude:</span><span class=\"value\">{{u.overpage.options.latitude}}</span> </div>\r\n  <div class=\"ndo6-property\"><span class=\"name\">Longitude:</span><span class=\"value\">{{u.overpage.options.longitude}}</span> </div>\r\n  <!-- OPTIONS -->\r\n  <div label>Options</div>\r\n  <mat-slide-toggle *ngSwitchCase=\"'owner'\" color=\"accent\" [(ngModel)]=\"followed\" (change)=\"changeOption()\">Follow Me</mat-slide-toggle>\r\n  <div layout-row>\r\n    <button *ngIf=\"canDelete\" mat-raised-button (click)=\"deleteElement()\" [color]=\"deleteState.color\">{{deleteState.message}}</button>\r\n    <span flex></span>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -643,15 +643,29 @@ var OverpageTestComponent = (function () {
 }());
 
 var OverpageMarkerComponent = (function () {
-    function OverpageMarkerComponent(u, ndo6) {
+    function OverpageMarkerComponent(u, user, ndo6) {
         this.u = u;
+        this.user = user;
         this.ndo6 = ndo6;
         this.followed = false;
         this.marker = null;
+        this.canDelete = false;
+        this.deleteStates = {
+            first: {
+                message: 'Delete this element',
+                color: 'accent'
+            },
+            second: {
+                message: 'Confirm delete this element',
+                color: 'warn'
+            }
+        };
+        this.deleteState = this.deleteStates.first;
     }
     OverpageMarkerComponent.prototype.ngOnInit = function () {
         this.followed = this.ndo6.followMarker === this.u.overpage.options.marker;
         this.marker = (this.u.overpage.options.marker || {}).ndo6 || {};
+        this.canDelete = this.marker.type !== this.ndo6.markers.owner && this.marker.owner === this.user.settings.nick;
     };
     OverpageMarkerComponent.prototype.changeOption = function () {
         if (this.followed) {
@@ -662,12 +676,22 @@ var OverpageMarkerComponent = (function () {
             this.ndo6.followMarker = null;
         }
     };
+    OverpageMarkerComponent.prototype.deleteElement = function () {
+        if (this.deleteState === this.deleteStates.first) {
+            this.deleteState = this.deleteStates.second;
+        }
+        else {
+            this.ndo6.deleteElement(this.u.overpage.options.marker);
+            this.u.closeOverpage();
+        }
+    };
     OverpageMarkerComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'app-overpage-marker',
             template: __webpack_require__("../../../../../src/app/components/overpages/overpage-marker.html")
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__["a" /* UserSettingsService */],
             __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */]])
     ], OverpageMarkerComponent);
     return OverpageMarkerComponent;
@@ -858,32 +882,36 @@ var MapElementPointComponent = (function () {
         this.u = u;
         this.ndo6 = ndo6;
         this.graph = graph;
-        this.info = {
+        this.template = {
             position: {},
             type: '',
             name: 'New Point',
             content: {}
         };
+        this.info = null;
     }
     MapElementPointComponent.prototype.ngOnInit = function () {
-        var e = __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.clone(this.info);
+        var e = __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.clone(this.template);
         e.type = this.ndo6.mapElements.point;
         e.content.desc = '';
         e.content.icon = this.graph.getDef('flag');
         e.content.color = this.graph.defaults.color;
         e.content.position = this.ndo6.getCurrentPos();
         this.u.overpage.options.element = e;
+        this.info = e;
     };
     MapElementPointComponent.prototype.setIcon = function (idef) {
-        var source = this.u.overpage.options.element.content;
-        var color = source.icon.color || this.graph.defaults.color;
-        source.icon = this.graph.getDef(idef.code);
-        if (source.icon.colors.indexOf(color) < 0) {
-            source.icon.color = this.graph.defaults.color;
+        var color = this.info.content.icon.color || this.graph.defaults.color;
+        this.info.content.icon = this.graph.getDef(idef.code);
+        if (this.info.content.icon.colors.indexOf(color) < 0) {
+            this.info.content.icon.color = this.graph.defaults.color;
         }
         else {
-            source.icon.color = color;
+            this.info.content.icon.color = color;
         }
+    };
+    MapElementPointComponent.prototype.setColor = function (color) {
+        this.info.content.icon.color = color;
     };
     MapElementPointComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -901,20 +929,22 @@ var MapElementWayComponent = (function () {
     function MapElementWayComponent(u, ndo6) {
         this.u = u;
         this.ndo6 = ndo6;
-        this.info = {
+        this.template = {
             position: {},
             type: '',
             name: 'New Way',
             content: {}
         };
+        this.info = null;
     }
     MapElementWayComponent.prototype.ngOnInit = function () {
-        var e = __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.clone(this.info);
+        var e = __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.clone(this.template);
         e.type = this.ndo6.mapElements.way;
         e.content.desc = '';
         e.content.start = '';
         e.content.end = '';
         this.u.overpage.options.element = e;
+        this.info = e;
     };
     MapElementWayComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -1040,6 +1070,10 @@ var InteractionService = (function () {
     InteractionService.prototype.element = function (data, cb) {
         this.http.post(this.user.getUrl('api/view/element'), this._check(data))
             .subscribe(function (r) { return cb(null, r); }, this._err(cb));
+    };
+    InteractionService.prototype.deleteElement = function (data, cb) {
+        this.http.post(this.user.getUrl('api/view/remove'), this._check(data))
+            .subscribe(function (r) { return cb(); }, this._err(cb));
     };
     //////////////////////////////////////////////////////
     // SYSTEM METHODS
@@ -1250,6 +1284,10 @@ var MapsService = (function () {
         this.elements.forEach(function (e) { return e.setMap(null); });
         this.elements.splice(0);
     };
+    MapsService.prototype.deleteMapElement = function (m) {
+        m.setMap(null);
+        __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.remove(this.elements, function (e) { return e === m; });
+    };
     MapsService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__utils_service__["a" /* UtilsService */]])
@@ -1296,236 +1334,237 @@ var Ndo6IconsService = (function () {
             {
                 name: 'Palace',
                 code: 'account_balance',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Add Photo',
                 code: 'add_a_photo',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Adjust',
                 code: 'adjust',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Audio Track',
                 code: 'audiotrack',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Block',
                 code: 'block',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Build',
                 code: 'build',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Camera',
                 code: 'camera',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Error',
                 code: 'error',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Face',
                 code: 'face',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Favorite',
                 code: 'favorite',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Favorite Border',
                 code: 'favorite_border',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Feedback',
                 code: 'feedback',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 4, y: 48 }
             },
             {
                 name: 'Point',
                 code: 'fiber_manual_record',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Flag',
                 code: 'flag',
                 anchor: { x: 4, y: 48 },
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Flash',
                 code: 'flash_on',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Flight',
                 code: 'flight_takeoff',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Star',
                 code: 'grade',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Help',
                 code: 'help',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Highlight',
                 code: 'highlight',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Emoticon',
                 code: 'insert_emoticon',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Lightbulb',
                 code: 'lightbulb_outline',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Location Off',
                 code: 'location_off',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Message',
                 code: 'message',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 4, y: 48 }
             },
             {
                 name: 'Money',
                 code: 'monetization_on',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Pets',
                 code: 'pets',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Photo',
                 code: 'photo',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Rowing',
                 code: 'rowing',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Feed',
                 code: 'rss_feed',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 4, y: 48 }
             },
             {
                 name: 'Settings',
                 code: 'settings',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Shopping',
                 code: 'shopping_cart',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Thumb Down',
                 code: 'thumb_down',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Thumb Up',
                 code: 'thumb_up',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Verified',
                 code: 'verified_user',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Visibility On',
                 code: 'visibility',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Visibility Off',
                 code: 'visibility_off',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Volume Off',
                 code: 'volume_off',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Volume Up',
                 code: 'volume_up',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Key',
                 code: 'vpn_key',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Warning',
                 code: 'warning',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Sunny',
                 code: 'wb_sunny',
-                colors: ['black', 'orange'],
+                colors: ['orange'],
                 anchor: { x: 24, y: 24 }
             },
             {
                 name: 'Position',
                 code: 'position',
-                colors: ['black', 'blue', 'green', 'orange', 'red']
+                _code: 'add_location',
+                colors: ['blue', 'green', 'orange', 'red']
             },
             {
                 name: 'Person',
                 code: 'person_pin_circle',
-                colors: ['black', 'orange']
+                colors: ['orange']
             },
             {
                 name: 'Place',
                 code: 'place',
-                colors: ['black', 'orange']
+                colors: ['orange']
             }
         ];
     }
@@ -1939,26 +1978,6 @@ var Ndo6Service = (function () {
         }
         // TODO: messaggi
     };
-    // getMarkerIcon(info: any, color = this.icons.defaults.color) {
-    //   if (info) {
-    //     if (!_.isObject(info)) {
-    //       info = {
-    //         code: info,
-    //         color: color,
-    //         anchor: this.icons.defaults.anchor
-    //       };
-    //     }
-    //     info.color = info.color || this.icons.defaults.color;
-    //     info.code = info.code || info.icon || this.icons.defaults.code;
-    //     info.anchor = info.anchor || this.icons.defaults.anchor;
-    //     return {
-    //       url: './assets/elements/' + info.color + '/' + info.code + '.png',
-    //       size: new google.maps.Size(48, 48),
-    //       origin: new google.maps.Point(0, 0),
-    //       anchor: new google.maps.Point(info.anchor.x, info.anchor.y)
-    //     };
-    //   }
-    // }
     Ndo6Service.prototype.getMarker = function (info) {
         var self = this;
         if (!self.session.context) {
@@ -2004,10 +2023,19 @@ var Ndo6Service = (function () {
     };
     Ndo6Service.prototype.addToMap = function (ele) {
         var self = this;
-        console.log('NEW ELEMENT BY CLIENT:', ele);
+        // console.log('NEW ELEMENT BY CLIENT:', ele);
         self.interaction.element(ele, function (err) {
             if (!err) {
                 self.u.snack('Element shared on map.');
+            }
+        });
+    };
+    Ndo6Service.prototype.deleteElement = function (marker) {
+        var self = this;
+        self.interaction.deleteElement(marker.ndo6, function (err) {
+            if (!err) {
+                self.maps.deleteMapElement(marker);
+                self.u.snack('Element deleted.');
             }
         });
     };

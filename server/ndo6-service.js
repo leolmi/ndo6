@@ -126,7 +126,7 @@ const settings = {
   // Path del client
   clientPath: '',
   // Token expires in minutes
-  tokenExpiration: 10,
+  tokenExpiration: 60 * 24,
   // Positions expires in seconds
   positionExpirationAge: 900,
   // MongoDB connection options
@@ -626,6 +626,7 @@ function _setPosition(view, pos, cb) {
   } else {
     view.positions.push(pos);
   }
+  view.markModified('positions');
   _checkExpired(view);
   view.save(function(err){
     if (err) return cb(err);
@@ -657,6 +658,7 @@ function _update(req, res, obj, smethod) {
       return u.error(res, err);
     }
     res.send(200, obj);
+    // console.log('MODIFIED VIEW:' , req.view);
     socket.events[smethod](req.view, obj);
   });
 }
@@ -715,6 +717,7 @@ exports.element = function(req, res) {
   };
   // console.log('push new element', ele);
   req.view.elements.push(ele);
+  req.view.markModified('elements');
   // console.log('notify update...');
   _update(req, res, ele, 'onElement');
 };
@@ -734,10 +737,15 @@ exports.removeElement = function(req, res) {
   if (!_validate(req, res)) return;
   const e = req.body;
   if (!e || !e.name || !e.type) return u.error(res, 'Unrecognized element');
+  // console.log('REMOVE - element to delete:', e);
   const removed = _.remove(req.view.elements, function(xe){
-    return xe.name === e.name && xe.type === e.type && (xe.owner === req.owner || req.view.owner === req.owner);
+    // console.log('REMOVE - existent element: ', xe);
+    const todelete = xe.name === e.name && xe.type === e.type && (xe.owner === req.owner || req.view.owner === req.owner);
+    // console.log('REMOVE - todelete=%s   owner=%s', todelete, req.owner);
+    return todelete;
   });
   if (!(removed||[]).length) return u.error(res, 'Element not found or you cannot remove it!');
+  req.view.markModified('elements');
   _update(req, res, removed[0], 'onRemoveElement');
 };
 
@@ -754,6 +762,7 @@ exports.message = function(req, res) {
     icon: m.icon||''
   };
   req.view.messages.push(msg);
+  req.view.markModified('messages');
   _update(req, res, msg, 'onMessage');
 };
 
