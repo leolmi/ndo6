@@ -1321,13 +1321,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var Ndo6IconsService = (function () {
     function Ndo6IconsService() {
         this.defaults = {
-            anchor: {
-                x: 24,
-                y: 48
-            },
+            anchor: { x: 24, y: 48 },
+            labelOrigin: { x: 24, y: 50 },
             color: 'orange',
-            code: 'position',
-            personIcon: 'position',
+            code: 'place',
+            personIcon: 'person_pin_circle',
             placeIcon: 'flag'
         };
         this.icons = [
@@ -1591,11 +1589,14 @@ var Ndo6IconsService = (function () {
         ic.color = ic.color || this.defaults.color;
         ic.code = ic.code || ic.icon || this.defaults.code;
         ic.anchor = ic.anchor || this.defaults.anchor;
+        ic.labelOrigin = ic.labelOrigin || this.defaults.labelOrigin;
         return {
+            // url: './assets/elements/' + ic.color + '/' + ic.code + '.svg',
             url: './assets/elements/' + ic.color + '/' + ic.code + '.png',
             size: new google.maps.Size(48, 48),
             origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(ic.anchor.x, ic.anchor.y)
+            anchor: new google.maps.Point(ic.anchor.x, ic.anchor.y),
+            labelOrigin: new google.maps.Point(ic.labelOrigin.x, ic.labelOrigin.y)
         };
     };
     Ndo6IconsService = __decorate([
@@ -1802,7 +1803,8 @@ var Ndo6Service = (function () {
             self.last = self.getMarker({
                 type: MARKERS.owner,
                 icon: self.icons.defaults.personIcon,
-                label: self.user.settings.nick[0],
+                // label: self.user.settings.nick[0],
+                label: self.user.settings.nick,
                 nick: self.user.settings.nick,
                 owner: self.user.settings.nick,
                 id: self.user.settings.id
@@ -1819,7 +1821,7 @@ var Ndo6Service = (function () {
                 longitude: p.longitude,
                 id: self.user.settings.id
             }));
-            var center = self.center || self.samePos(self.followMarker, self.last);
+            var center = self.center || self.followMarker === self.last;
             if (center === true) {
                 self.centerMap(self.last);
                 self.center = false;
@@ -1894,8 +1896,20 @@ var Ndo6Service = (function () {
         this.u.closeOverpage();
         this.checkState();
     };
+    Ndo6Service.prototype.checkNick = function () {
+        var self = this;
+        if (self.last && self.last.label.text !== self.user.settings.nick) {
+            self.last.setLabel({
+                text: self.user.settings.nick,
+                color: '#111',
+                fontSize: '12px',
+                fontWeight: 'normal'
+            });
+        }
+    };
     Ndo6Service.prototype.checkState = function () {
         var self = this;
+        self.checkNick();
         // se esiste il token attiva il pool oppure connette il socket (secondo lo impostazioni)
         if (!!self.user.settings.token) {
             if (self.user.settings.socketMode) {
@@ -1946,11 +1960,15 @@ var Ndo6Service = (function () {
                 ex.setPosition(latlng);
             }
             else {
-                pos.label = pos.owner[0] || '?';
+                // pos.label = pos.owner[0] || '?';
+                pos.label = pos.owner || '?';
                 pos.type = MARKERS.owner;
                 pos.icon = pos.icon || self.icons.defaults.personIcon;
                 ex = self.getMarker(pos);
                 self.maps.elements.push(ex);
+            }
+            if (ex === self.followMarker) {
+                self.centerMap(ex);
             }
         });
     };
@@ -1967,6 +1985,7 @@ var Ndo6Service = (function () {
                 ele.latitude = ele.content.position.latitude;
                 ele.longitude = ele.content.position.longitude;
                 ele.icon = ele.content.icon || self.icons.defaults.placeIcon;
+                ele.label = ele.name;
                 ex = self.getMarker(ele);
                 self.maps.elements.push(ex);
             }
@@ -1986,7 +2005,13 @@ var Ndo6Service = (function () {
         var latlnt = self.maps.getLatLng(info);
         var m = new google.maps.Marker({
             map: self.session.context.map,
-            label: info.label,
+            // label: info.label,
+            label: {
+                text: info.label,
+                color: '#111',
+                fontSize: '12px',
+                fontWeight: 'normal'
+            },
             position: latlnt,
             title: info.title || info.description || info.nick,
             icon: self.icons.getIcon(info)
