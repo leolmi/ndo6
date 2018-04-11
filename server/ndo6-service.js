@@ -504,6 +504,16 @@ function _validate(req, res) {
   return true;
 }
 
+function _save(view, marks, cb) {
+  if (marks) {
+    if (!_.isArray(marks)) marks = [marks];
+    marks.forEach(function(m){
+      view.markModified(m);
+    });
+  }
+  view.save(cb);
+}
+
 /**
  * Get list of views
  */
@@ -626,9 +636,8 @@ function _setPosition(view, pos, cb) {
   } else {
     view.positions.push(pos);
   }
-  view.markModified('positions');
   _checkExpired(view);
-  view.save(function(err){
+  _save(view, 'positions', function(err){
     if (err) return cb(err);
     socket.events.onPosition(view, pos);
     cb(null, pos);
@@ -641,7 +650,7 @@ exports.clearPosition = function(req, cb) {
     _.remove(req.view.positions, function(p){
       return p.owner === req.owner;
     });
-    req.view.save(function(err) {
+    _save(req.view, 'positions', function(err) {
       if (err) console.error(err);
       cb();
     });
@@ -650,9 +659,8 @@ exports.clearPosition = function(req, cb) {
   }
 };
 
-function _update(req, res, obj, smethod) {
-  // console.log('save view', req.view);
-  req.view.save(function(err){
+function _update(req, res, obj, smethod, mark) {
+  _save(req.view, mark, function(err) {
     if (err) {
       console.error(err);
       return u.error(res, err);
@@ -717,9 +725,8 @@ exports.element = function(req, res) {
   };
   // console.log('push new element', ele);
   req.view.elements.push(ele);
-  req.view.markModified('elements');
   // console.log('notify update...');
-  _update(req, res, ele, 'onElement');
+  _update(req, res, ele, 'onElement', 'elements');
 };
 
 /**
@@ -737,16 +744,13 @@ exports.removeElement = function(req, res) {
   if (!_validate(req, res)) return;
   const e = req.body;
   if (!e || !e.name || !e.type) return u.error(res, 'Unrecognized element');
-  // console.log('REMOVE - element to delete:', e);
+  // console.log('REMOVE - (owner=%s) element to delete:', req.owner, e);
   const removed = _.remove(req.view.elements, function(xe){
     // console.log('REMOVE - existent element: ', xe);
-    const todelete = xe.name === e.name && xe.type === e.type && (xe.owner === req.owner || req.view.owner === req.owner);
-    // console.log('REMOVE - todelete=%s   owner=%s', todelete, req.owner);
-    return todelete;
+    return xe.name === e.name && xe.type === e.type && (xe.owner === req.owner || req.view.owner === req.owner);
   });
   if (!(removed||[]).length) return u.error(res, 'Element not found or you cannot remove it!');
-  req.view.markModified('elements');
-  _update(req, res, removed[0], 'onRemoveElement');
+  _update(req, res, removed[0], 'onRemoveElement', 'elements');
 };
 
 /**
@@ -762,8 +766,7 @@ exports.message = function(req, res) {
     icon: m.icon||''
   };
   req.view.messages.push(msg);
-  req.view.markModified('messages');
-  _update(req, res, msg, 'onMessage');
+  _update(req, res, msg, 'onMessage', 'messages');
 };
 
 /**
@@ -834,7 +837,7 @@ exports.empty = function(req, res) {
     view.elements.splice(0);
     view.positions.splice(0);
     view.messages.splice(0);
-    view.save(function(err){
+    _save(view, ['elements', 'positions', 'messages'], function(err){
       if (err) return u.error(res, err);
       return res.send(200);
     });
