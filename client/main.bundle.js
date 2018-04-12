@@ -39,7 +39,7 @@ var fadeAnimation = Object(__WEBPACK_IMPORTED_MODULE_0__angular_animations__["l"
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idle\">\n<!--<div class=\"loader-container\">-->\n  <div class=\"loader\"></div>\n</div>\n\n<!-- HEADER -->\n<div class=\"map-header\" *ngIf=\"!u.overpage.type && user.settings.token && user.settings.map\" layout-row>\n  <div class=\"map-name\" flex>{{user.settings.map}}</div>\n  <div class=\"map-owner\">{{user.settings.nick}}</div>\n  <mat-icon class=\"map-owner-icon\">person</mat-icon>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.last&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div layout-row flex>\n    <div class=\"distance-info\" *ngIf=\"ndo6.distance.marker1 && ndo6.distance.marker2\" layout-col flex>\n      <div class=\"value\">{{ndo6.distance.text}}</div>\n      <div class=\"label\">{{ndo6.distance.label}}</div>\n    </div>\n  </div>\n  <button *ngIf=\"debug || user.system.token\" class=\"right-margin\" mat-fab matTooltip=\"test\" (click)=\"overpage('test')\">\n    <mat-icon>bug_report</mat-icon>\n  </button>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"overpage('map')\">\n    <mat-icon>map</mat-icon>\n  </button>\n</div>\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <div class=\"overpage-toolbar\" layout-row>\n    <span flex></span>\n    <button *ngIf=\"u.overpage.back\" class=\"back-button\" mat-icon-button matTooltip=\"go back\" (click)=\"backOverpage()\">\n      <mat-icon>chevron_left</mat-icon>\n    </button>\n    <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n      <mat-icon>close</mat-icon>\n    </button>\n  </div>\n  <app-overpage-test *ngSwitchCase=\"'test'\"></app-overpage-test>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n  <app-overpage-elements *ngSwitchCase=\"'elements'\"></app-overpage-elements>\n</div>\n"
+module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idle\">\n<!--<div class=\"loader-container\">-->\n  <div class=\"loader\"></div>\n</div>\n\n<!-- HEADER -->\n<div class=\"map-header\" *ngIf=\"!u.overpage.type && user.settings.token && user.settings.map\" layout-row>\n  <div class=\"map-name\" flex>{{user.settings.map}}</div>\n  <div class=\"map-owner\">{{user.settings.nick}}</div>\n  <mat-icon class=\"map-owner-icon\">person</mat-icon>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.mym&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div layout-row flex>\n    <div class=\"distance-info\" *ngIf=\"ndo6.distance.marker1 && ndo6.distance.marker2\" layout-col flex>\n      <div class=\"value\">{{ndo6.distance.text}}<span class=\"um\">{{ndo6.distance.um}}</span></div>\n      <div class=\"label\">{{ndo6.distance.label}}</div>\n    </div>\n  </div>\n  <button *ngIf=\"debug || user.system.token\" class=\"right-margin\" mat-fab matTooltip=\"test\" (click)=\"overpage('test')\">\n    <mat-icon>bug_report</mat-icon>\n  </button>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"overpage('map')\">\n    <mat-icon>map</mat-icon>\n  </button>\n</div>\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <div class=\"overpage-toolbar\" layout-row>\n    <span flex></span>\n    <button *ngIf=\"u.overpage.back\" class=\"back-button\" mat-icon-button matTooltip=\"go back\" (click)=\"backOverpage()\">\n      <mat-icon>chevron_left</mat-icon>\n    </button>\n    <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n      <mat-icon>close</mat-icon>\n    </button>\n  </div>\n  <app-overpage-test *ngSwitchCase=\"'test'\"></app-overpage-test>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n  <app-overpage-elements *ngSwitchCase=\"'elements'\"></app-overpage-elements>\n  <app-overpage-invite *ngSwitchCase=\"'invite'\"></app-overpage-invite>\n</div>\n"
 
 /***/ }),
 
@@ -140,7 +140,7 @@ var AppComponent = (function () {
                         self.clickOnMarker(e.data);
                         break;
                     case 'firstpos':
-                        self.initialized = !!self.ndo6.last || !!self.ndo6.followMarker;
+                        self.initialized = !!self.ndo6.mym || !!self.ndo6.followMarker;
                         break;
                     case 'changepos':
                         if (!!self.user.settings.token) {
@@ -168,7 +168,7 @@ var AppComponent = (function () {
                 }
             });
         });
-        self.initialized = !!self.ndo6.last || !!self.ndo6.followMarker;
+        self.initialized = !!self.ndo6.mym || !!self.ndo6.followMarker;
         this.refresh();
     };
     AppComponent.prototype.overpage = function (type, o) {
@@ -187,8 +187,8 @@ var AppComponent = (function () {
         });
     };
     AppComponent.prototype.location = function () {
-        if (this.ndo6.last) {
-            this.ndo6.centerMap(this.ndo6.last);
+        if (this.ndo6.mym) {
+            this.ndo6.centerMap(this.ndo6.mym);
         }
     };
     AppComponent.prototype.closeOverpage = function () {
@@ -276,11 +276,12 @@ var AppModule = (function () {
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */],
                 __WEBPACK_IMPORTED_MODULE_15__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["g" /* OverpageTestComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["e" /* OverpageMarkerComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["f" /* OverpageSettingsComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["d" /* OverpageMapComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["h" /* OverpageTestComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["f" /* OverpageMarkerComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["g" /* OverpageSettingsComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["e" /* OverpageMapComponent */],
                 __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["c" /* OverpageElementsComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["d" /* OverpageInviteComponent */],
                 __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["a" /* MapElementPointComponent */],
                 __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["b" /* MapElementWayComponent */],
                 __WEBPACK_IMPORTED_MODULE_17__components_log_monitor_log_monitor_component__["a" /* LogMonitorComponent */]
@@ -465,17 +466,24 @@ module.exports = "<div class=\"overpage-content page-elements\" [ngSwitch]=\"u.o
 
 /***/ }),
 
+/***/ "../../../../../src/app/components/overpages/overpage-invite.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"overpage-content\"  layout-col>\r\n  <h1>Invite</h1>\r\n  <div label>Mail list</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"e-mails\" [(ngModel)]=\"u.overpage.options.element.emails\" matTextareaAutosize matAutosizeMinRows=\"2\" (change)=\"refreshState()\"></textarea>\r\n  </mat-form-field>\r\n  <div label>Message</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"message\" [(ngModel)]=\"u.overpage.options.element.message\" matTextareaAutosize matAutosizeMinRows=\"2\"></textarea>\r\n  </mat-form-field>\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"invite()\" color=\"warn\" [disabled]=\"!inviteState.valid\">send invite</button>\r\n    <span flex></span>\r\n  </div>\r\n</div>\r\n\r\n"
+
+/***/ }),
+
 /***/ "../../../../../src/app/components/overpages/overpage-map.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"addElement()\">\r\n        <mat-icon>add</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element button-row\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.name}}</div>\r\n        <button mat-icon-button (click)=\"find(ele.marker)\">\r\n          <mat-icon>{{ele.marker.ndo6.content.icon.code}}</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.last)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"addElement()\">\r\n        <mat-icon>add</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element button-row\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.name}}</div>\r\n        <button mat-icon-button (click)=\"find(ele.marker)\">\r\n          <mat-icon>{{ele.marker.ndo6.content.icon.code}}</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.mym)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <!--<div class=\"padding-top\" layout-row>-->\r\n      <!--<span flex></span>-->\r\n      <!--<button mat-raised-button (click)=\"invite()\" color=\"accent\">Invite in Party</button>-->\r\n      <!--<span flex></span>-->\r\n    <!--</div>-->\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
 
 /***/ }),
 
 /***/ "../../../../../src/app/components/overpages/overpage-marker.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content\"  layout-col [ngSwitch]=\"marker.type\">\r\n  <!-- DATA: nick e altre info -->\r\n  <div label>Data</div>\r\n  <!-- TYPE: OWNER -->\r\n  <div *ngSwitchCase=\"'owner'\" class=\"ndo6-property\" layout-row><div class=\"name\">Nick:</div><div class=\"value\" flex>{{marker.owner||'(unknown)'}}</div> </div>\r\n  <!-- TYPE: POINT -->\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\" layout-row><div class=\"name\">Name:</div><div class=\"value big-text\" flex>{{marker.name||'(unknown)'}}</div> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\" layout-row><div class=\"name\">Author:</div><div class=\"value\" flex>{{marker.owner||'(unknown)'}}</div> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\" layout-row><div class=\"name\">Description:</div><div class=\"value\" flex>{{marker.content.desc}}</div> </div>\r\n  <!-- POSITION -->\r\n  <div label>Position</div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Latitude:</div><div class=\"value\" flex>{{u.overpage.options.latitude}}</div> </div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Longitude:</div><div class=\"value\" flex>{{u.overpage.options.longitude}}</div> </div>\r\n  <!-- OPTIONS -->\r\n  <div label>Options</div>\r\n  <mat-slide-toggle *ngSwitchCase=\"'owner'\" color=\"accent\" [(ngModel)]=\"followed\" (change)=\"changeOption()\">Follow Me</mat-slide-toggle>\r\n  <mat-slide-toggle *ngSwitchCase=\"'point'\" color=\"accent\" [(ngModel)]=\"marker.content.draggable\" disabled>Draggable</mat-slide-toggle>\r\n  <div class=\"padding-top\" layout-row>\r\n    <button *ngIf=\"canDelete\" mat-raised-button (click)=\"deleteElement()\" [color]=\"deleteState.color\">{{deleteState.message}}</button>\r\n    <span flex></span>\r\n  </div>\r\n  <div class=\"distance-definition\" layout-row>\r\n    <span class=\"distance-label text-right\" flex>{{((ndo6.distance.marker1||{}).ndo6||{}).label}}</span>\r\n    <button mat-mini-fab (click)=\"setDistance(false)\" [color]=\"(u.overpage.options.marker === ndo6.distance.marker1) ? 'accent' : ''\">\r\n      <mat-icon>{{ndo6.distance.marker1 ? 'gps_fixed' : 'gps_not_fixed'}}</mat-icon>\r\n    </button>\r\n    <!-- linear_scale -->\r\n    <mat-icon class=\"distance-separator\">settings_ethernet</mat-icon>\r\n    <button mat-mini-fab (click)=\"setDistance(true)\" [color]=\"(u.overpage.options.marker === ndo6.distance.marker2) ? 'accent' : ''\">\r\n      <mat-icon>{{ndo6.distance.marker2 ? 'gps_fixed' : 'gps_not_fixed'}}</mat-icon>\r\n    </button>\r\n    <span class=\"distance-label\" flex>{{((ndo6.distance.marker2||{}).ndo6||{}).label}}</span>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content\"  layout-col [ngSwitch]=\"marker.type\">\r\n  <!-- INFO: nick e altre info -->\r\n  <div label>Info</div>\r\n  <!-- TYPE: OWNER -->\r\n  <div *ngSwitchCase=\"'owner'\" class=\"ndo6-property\" layout-row><div class=\"name\">Nick:</div><div class=\"value\" flex>{{marker.owner||'(unknown)'}}</div> </div>\r\n  <!-- TYPE: POINT -->\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\" layout-row><div class=\"name\">Name:</div><div class=\"value big-text\" flex>{{marker.name||'(unknown)'}}</div> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\" layout-row><div class=\"name\">Author:</div><div class=\"value\" flex>{{marker.owner||'(unknown)'}}</div> </div>\r\n  <div *ngSwitchCase=\"'point'\" class=\"ndo6-property\" layout-row><div class=\"name\">Description:</div><div class=\"value\" flex>{{marker.content.desc}}</div> </div>\r\n  <!-- POSITION -->\r\n  <div label>Position</div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Latitude:</div><div class=\"value\" flex>{{u.overpage.options.latitude}}</div> </div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Longitude:</div><div class=\"value\" flex>{{u.overpage.options.longitude}}</div> </div>\r\n  <!-- OPTIONS -->\r\n  <div label>Options</div>\r\n  <mat-slide-toggle *ngSwitchCase=\"'owner'\" color=\"accent\" [(ngModel)]=\"followed\" (change)=\"changeOption()\">Follow Me</mat-slide-toggle>\r\n  <mat-slide-toggle *ngSwitchCase=\"'point'\" color=\"accent\" [(ngModel)]=\"marker.content.draggable\" disabled>Draggable</mat-slide-toggle>\r\n  <div class=\"distance-definition\" layout-row>\r\n    <span class=\"distance-label text-right\" flex>{{((ndo6.distance.marker1||{}).ndo6||{}).label}}</span>\r\n    <button mat-mini-fab (click)=\"setDistance(false)\" [color]=\"(u.overpage.options.marker === ndo6.distance.marker1) ? 'accent' : ''\">\r\n      <mat-icon>{{ndo6.distance.marker1 ? 'gps_fixed' : 'gps_not_fixed'}}</mat-icon>\r\n    </button>\r\n    <mat-icon class=\"distance-separator\">settings_ethernet</mat-icon>\r\n    <button mat-mini-fab (click)=\"setDistance(true)\" [color]=\"(u.overpage.options.marker === ndo6.distance.marker2) ? 'accent' : ''\">\r\n      <mat-icon>{{ndo6.distance.marker2 ? 'gps_fixed' : 'gps_not_fixed'}}</mat-icon>\r\n    </button>\r\n    <span class=\"distance-label\" flex>{{((ndo6.distance.marker2||{}).ndo6||{}).label}}</span>\r\n  </div>\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button *ngIf=\"canDelete\" mat-raised-button (click)=\"deleteElement()\" [color]=\"deleteState.color\">{{deleteState.message}}</button>\r\n    <span flex></span>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -497,13 +505,14 @@ module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-co
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return OverpageSettingsComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return OverpageTestComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return OverpageMarkerComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return OverpageMapComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return OverpageSettingsComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return OverpageTestComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return OverpageMarkerComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return OverpageMapComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return OverpageElementsComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MapElementPointComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return MapElementWayComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return OverpageInviteComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_operators_startWith__ = __webpack_require__("../../../../rxjs/_esm5/operators/startWith.js");
@@ -834,6 +843,9 @@ var OverpageMapComponent = (function () {
         this.ndo6.centerMap(m);
         this.u.closeOverpage();
     };
+    OverpageMapComponent.prototype.invite = function () {
+        this.u.openOverpage('invite');
+    };
     OverpageMapComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'app-overpage-map',
@@ -969,6 +981,32 @@ var MapElementWayComponent = (function () {
             __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */]])
     ], MapElementWayComponent);
     return MapElementWayComponent;
+}());
+
+var OverpageInviteComponent = (function () {
+    function OverpageInviteComponent(u, ndo6) {
+        this.u = u;
+        this.ndo6 = ndo6;
+        this.inviteState = {
+            valid: false
+        };
+    }
+    OverpageInviteComponent.prototype.ngOnInit = function () {
+        this.u.overpage.options.element = {};
+    };
+    OverpageInviteComponent.prototype.refreshState = function () {
+    };
+    OverpageInviteComponent.prototype.invite = function () {
+    };
+    OverpageInviteComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'app-overpage-invite',
+            template: __webpack_require__("../../../../../src/app/components/overpages/overpage-invite.html")
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_6__services_ndo6_service__["a" /* Ndo6Service */]])
+    ], OverpageInviteComponent);
+    return OverpageInviteComponent;
 }());
 
 
@@ -1302,12 +1340,12 @@ var MapsService = (function () {
         m.setMap(null);
         __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.remove(this.elements, function (e) { return e === m; });
     };
-    MapsService.prototype.getDistanceLabel = function (m) {
+    MapsService.prototype.getDistanceLabel = function (m, cb) {
         if (m >= 1000) {
-            return (m / 1000).toFixed(2) + 'km';
+            cb((m / 1000).toFixed(2), 'km');
         }
         else {
-            return m + 'm';
+            cb(m + '', 'm');
         }
     };
     MapsService = __decorate([
@@ -1702,7 +1740,7 @@ var Ndo6Service = (function () {
         this.icons = icons;
         this.events = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* EventEmitter */]();
         this.positionChecker = null;
-        this.last = null;
+        this.mym = null;
         this.distanceService = null;
         this.session = {
             user: {},
@@ -1716,6 +1754,7 @@ var Ndo6Service = (function () {
             marker2: null,
             value: 0,
             text: '',
+            um: '',
             label: ''
         };
         this.watchId = null;
@@ -1838,9 +1877,9 @@ var Ndo6Service = (function () {
     };
     Ndo6Service.prototype.setPos = function (pos) {
         var self = this;
-        if (!self.last) {
+        if (!self.mym) {
             self.onfirstpos = true;
-            self.last = self.getMarker({
+            self.mym = self.getMarker({
                 type: MARKERS.owner,
                 icon: self.icons.defaults.personIcon,
                 // label: self.user.settings.nick[0],
@@ -1851,9 +1890,9 @@ var Ndo6Service = (function () {
             });
         }
         self.log.info('POSITION: ', pos);
-        if (!self.samePosOf(self.last, pos) && self.validPos(pos)) {
+        if (!self.samePosOf(self.mym, pos) && self.validPos(pos)) {
             var latlng = self.maps.getLatLng(pos);
-            self.last.setPosition(latlng);
+            self.mym.setPosition(latlng);
             self.log.info('EMIT POSITION: ', pos);
             var p = self.maps.getPosition(pos);
             self.events.emit(new Ndo6Event('changepos', {
@@ -1861,16 +1900,16 @@ var Ndo6Service = (function () {
                 longitude: p.longitude,
                 id: self.user.settings.id
             }));
-            var center = self.center || self.followMarker === self.last;
+            var center = self.center || self.followMarker === self.mym;
             if (center === true) {
-                self.centerMap(self.last);
+                self.centerMap(self.mym);
                 self.center = false;
             }
             if (self.onfirstpos) {
                 self.events.emit(new Ndo6Event('firstpos'));
                 self.onfirstpos = false;
             }
-            self.refreshDistance(self.last);
+            self.refreshDistance(self.mym);
         }
     };
     Ndo6Service.prototype.checkPos = function () {
@@ -1953,12 +1992,13 @@ var Ndo6Service = (function () {
         }
         this.distance.label = '';
         this.distance.text = '';
+        this.distance.um = '';
         this.distance.value = 0;
     };
     Ndo6Service.prototype.checkNick = function () {
         var self = this;
-        if (self.last && self.last.label.text !== self.user.settings.nick) {
-            self.last.setLabel({
+        if (self.mym && self.mym.label.text !== self.user.settings.nick) {
+            self.mym.setLabel({
                 text: self.user.settings.nick,
                 color: '#111',
                 fontSize: '12px',
@@ -2006,7 +2046,7 @@ var Ndo6Service = (function () {
         // elimina gli oggetti sulla mappa
         self.maps.clearMapElements();
         self.resetDistance();
-        if (self.followMarker && self.followMarker !== self.last) {
+        if (self.followMarker && self.followMarker !== self.mym) {
             self.followMarker = null;
         }
     };
@@ -2015,11 +2055,9 @@ var Ndo6Service = (function () {
             return;
         }
         var self = this;
-        var last = self.last || {};
+        var mym = (self.mym || {})['ndo6'] || {};
         ps.forEach(function (pos) {
-            // console.log('[CHECK POS]: pos=', pos);
-            // console.log('[CHECK POS]: last=', self.last);
-            if (pos.id === last.id || pos.owner === last.owner) {
+            if (pos.id === mym.id || pos.owner === self.user.settings.nick) {
                 return;
             }
             var ex = __WEBPACK_IMPORTED_MODULE_7_lodash___default.a.find(self.maps.elements, function (e) { return e.ndo6.owner === pos.owner && e.ndo6.type === MARKERS.owner; });
@@ -2101,17 +2139,17 @@ var Ndo6Service = (function () {
         return m;
     };
     Ndo6Service.prototype.getNick = function (m) {
-        if (m === this.last) {
+        if (m === this.mym) {
             return this.user.settings.nick;
         }
         return m.ndo6.owner;
     };
     Ndo6Service.prototype.getLastPos = function () {
-        if (this.validMarkerPos(this.last)) {
+        if (this.validMarkerPos(this.mym)) {
             return {
-                latitude: this.last.position.lat(),
-                longitude: this.last.position.lng(),
-                timestamp: this.last.timestamp
+                latitude: this.mym.position.lat(),
+                longitude: this.mym.position.lng(),
+                timestamp: this.mym.timestamp
             };
         }
     };
@@ -2154,10 +2192,13 @@ var Ndo6Service = (function () {
                 travelMode: TRAVEL_MODES.walking
             }, function (err, data) {
                 if (err) {
-                    return console.error(err);
+                    return self.log.error(err);
                 }
                 self.distance.value = data.distance;
-                self.distance.text = self.maps.getDistanceLabel(data.distance);
+                self.maps.getDistanceLabel(data.distance, function (txt, um) {
+                    self.distance.text = txt;
+                    self.distance.um = um;
+                });
             });
         }
         else {
@@ -2165,9 +2206,10 @@ var Ndo6Service = (function () {
         }
     };
     Ndo6Service.prototype.calcDistance = function (o, cb) {
+        var self = this;
         var origin = o.origin.getPosition();
         var destination = o.destination.getPosition();
-        this.getDistanceService().getDistanceMatrix({
+        self.getDistanceService().getDistanceMatrix({
             origins: [origin],
             destinations: [destination],
             travelMode: o.travelMode || TRAVEL_MODES.walking,
@@ -2202,7 +2244,9 @@ var Ndo6Service = (function () {
                 case 'UNKNOWN_ERROR':
                     // — A Distance Matrix request could not be processed due to a server error.
                     //    The request may succeed if you try again.
-                    return cb('Error on distance calc request!');
+                    var err = 'Error on distance calc request (' + status + ')!';
+                    self.log.error(err);
+                    return cb(err);
             }
         });
     };
