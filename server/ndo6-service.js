@@ -778,6 +778,14 @@ exports.messages = function(req, res) {
 };
 
 
+exports.invite = function(req, res) {
+  if (!_validate(req, res)) return;
+  //TODO: invite friends on map
+  // - generate token 1 time (one for email)
+  // - send email
+  res.json(501, 'Not implemented yet!');
+};
+
 
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
@@ -1268,6 +1276,7 @@ router.post('/position', auth.isOnView(), controller.position);
 router.post('/message', auth.isOnView(), controller.message);
 router.post('/element', auth.isOnView(), controller.element);
 router.post('/remove', auth.isOnView(), controller.removeElement);
+router.post('/invite', auth.isOnView(), controller.invite);
 
 // SYSTEM METHODS
 router.post('/reset', auth.isSystem(), controller.reset);
