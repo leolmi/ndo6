@@ -39,7 +39,7 @@ var fadeAnimation = Object(__WEBPACK_IMPORTED_MODULE_0__angular_animations__["l"
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idle\">\n<!--<div class=\"loader-container\">-->\n  <div class=\"loader\"></div>\n</div>\n\n<!-- HEADER -->\n<div class=\"map-header\" *ngIf=\"!u.overpage.type && user.settings.token && user.settings.map\" layout-row>\n  <div class=\"map-name\" flex>{{user.settings.map}}</div>\n  <div class=\"map-owner\">{{user.settings.nick}}</div>\n  <mat-icon class=\"map-owner-icon\">person</mat-icon>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.mym&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div layout-row flex>\n    <div class=\"distance-info\" *ngIf=\"ndo6.distance.marker1 && ndo6.distance.marker2\" layout-col flex>\n      <div class=\"value\">{{ndo6.distance.text}}<span class=\"um\">{{ndo6.distance.um}}</span></div>\n      <div class=\"label\">{{ndo6.distance.label}}</div>\n    </div>\n  </div>\n  <button *ngIf=\"debug || user.system.token\" class=\"right-margin\" mat-fab matTooltip=\"test\" (click)=\"overpage('test')\">\n    <mat-icon>bug_report</mat-icon>\n  </button>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"overpage('map')\">\n    <mat-icon>map</mat-icon>\n  </button>\n</div>\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngSwitch]=\"u.overpage.type\">\n  <div class=\"overpage-toolbar\" layout-row>\n    <span flex></span>\n    <button *ngIf=\"u.overpage.back\" class=\"back-button\" mat-icon-button matTooltip=\"go back\" (click)=\"backOverpage()\">\n      <mat-icon>chevron_left</mat-icon>\n    </button>\n    <button class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n      <mat-icon>close</mat-icon>\n    </button>\n  </div>\n  <app-overpage-test *ngSwitchCase=\"'test'\"></app-overpage-test>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n  <app-overpage-elements *ngSwitchCase=\"'elements'\"></app-overpage-elements>\n  <app-overpage-invite *ngSwitchCase=\"'invite'\"></app-overpage-invite>\n</div>\n"
+module.exports = "<!-- LOADER -->\n<div class=\"loader-container\" *ngIf=\"u.idle\">\n<!--<div class=\"loader-container\">-->\n  <div class=\"loader\"></div>\n</div>\n\n<!-- HEADER -->\n<div class=\"map-header\" *ngIf=\"!u.overpage.type && user.settings.token && user.settings.map\" layout-row>\n  <div class=\"map-name\" flex>{{user.settings.map}}</div>\n  <div class=\"map-owner\">{{user.settings.nick}}</div>\n  <mat-icon class=\"map-owner-icon\">person</mat-icon>\n</div>\n\n<!-- MAP -->\n<div id=\"map-canvas\" [ngClass]=\"{'blur':u.err || u.overpage.type || u.modalActive}\"></div>\n\n<!-- CENTER -->\n<div class=\"map-center\" *ngIf=\"!u.err && !u.overpage.type && !u.modalActive\">\n  <div class=\"map-center-H\"></div>\n  <div class=\"map-center-V\"></div>\n</div>\n\n<!-- ERROR -->\n<div class=\"error-container\" *ngIf=\"u.err\" (click)=\"hideError()\">\n  <div class=\"error-title\">Error :(</div>\n  <div class=\"error\">{{u.err}}</div>\n</div>\n\n<!-- TOOLBAR -->\n<div *ngIf=\"!u.overpage.type\" class=\"toolbar\" layout-row>\n  <button class=\"location-button\" [color]=\"(ndo6.followMarker&&initialized) ? 'accent' : ((ndo6.mym&&initialized) ? 'primary' : '')\" mat-fab matTooltip=\"location\" (click)=\"location()\">\n    <mat-icon>my_location</mat-icon>\n  </button>\n  <div layout-row flex>\n    <div class=\"distance-info\" *ngIf=\"ndo6.distance.marker1 && ndo6.distance.marker2\" layout-col flex>\n      <div class=\"value\">{{ndo6.distance.text}}<span class=\"um\">{{ndo6.distance.um}}</span></div>\n      <div class=\"label\">{{ndo6.distance.label}}</div>\n    </div>\n  </div>\n  <button *ngIf=\"debug || user.system.token\" class=\"right-margin\" mat-fab matTooltip=\"test\" (click)=\"overpage('test')\">\n    <mat-icon>bug_report</mat-icon>\n  </button>\n  <button mat-fab matTooltip=\"map\" color=\"primary\" (click)=\"overpage('map')\">\n    <mat-icon>map</mat-icon>\n  </button>\n</div>\n\n<!-- OVERPAGES -->\n<div *ngIf=\"!!u.overpage.type\" class=\"overpage-container\" [ngClass]=\"(u.overpage.options||{}).style\" [ngSwitch]=\"u.overpage.type\">\n  <div class=\"overpage-toolbar\" layout-row>\n    <span flex></span>\n    <button *ngIf=\"u.overpage.back\" class=\"back-button\" mat-icon-button matTooltip=\"go back\" (click)=\"backOverpage()\">\n      <mat-icon>chevron_left</mat-icon>\n    </button>\n    <button *ngIf=\"(u.overpage.options||{}).close!==false\" class=\"close-button\" mat-icon-button matTooltip=\"close page\" (click)=\"closeOverpage()\">\n      <mat-icon>close</mat-icon>\n    </button>\n  </div>\n  <app-overpage-initial *ngSwitchCase=\"'initial'\"></app-overpage-initial>\n  <app-overpage-test *ngSwitchCase=\"'test'\"></app-overpage-test>\n  <app-overpage-settings *ngSwitchCase=\"'settings'\"></app-overpage-settings>\n  <app-overpage-marker *ngSwitchCase=\"'marker'\"></app-overpage-marker>\n  <app-overpage-map *ngSwitchCase=\"'map'\"></app-overpage-map>\n  <app-overpage-elements *ngSwitchCase=\"'elements'\"></app-overpage-elements>\n  <app-overpage-invite *ngSwitchCase=\"'invite'\"></app-overpage-invite>\n</div>\n"
 
 /***/ }),
 
@@ -102,33 +102,37 @@ var AppComponent = (function () {
         this.initialized = false;
         this.info = {};
         this.debug = !__WEBPACK_IMPORTED_MODULE_1__environments_environment__["a" /* environment */].production;
-        this.u.idle = true;
     }
     AppComponent.prototype.refresh = function () {
+        var _this = this;
         var self = this;
         self.u.err = null;
         self.info = {};
-        self.ndo6.reset();
-        self.interaction.getInfo().subscribe(function (data) {
-            self.info = data;
-            if (data.debug === true) {
-                self.debug = true;
-            }
-            initializer.run(data).then(function () {
-                self.maps.create(function (ctx) {
-                    self.ndo6.clickOnMarker = function (m) {
-                        self.clickOnMarker(m);
-                    };
-                    self.ndo6.activate(ctx);
+        self.ndo6.init(function () {
+            _this.u.closeOverpage();
+            _this.u.idle = true;
+            self.interaction.getInfo().subscribe(function (data) {
+                self.info = data;
+                if (data.debug === true) {
+                    self.debug = true;
+                }
+                initializer.run(data).then(function () {
+                    self.maps.create(function (ctx) {
+                        self.ndo6.clickOnMarker = function (m) {
+                            self.clickOnMarker(m);
+                        };
+                        self.ndo6.activate(ctx);
+                    });
+                    self.u.idle = false;
+                    self.ndo6.checkInvite();
+                }, function (err) {
+                    self.log.error(err, true);
+                    self.u.idle = false;
                 });
-                self.u.idle = false;
             }, function (err) {
                 self.log.error(err, true);
                 self.u.idle = false;
             });
-        }, function (err) {
-            self.log.error(err, true);
-            self.u.idle = false;
         });
     };
     AppComponent.prototype.ngOnInit = function () {
@@ -276,12 +280,13 @@ var AppModule = (function () {
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */],
                 __WEBPACK_IMPORTED_MODULE_15__components_confirm_dialog_confirm_dialog_component__["a" /* ConfirmDialogComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["h" /* OverpageTestComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["f" /* OverpageMarkerComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["g" /* OverpageSettingsComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["e" /* OverpageMapComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["d" /* OverpageInitialComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["i" /* OverpageTestComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["g" /* OverpageMarkerComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["h" /* OverpageSettingsComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["f" /* OverpageMapComponent */],
                 __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["c" /* OverpageElementsComponent */],
-                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["d" /* OverpageInviteComponent */],
+                __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["e" /* OverpageInviteComponent */],
                 __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["a" /* MapElementPointComponent */],
                 __WEBPACK_IMPORTED_MODULE_16__components_overpages_overpages_component__["b" /* MapElementWayComponent */],
                 __WEBPACK_IMPORTED_MODULE_17__components_log_monitor_log_monitor_component__["a" /* LogMonitorComponent */]
@@ -466,17 +471,24 @@ module.exports = "<div class=\"overpage-content page-elements\" [ngSwitch]=\"u.o
 
 /***/ }),
 
+/***/ "../../../../../src/app/components/overpages/overpage-initial.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"overpage-content page-initial\"  layout-col>\r\n  <!-- TERMS -->\r\n  <div *ngIf=\"!user.settings.accepted\" class=\"page-initial-section init-terms\">\r\n    <h1>Welcome to ndo6</h1>\r\n    <p>This app will read your position and sign it on map.</p>\r\n    <p>If you accept the terms you can share your position in a \"party\"</p>\r\n    <p>A party is a shared map where all components enter after autentication.</p>\r\n    <p>In a party you can share also points, ways and messages (chat) between components.</p>\r\n    <mat-checkbox [(ngModel)]=\"o.termsAccepted\">Accept</mat-checkbox>\r\n  </div>\r\n  <!-- USER -->\r\n  <div *ngIf=\"!user.settings.nick\" class=\"page-initial-section init-user\">\r\n    <h1>Your nickname</h1>\r\n    <p>You must specify a nickname to make yourself recognized inside a party</p>\r\n    <mat-form-field flex>\r\n      <input matInput [(ngModel)]=\"o.nick\" placeholder=\"Nick\">\r\n    </mat-form-field>\r\n  </div>\r\n  <!-- INVITATION -->\r\n  <div *ngIf=\"user.invitation\" class=\"page-initial-section init-invitation\">\r\n    <h1>Invitation</h1>\r\n    <p>You have received an invitation:</p>\r\n    <mat-checkbox [(ngModel)]=\"o.inviteAccepted\">Accept</mat-checkbox>\r\n    <div *ngIf=\"error\" class=\"error\">{{error}}</div>\r\n  </div>\r\n  <!-- DONE -->\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"done()\" color=\"warn\" [disabled]=\"!o.nick || !o.termsAccepted\">OK</button>\r\n    <span flex></span>\r\n  </div>\r\n</div>\r\n"
+
+/***/ }),
+
 /***/ "../../../../../src/app/components/overpages/overpage-invite.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content\"  layout-col>\r\n  <h1>Invite</h1>\r\n  <div label>Mail list</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"e-mails\" [(ngModel)]=\"u.overpage.options.element.emails\" matTextareaAutosize matAutosizeMinRows=\"2\" (change)=\"refreshState()\"></textarea>\r\n  </mat-form-field>\r\n  <div label>Message</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"message\" [(ngModel)]=\"u.overpage.options.element.message\" matTextareaAutosize matAutosizeMinRows=\"2\"></textarea>\r\n  </mat-form-field>\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"invite()\" color=\"warn\" [disabled]=\"!inviteState.valid\">send invite</button>\r\n    <span flex></span>\r\n  </div>\r\n</div>\r\n\r\n"
+module.exports = "<div class=\"overpage-content\" layout-col>\r\n  <h1>Invite</h1>\r\n  <div label>Mail list</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"e-mails\" [(ngModel)]=\"u.overpage.options.element.emails\" matTextareaAutosize matAutosizeMinRows=\"2\" (change)=\"refreshState()\"></textarea>\r\n  </mat-form-field>\r\n  <div label>Message</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"message\" [(ngModel)]=\"u.overpage.options.element.message\" matTextareaAutosize matAutosizeMinRows=\"2\"></textarea>\r\n  </mat-form-field>\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"invite()\" color=\"warn\" [disabled]=\"!inviteState.valid\">send invite</button>\r\n    <span flex></span>\r\n  </div>\r\n  <!-- TODO: central position: seleziona un element da centrare sulla mappa -->\r\n</div>\r\n\r\n"
 
 /***/ }),
 
 /***/ "../../../../../src/app/components/overpages/overpage-map.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"addElement()\">\r\n        <mat-icon>add</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element button-row\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.name}}</div>\r\n        <button mat-icon-button (click)=\"find(ele.marker)\">\r\n          <mat-icon>{{ele.marker.ndo6.content.icon.code}}</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.mym)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div class=\"padding-top\" layout-row>\r\n      <span flex></span>\r\n      <button mat-raised-button (click)=\"invite()\" color=\"accent\">Invite in Party</button>\r\n      <span flex></span>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"addElement()\">\r\n        <mat-icon>add</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element button-row\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.name}}</div>\r\n        <button mat-icon-button (click)=\"find(ele.marker)\">\r\n          <mat-icon>{{ele.marker.ndo6.content.icon.code}}</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.mym)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div class=\"padding-top\" layout-row>\r\n      <span flex></span>\r\n      <!--<button mat-raised-button (click)=\"invite()\" color=\"accent\">Invite in Party</button>-->\r\n      <span flex></span>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -505,14 +517,15 @@ module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-co
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return OverpageSettingsComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return OverpageTestComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return OverpageMarkerComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return OverpageMapComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return OverpageSettingsComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return OverpageInitialComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return OverpageTestComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return OverpageMarkerComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return OverpageMapComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return OverpageElementsComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MapElementPointComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return MapElementWayComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return OverpageInviteComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return OverpageInviteComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_operators_startWith__ = __webpack_require__("../../../../rxjs/_esm5/operators/startWith.js");
@@ -561,6 +574,50 @@ var OverpageSettingsComponent = (function () {
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__["a" /* UserSettingsService */]])
     ], OverpageSettingsComponent);
     return OverpageSettingsComponent;
+}());
+
+var OverpageInitialComponent = (function () {
+    function OverpageInitialComponent(u, user, interaction) {
+        this.u = u;
+        this.user = user;
+        this.interaction = interaction;
+        this.o = {};
+        this.loading = false;
+        this.invite = {};
+        this.error = null;
+    }
+    OverpageInitialComponent.prototype.ngOnInit = function () {
+        var self = this;
+        self.loading = true;
+        self.o = self.u.overpage.options || {};
+        self.o.nick = self.user.settings.nick;
+        self.o.termsAccepted = self.user.settings.accepted;
+        self.o.inviteAccepted = false;
+        self.interaction.checkInvite({ invitation: self.user.invitation }, function (err, data) {
+            self.invite = data || {};
+            self.error = self.u.getErrorMessage(err);
+            self.loading = false;
+        });
+    };
+    OverpageInitialComponent.prototype.done = function () {
+        this.user.settings.nick = this.o.nick;
+        this.user.settings.accepted = this.o.termsAccepted;
+        this.user.inviteAccepted = this.o.inviteAccepted;
+        this.user.update();
+        if (__WEBPACK_IMPORTED_MODULE_11_lodash___default.a.isFunction(this.o.callback)) {
+            this.o.callback();
+        }
+    };
+    OverpageInitialComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'app-overpage-initial',
+            template: __webpack_require__("../../../../../src/app/components/overpages/overpage-initial.html")
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__services_utils_service__["a" /* UtilsService */],
+            __WEBPACK_IMPORTED_MODULE_5__services_user_settings_service__["a" /* UserSettingsService */],
+            __WEBPACK_IMPORTED_MODULE_9__services_interaction_service__["a" /* InteractionService */]])
+    ], OverpageInitialComponent);
+    return OverpageInitialComponent;
 }());
 
 var OverpageTestComponent = (function () {
@@ -995,7 +1052,8 @@ var OverpageInviteComponent = (function () {
     OverpageInviteComponent.prototype.ngOnInit = function () {
         this.u.overpage.options.element = {
             emails: '',
-            message: this.user.settings.nick + ' invite you in map "' + this.user.settings.map + '"'
+            message: this.user.settings.nick + ' invite you in map "' + this.user.settings.map + '"',
+            point: null
         };
         this.inviteState.valid = false;
     };
@@ -1008,6 +1066,9 @@ var OverpageInviteComponent = (function () {
         this.interaction.invite(this.u.overpage.options.element, function (err) {
             var msg = (err) ? 'Error: ' + _this.u.getErrorMessage(err) : 'Invitation sended successfully';
             _this.u.snack(msg);
+            if (!err) {
+                _this.u.closeOverpage();
+            }
         });
     };
     OverpageInviteComponent = __decorate([
@@ -1143,6 +1204,13 @@ var InteractionService = (function () {
     InteractionService.prototype.invite = function (data, cb) {
         this.http.post(this.user.getUrl('api/view/invite'), this._check(data))
             .subscribe(function (r) { return cb(); }, this._err(cb));
+    };
+    InteractionService.prototype.checkInvite = function (invitation, cb) {
+        if (!invitation) {
+            return cb();
+        }
+        this.http.get(this.user.getUrl('api/view/check/' + invitation))
+            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     //////////////////////////////////////////////////////
     // SYSTEM METHODS
@@ -1791,6 +1859,27 @@ var Ndo6Service = (function () {
             }
         });
     }
+    Ndo6Service.prototype.init = function (cb) {
+        var self = this;
+        self.user.invitation = self.u.getUrlGuid();
+        if (self.user.needInit()) {
+            self.u.clearPath();
+            self.u.overpage.options = {
+                style: 'background',
+                close: false,
+                callback: cb
+            };
+            self.u.overpage.type = 'initial';
+        }
+        else {
+            cb();
+        }
+    };
+    Ndo6Service.prototype.checkInvite = function () {
+        // TODO: se è stato accettato l'invito e ci sono i parametri accede all'invito
+        // ..............................
+        console.log('OPEN INVITE (todo)...');
+    };
     Ndo6Service.prototype.getDistanceService = function () {
         this.distanceService = this.distanceService || new google.maps.DistanceMatrixService();
         return this.distanceService;
@@ -2313,18 +2402,21 @@ var UserSettingsService = (function () {
         this.u = u;
         this.settings = {};
         this.system = {};
+        this.invitation = '';
+        this.inviteAccepted = false;
         var sts = this.u.storage.get(STORE_KEY) || {};
         __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.extend(this.settings, sts);
         __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.defaults(this.settings, {
             host: DEFAULT_SERVER_HOST,
             debug: false,
             delay: 1000,
-            nick: 'io',
+            nick: '',
             id: u.guid(),
             map: '',
             token: '',
             socketMode: false,
-            poolingTime: 1000
+            poolingTime: 1000,
+            accepted: false
         });
         console.log('SETTINGS', this.settings);
     }
@@ -2332,6 +2424,9 @@ var UserSettingsService = (function () {
         if (value) {
             this.settings[target] = value;
         }
+    };
+    UserSettingsService.prototype.needInit = function () {
+        return !!this.invitation || !this.settings.nick || !this.settings.accepted;
     };
     UserSettingsService.prototype.update = function () {
         this.u.storage.set(STORE_KEY, this.settings);
@@ -2375,6 +2470,7 @@ var UserSettingsService = (function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* unused harmony export Composer */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return UtilsService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_material__ = __webpack_require__("../../../material/esm5/material.es5.js");
@@ -2394,6 +2490,62 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+/**
+ * Compone uno stack di elementi eseguibili (funzioni o oggetti con metodo di run)
+ * da eseguire in sequenza. Al termine esegue la callback definita nel
+ * metodo run (se specificata)
+ * @param {object|string} [o]
+ * @constructor
+ */
+var Composer = (function () {
+    function Composer(options) {
+        var _this = this;
+        this._nextMethod = null;
+        this._stack = new Array();
+        this._options = null;
+        this._exit = false;
+        this._step = 0;
+        this._getStep = function () {
+            var self = _this;
+            var step = (!self._exit && self._step < self._stack.length) ? self._stack[self._step] : null;
+            self._step++;
+            return step;
+        };
+        // if (!_.isObject(o)) o = {nextMethod: _.isString(o) ? o : 'exec'};
+        // this._nextMethod = o.nextMethod || 'exec';
+        // this._stack = [];
+        // this.options = o;
+        // this.exit = false;
+        this.use = function (step) {
+            var self = _this;
+            self._stack.push(step);
+            return self;
+        };
+        this.run = function (cb) {
+            cb = cb || (function () { });
+            var self = _this;
+            self._step = 0;
+            if (self._stack.length <= 0) {
+                return cb(self._options);
+            }
+            (function next() {
+                var step = self._getStep();
+                if (!step) {
+                    return cb(self._options);
+                }
+                else if (__WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isFunction(step)) {
+                    step.call(self, next, self._options);
+                }
+                else if (__WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isFunction(step[self._nextMethod])) {
+                    step[self._nextMethod](next, self._options);
+                }
+            })();
+        };
+        this._options = options || {};
+    }
+    return Composer;
+}());
 
 var TYPES = {
     string: 'string',
@@ -2708,11 +2860,25 @@ var UtilsService = (function () {
             window.location.origin ||
             window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
     };
+    UtilsService.prototype.clearPath = function () {
+        var url = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        window.history.pushState({ path: url }, '', url);
+    };
     UtilsService.prototype.validate = function (str, rgxstr) {
         if (rgxstr === void 0) { rgxstr = null; }
         var rgx = (rgxstr) ? new RegExp(rgxstr) : null;
         var valid = (rgx) ? rgx.test(str) : true;
         return valid && str && __WEBPACK_IMPORTED_MODULE_3_lodash___default.a.isString(str) && str.trim().length > 1;
+    };
+    UtilsService.prototype.getUrlGuid = function () {
+        var query = window.location.search || '';
+        var rgx = /^\?map=(.*)$/g;
+        var m = query ? rgx.exec(window.location.search || '') : null;
+        return m ? m[1] : null;
+    };
+    UtilsService.prototype.compose = function (o) {
+        if (o === void 0) { o = null; }
+        return new Composer(o);
     };
     UtilsService = UtilsService_1 = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),

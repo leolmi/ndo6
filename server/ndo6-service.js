@@ -105,6 +105,11 @@ const settings = {
   secrets: {
     session: 'ndo6-secret'
   },
+  // email
+  email: {
+    user: process.env.NDO6_MAIL_USER || '',
+    password: process.env.NDO6_MAIL_PASSWORD || ''
+  },
   // System
   system: {
     id: 'ndo6_system_user',
@@ -334,6 +339,7 @@ module.exports = require("mongoose");
 "use strict";
 
 const crypto = __webpack_require__(9);
+const _ = __webpack_require__(1);
 const _use =  true ? require : require;
 
 exports.use = _use;
@@ -351,6 +357,54 @@ exports.encryptPassword =function(password, saltstr) {
 };
 
 
+function _getStep(c) {
+  var step = c._step < c._stack.length ? c._stack[c._step] : null;
+  c._step++;
+  return step;
+}
+
+var composer = function(execFnName) {
+  this._exec = execFnName || 'exec';
+  this._stack = [];
+};
+
+composer.prototype = {
+  /**
+   * Aggiunge un elemento in stack
+   * @param {function|object} step
+   * @returns {composer}
+   */
+  use: function(step) {
+    var self = this;
+    self._stack.push(step);
+    return self;
+  },
+  /**
+   * Avvia lo stack di elementi
+   * @param {function} [cb]
+   * @returns {*}
+   */
+  run: function(cb) {
+    cb = cb || _.noop;
+    var self = this;
+    self._step = 0;
+    if (self._stack.length<=0) return cb();
+    (function next() {
+      var step = _getStep(self);
+      if (!step) {
+        cb();
+      } else if (_.isFunction(step)) {
+        step.call(self, next);
+      } else if (_.isFunction(step[self._exec])) {
+        step[self._exec](next);
+      }
+    })();
+  }
+};
+
+exports.compose = function(execFnName) { return new composer(execFnName); };
+
+
 /***/ }),
 /* 6 */
 /***/ (function(module, exports) {
@@ -366,9 +420,9 @@ module.exports = require("passport");
 
 const _ = __webpack_require__(1);
 const config = __webpack_require__(0);
-const jwt = __webpack_require__(32);
-const expressJwt = __webpack_require__(33);
-const compose = __webpack_require__(34);
+const jwt = __webpack_require__(33);
+const expressJwt = __webpack_require__(34);
+const compose = __webpack_require__(35);
 const View = __webpack_require__(2);
 const validateJwt = expressJwt({ secret: config.secrets.session });
 
@@ -419,8 +473,8 @@ function isSystem() {
 /**
  * Returns a jwt token signed by the app secret
  */
-function signToken(id, owner) {
-  return jwt.sign({ id: id, owner: owner||'' }, config.secrets.session, { expiresIn: 60*(config.tokenExpiration||10) });
+function signToken(id, owner, expiration) {
+  return jwt.sign({ id: id, owner: owner||'' }, config.secrets.session, { expiresIn: 60*(expiration||config.tokenExpiration||10) });
 }
 
 exports.signToken = signToken;
@@ -487,12 +541,14 @@ exports.register = function(handler) {
 
 
 const View = __webpack_require__(2);
+const Invite = __webpack_require__(32);
 const config = __webpack_require__(0);
 const u = __webpack_require__(5);
 const auth = __webpack_require__(7);
 const socket = __webpack_require__(10);
 const _ = __webpack_require__(1);
-const version = __webpack_require__(35);
+const version = __webpack_require__(36);
+const nodemailer = __webpack_require__(37);
 
 function _validationError(res, err) {
   return res.json(422, err);
@@ -777,13 +833,94 @@ exports.messages = function(req, res) {
   res.json(200, req.view.messages);
 };
 
+function _sendInviteMail(transporter, invite, cb) {
+  const url = 'https://ndo6.herokuapp.com/?map=' + invite._id;
+  const html = '<style>body,html {font-variant: small-caps;font-family: "Helvetica Neue Light", '+
+    '"HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;color: #111;}</style>'+
+    '<h1>ndo6</h1><p>' + invite.message + '</p><a href="'+ url + '">' + invite.map + '</a>';
+  const o = {
+    from: config.email.user,
+    to: invite.email,
+    subject: 'ndo6 invite',
+    html: html
+  };
+  // console.log('before send mail. url=%s  options:', url, o)
+  transporter.sendMail(o, function (err, info) {
+    if (err) {
+      console.log('Send mail error:', error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+    cb(err);
+  });
+}
+
+const INVITE_TOKEN_AGEM = 60 * 24 * 2;
 
 exports.invite = function(req, res) {
   if (!_validate(req, res)) return;
-  //TODO: invite friends on map
-  // - generate token 1 time (one for email)
-  // - send email
-  res.json(501, 'Not implemented yet!');
+  const info = req.body;
+  const rgx = /[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*/g;
+  const m = (info.emails||'').match(rgx);
+  if (!m || !m.length) return res.json(500, 'Undefined emails');
+  const errors = [];
+  const seq = u.compose();
+  const transpo = {
+    service: 'gmail',
+    auth: {
+      user: config.email.user,
+      pass: config.email.password
+    }
+  };
+  const trans = nodemailer.createTransport(transpo);
+  // console.log('Transporter options: ', transpo);
+  m.forEach(function(email){
+    const token = auth.signToken(req.view._id, req.owner, INVITE_TOKEN_AGEM);
+    const invite = new Invite({
+      owner: req.owner,
+      map: req.view.name,
+      email: email,
+      message: info.message,
+      point: info.point,
+      token: token,
+      created: Date.now()
+    });
+    // console.log('Nuovo invito: ', invite);
+    seq.use(function(next){
+      invite.save(function(err, inv) {
+        if (err) console.error('Saving invite error:', err);
+        // console.log('Invite saved:',  inv);
+        if (err) {
+          errors.push(err);
+          next();
+        } else {
+          _sendInviteMail(trans, inv, function(err){
+            if (err) errors.push(err);
+            next();
+          });
+        }
+      });
+    });
+  });
+  seq.run(function() {
+    console.log('end of sequence...');
+    if (errors.length) console.error(errors);
+    res.json(200, {errors:errors});
+  });
+};
+
+exports.check = function(req, res) {
+  if (!req.params.id) return res.json(401, 'Undefined invite');
+  Invite.findById(req.params.id, function (err, invite) {
+    if (err) return res.send(404);
+    const now = Date.now();
+    if (invite.created + (INVITE_TOKEN_AGEM * 60 * 1000) < now) {
+      invite.remove();
+      return res.send(403);
+    } else {
+      res.json(200, invite);
+    }
+  });
 };
 
 
@@ -1209,7 +1346,7 @@ var errors = __webpack_require__(30);
 
 module.exports = function(app) {
   app.use('/api/view', __webpack_require__(31));
-  app.use('/auth', __webpack_require__(36));
+  app.use('/auth', __webpack_require__(38));
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|assets)/*')
    .get(errors[404]);
@@ -1264,6 +1401,8 @@ var router = express.Router();
 
 router.get('/', controller.index);
 router.get('/info', controller.info);
+router.get('/check/:id', controller.check);
+
 // router.get('/positions/:owner', auth.isOnView(), controller.positions);
 // router.get('/messages/:owner', auth.isOnView(), controller.messages);
 // router.get('/elements/:owner', auth.isOnView(), controller.elements);
@@ -1278,6 +1417,7 @@ router.post('/element', auth.isOnView(), controller.element);
 router.post('/remove', auth.isOnView(), controller.removeElement);
 router.post('/invite', auth.isOnView(), controller.invite);
 
+
 // SYSTEM METHODS
 router.post('/reset', auth.isSystem(), controller.reset);
 router.post('/empty', auth.isSystem(), controller.empty);
@@ -1290,24 +1430,47 @@ module.exports = router;
 
 /***/ }),
 /* 32 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("jsonwebtoken");
+"use strict";
+
+
+const mongoose = __webpack_require__(4);
+const Schema = mongoose.Schema;
+
+var InviteSchema = new Schema({
+  owner: String,
+  map: String,
+  email: String,
+  message: String,
+  point: String,
+  token: String,
+  created: Number
+}, { versionKey: false });
+
+module.exports = mongoose.model('Invite', InviteSchema);
+
 
 /***/ }),
 /* 33 */
 /***/ (function(module, exports) {
 
-module.exports = require("express-jwt");
+module.exports = require("jsonwebtoken");
 
 /***/ }),
 /* 34 */
 /***/ (function(module, exports) {
 
-module.exports = require("composable-middleware");
+module.exports = require("express-jwt");
 
 /***/ }),
 /* 35 */
+/***/ (function(module, exports) {
+
+module.exports = require("composable-middleware");
+
+/***/ }),
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1323,7 +1486,13 @@ exports.infos = {
 
 
 /***/ }),
-/* 36 */
+/* 37 */
+/***/ (function(module, exports) {
+
+module.exports = require("nodemailer");
+
+/***/ }),
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1336,10 +1505,10 @@ const auth = __webpack_require__(7);
 const View = __webpack_require__(2);
 const controller = __webpack_require__(11);
 // const socket = require('../config/socketio');
-const system = __webpack_require__(37);
+const system = __webpack_require__(39);
 
 // Passport Configuration
-__webpack_require__(38).setup(View, config);
+__webpack_require__(40).setup(View, config);
 
 const router = express.Router();
 
@@ -1382,7 +1551,7 @@ module.exports = router;
 
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1396,11 +1565,11 @@ exports.authenticate = function(name, password) {
 
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const passport = __webpack_require__(6);
-const LocalStrategy = __webpack_require__(39).Strategy;
+const LocalStrategy = __webpack_require__(41).Strategy;
 
 exports.setup = function (View, config) {
   passport.use(new LocalStrategy({
@@ -1427,7 +1596,7 @@ exports.setup = function (View, config) {
 
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-local");
