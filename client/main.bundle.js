@@ -2250,6 +2250,7 @@ var Ndo6Service = (function () {
             }
             if (!self.followMarker && !!self.centerPoint && ex.ndo6.name === self.centerPoint) {
                 self.centerMap(ex);
+                self.centerPoint = null;
             }
         });
     };
