@@ -847,7 +847,7 @@ function _sendInviteMail(transporter, invite, cb) {
   // console.log('before send mail. url=%s  options:', url, o)
   transporter.sendMail(o, function (err, info) {
     if (err) {
-      console.log('Send mail error:', error);
+      console.log('Send mail error:', err);
     } else {
       console.log('Email sent: ' + info.response);
     }
