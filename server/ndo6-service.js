@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -69,8 +69,8 @@
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(__dirname) {
-const fs = __webpack_require__(13);
-const path = __webpack_require__(8);
+const fs = __webpack_require__(14);
+const path = __webpack_require__(9);
 const _ = __webpack_require__(1);
 const _is_release = typeof __webpack_require__ === "function";
 const root = path.normalize(__dirname + (_is_release ? '/..' : '/../../..'));
@@ -167,7 +167,7 @@ module.exports = require("lodash");
 
 const mongoose = __webpack_require__(4);
 const Schema = mongoose.Schema;
-const crypto = __webpack_require__(9);
+const crypto = __webpack_require__(10);
 const u = __webpack_require__(5);
 const _ = __webpack_require__(1);
 
@@ -187,7 +187,8 @@ var ViewSchemaPosition = new Schema({
   id: String,
   latitude: Number,
   longitude: Number,
-  timestamp: Number
+  timestamp: Number,
+  _update: Number,
 });
 
 var ViewSchemaMessage = new Schema({
@@ -338,7 +339,7 @@ module.exports = require("mongoose");
 
 "use strict";
 
-const crypto = __webpack_require__(9);
+const crypto = __webpack_require__(10);
 const _ = __webpack_require__(1);
 const _use =  true ? require : require;
 
@@ -407,12 +408,36 @@ exports.compose = function(execFnName) { return new composer(execFnName); };
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const mongoose = __webpack_require__(4);
+const Schema = mongoose.Schema;
+
+var InviteSchema = new Schema({
+  owner: String,
+  map: String,
+  email: String,
+  message: String,
+  point: String,
+  token: String,
+  age: {type: Number, default: 2},
+  created: Number
+}, { versionKey: false });
+
+module.exports = mongoose.model('Invite', InviteSchema);
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport");
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -424,6 +449,7 @@ const jwt = __webpack_require__(33);
 const expressJwt = __webpack_require__(34);
 const compose = __webpack_require__(35);
 const View = __webpack_require__(2);
+const Invite = __webpack_require__(6);
 const validateJwt = expressJwt({ secret: config.secrets.session });
 
 function _owner(req, res, next) {
@@ -436,6 +462,18 @@ function _view(req, res, next) {
     if (err) return next(err);
     if (!view) return res.send(404);
     req.view = view;
+    next();
+  });
+}
+
+function _invite(req, res, next) {
+  console.log('USER: %s', req.user);
+  if (!(req.user||{}).invite) return next();
+  Invite.findById(req.user.invite, function(err, inv) {
+    if (inv) inv.remove(function (err) {
+      console.log('Invite deleted: ', (err || 'OK!'));
+      if (err) console.error('Errors deleting invite:', err)
+    });
     next();
   });
 }
@@ -458,7 +496,9 @@ function isOnView() {
     // Attach owner to request
     .use(_owner)
     // Attach view to request
-    .use(_view);
+    .use(_view)
+    // Check login by invite
+    .use(_invite);
 }
 
 
@@ -473,8 +513,8 @@ function isSystem() {
 /**
  * Returns a jwt token signed by the app secret
  */
-function signToken(id, owner, expiration) {
-  return jwt.sign({ id: id, owner: owner||'' }, config.secrets.session, { expiresIn: 60*(expiration||config.tokenExpiration||10) });
+function signToken(o, expiration) {
+  return jwt.sign(o, config.secrets.session, { expiresIn: 60*(expiration||config.tokenExpiration||10) });
 }
 
 exports.signToken = signToken;
@@ -484,19 +524,19 @@ exports.isSystem = isSystem;
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = require("crypto");
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -534,18 +574,18 @@ exports.register = function(handler) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 const View = __webpack_require__(2);
-const Invite = __webpack_require__(32);
+const Invite = __webpack_require__(6);
 const config = __webpack_require__(0);
 const u = __webpack_require__(5);
-const auth = __webpack_require__(7);
-const socket = __webpack_require__(10);
+const auth = __webpack_require__(8);
+const socket = __webpack_require__(11);
 const _ = __webpack_require__(1);
 const version = __webpack_require__(36);
 const nodemailer = __webpack_require__(37);
@@ -599,11 +639,10 @@ exports.create = function (req, res, next) {
   const newView = new View(req.body);
   newView.elements = newView.elements || [];
   newView.owner = req.owner;
-  console.log('Nuova view: ', newView);
-
+  // console.log('Nuova view: ', newView);
   newView.save(function(err, view) {
     if (err) return _validationError(res, err);
-    const token = auth.signToken(view._id, req.owner);
+    const token = auth.signToken({id: view._id, owner: req.owner});
     res.json({ token: token });
   });
 };
@@ -678,7 +717,7 @@ exports.view = function(req, res) {
 function _checkExpired(view) {
   const now = Date.now();
   _.remove(view.positions, function(p){
-    return (now - p._update) > ((config.positionExpirationAge || 900) * 1000);
+    return p._update ? (now - p._update) > ((config.positionExpirationAge || 900) * 1000) : false;
   });
 }
 
@@ -855,8 +894,6 @@ function _sendInviteMail(transporter, invite, cb) {
   });
 }
 
-const INVITE_TOKEN_AGEM = 60 * 24 * 2;
-
 exports.invite = function(req, res) {
   if (!_validate(req, res)) return;
   const info = req.body;
@@ -873,18 +910,22 @@ exports.invite = function(req, res) {
     }
   };
   const trans = nodemailer.createTransport(transpo);
+  var age = info.age||2;
+  if (age<1) age = 1;
+  if (age>10) age = 10;
   // console.log('Transporter options: ', transpo);
   m.forEach(function(email){
-    const token = auth.signToken(req.view._id, req.owner, INVITE_TOKEN_AGEM);
     const invite = new Invite({
       owner: req.owner,
       map: req.view.name,
       email: email,
       message: info.message,
       point: info.point,
-      token: token,
+      token: null,
+      age: age * 24 * 60,
       created: Date.now()
     });
+    invite.token = auth.signToken({id: req.view._id, owner: req.owner, invite: invite._id}, invite.age);
     // console.log('Nuovo invito: ', invite);
     seq.use(function(next){
       invite.save(function(err, inv) {
@@ -903,7 +944,7 @@ exports.invite = function(req, res) {
     });
   });
   seq.run(function() {
-    console.log('end of sequence...');
+    // console.log('end of sequence...');
     if (errors.length) console.error(errors);
     res.json(200, {errors:errors});
   });
@@ -912,11 +953,12 @@ exports.invite = function(req, res) {
 exports.check = function(req, res) {
   if (!req.params.id) return res.json(401, 'Undefined invite');
   Invite.findById(req.params.id, function (err, invite) {
-    if (err) return res.send(404);
+    if (err) return res.send(500, err);
+    if (!invite) return res.send(404);
     const now = Date.now();
-    if (invite.created + (INVITE_TOKEN_AGEM * 60 * 1000) < now) {
+    if (invite.created + (invite.age * 60 * 1000) < now) {
       invite.remove();
-      return res.send(403);
+      return res.send(404);
     } else {
       res.json(200, invite);
     }
@@ -947,7 +989,7 @@ exports.test = function(req, res) {
   }];
   const n = u.random(0, 2);
 
-  console.log('Random n=%s', n + '');
+  //console.log('Random n=%s', n + '');
   const pos = {
     owner: party[n].name,
     id: party[n].id,
@@ -1008,7 +1050,7 @@ exports.log = function(req, res) {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1029,19 +1071,19 @@ mongoose.connect(config.mongo.uri, config.mongo.options);
 
 // Populate DB with sample data
 // if(config.seedDB) { require('./config/seed'); }
-if(process.env.NDO6_SEED === 'true') { __webpack_require__(14); }
+if(process.env.NDO6_SEED === 'true') { __webpack_require__(15); }
 
 // Setup server
 const app = express();
-const server = __webpack_require__(15).createServer(app);
-const socketio = __webpack_require__(16)(server, {
+const server = __webpack_require__(16).createServer(app);
+const socketio = __webpack_require__(17)(server, {
   serveClient: (config.env !== 'production'),
   path: '/socket.io'
 });
 
-__webpack_require__(17)(socketio);
-__webpack_require__(18)(app);
-__webpack_require__(29)(app);
+__webpack_require__(18)(socketio);
+__webpack_require__(19)(app);
+__webpack_require__(30)(app);
 
 // Start server
 server.listen(config.port, config.ip, function () {
@@ -1053,22 +1095,26 @@ exports = module.exports = app;
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 const View = __webpack_require__(2);
+const Invite = __webpack_require__(6);
 
 View.find({}).remove(function() {
-  console.log('finished clearing views.');
+  console.log('views cleared.');
+});
+Invite.find({}).remove(function() {
+  console.log('invitations cleared.');
 });
 
 // View.find({}).remove(function() {
@@ -1087,19 +1133,19 @@ View.find({}).remove(function() {
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("socket.io");
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1126,7 +1172,7 @@ const handler = {
   }
 };
 
-__webpack_require__(10).register(handler);
+__webpack_require__(11).register(handler);
 
 function _log(message) {
   const now = new Date();
@@ -1205,25 +1251,25 @@ module.exports = function (io) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 const express = __webpack_require__(3);
-const favicon = __webpack_require__(19);
-const morgan = __webpack_require__(20);
-const compression = __webpack_require__(21);
-const bodyParser = __webpack_require__(22);
-const methodOverride = __webpack_require__(23);
-const cookieParser = __webpack_require__(24);
-const errorHandler = __webpack_require__(25);
-const path = __webpack_require__(8);
+const favicon = __webpack_require__(20);
+const morgan = __webpack_require__(21);
+const compression = __webpack_require__(22);
+const bodyParser = __webpack_require__(23);
+const methodOverride = __webpack_require__(24);
+const cookieParser = __webpack_require__(25);
+const errorHandler = __webpack_require__(26);
+const path = __webpack_require__(9);
 const config = __webpack_require__(0);
 const client_path = config.clientPath||'client';
-const passport = __webpack_require__(6);
-const session = __webpack_require__(26);
-const mongoStore = __webpack_require__(27)(session);
+const passport = __webpack_require__(7);
+const session = __webpack_require__(27);
+const mongoStore = __webpack_require__(28)(session);
 const mongoose = __webpack_require__(4);
 
 var _counter = 0;
@@ -1247,7 +1293,7 @@ module.exports = function(app) {
   var env = app.get('env');
 
   app.set('views', path.join(config.serverPath, 'views'));
-  app.engine('html', __webpack_require__(28).renderFile);
+  app.engine('html', __webpack_require__(29).renderFile);
   app.set('view engine', 'html');
   app.use(compression());
 
@@ -1277,75 +1323,75 @@ module.exports = function(app) {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("serve-favicon");
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("morgan");
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = require("compression");
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = require("method-override");
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("cookie-parser");
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("errorhandler");
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = require("connect-mongo");
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = require("ejs");
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var errors = __webpack_require__(30);
+var errors = __webpack_require__(31);
 
 module.exports = function(app) {
-  app.use('/api/view', __webpack_require__(31));
+  app.use('/api/view', __webpack_require__(32));
   app.use('/auth', __webpack_require__(38));
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|assets)/*')
@@ -1360,7 +1406,7 @@ module.exports = function(app) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1387,15 +1433,15 @@ module.exports[404] = function pageNotFound(req, res) {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var express = __webpack_require__(3);
-var controller = __webpack_require__(11);
-var auth = __webpack_require__(7);
+var controller = __webpack_require__(12);
+var auth = __webpack_require__(8);
 
 var router = express.Router();
 
@@ -1426,29 +1472,6 @@ router.post('/test', auth.isSystem(), controller.test);
 router.post('/log', auth.isSystem(), controller.log);
 
 module.exports = router;
-
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const mongoose = __webpack_require__(4);
-const Schema = mongoose.Schema;
-
-var InviteSchema = new Schema({
-  owner: String,
-  map: String,
-  email: String,
-  message: String,
-  point: String,
-  token: String,
-  created: Number
-}, { versionKey: false });
-
-module.exports = mongoose.model('Invite', InviteSchema);
 
 
 /***/ }),
@@ -1499,11 +1522,11 @@ module.exports = require("nodemailer");
 
 
 const express = __webpack_require__(3);
-const passport = __webpack_require__(6);
+const passport = __webpack_require__(7);
 const config = __webpack_require__(0);
-const auth = __webpack_require__(7);
+const auth = __webpack_require__(8);
 const View = __webpack_require__(2);
-const controller = __webpack_require__(11);
+const controller = __webpack_require__(12);
 // const socket = require('../config/socketio');
 const system = __webpack_require__(39);
 
@@ -1519,7 +1542,7 @@ router.post('/login', function(req, res, next) {
   if (!data.owner) return res.send(500, 'Undefined nickname');
 
   if (system.authenticate(data.name, data.password)) {
-    const token = auth.signToken(config.system.id, config.system.name);
+    const token = auth.signToken({id: config.system.id, owner: config.system.name});
     return res.json(200, {token: token, system: true});
   }
 
@@ -1528,7 +1551,7 @@ router.post('/login', function(req, res, next) {
     if (error) return res.json(401, error);
     if (!view) return res.json(404, {message: 'Something went wrong, please try again.'});
 
-    const token = auth.signToken(view._id, data.owner);
+    const token = auth.signToken({id: view._id, owner: data.owner});
     // console.log('TOKEN=', token);
     res.json({token: token});
     if (data.position) {
@@ -1568,7 +1591,7 @@ exports.authenticate = function(name, password) {
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const passport = __webpack_require__(6);
+const passport = __webpack_require__(7);
 const LocalStrategy = __webpack_require__(41).Strategy;
 
 exports.setup = function (View, config) {

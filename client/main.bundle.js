@@ -297,10 +297,10 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["c" /* HttpClientModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_forms__["d" /* FormsModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_forms__["i" /* ReactiveFormsModule */],
-                __WEBPACK_IMPORTED_MODULE_5__angular_material__["C" /* MatToolbarModule */],
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["D" /* MatToolbarModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["m" /* MatIconModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["c" /* MatButtonModule */],
-                __WEBPACK_IMPORTED_MODULE_5__angular_material__["D" /* MatTooltipModule */],
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["E" /* MatTooltipModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["o" /* MatListModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["l" /* MatFormFieldModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["n" /* MatInputModule */],
@@ -308,21 +308,22 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["s" /* MatProgressSpinnerModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["r" /* MatProgressBarModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["e" /* MatCardModule */],
-                __WEBPACK_IMPORTED_MODULE_5__angular_material__["y" /* MatSnackBarModule */],
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["z" /* MatSnackBarModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["d" /* MatButtonToggleModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["w" /* MatSlideToggleModule */],
-                __WEBPACK_IMPORTED_MODULE_5__angular_material__["A" /* MatTableModule */],
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["B" /* MatTableModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["q" /* MatPaginatorModule */],
-                __WEBPACK_IMPORTED_MODULE_5__angular_material__["z" /* MatSortModule */],
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["A" /* MatSortModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["p" /* MatMenuModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["i" /* MatDialogModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["g" /* MatChipsModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["v" /* MatSidenavModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["k" /* MatExpansionModule */],
-                __WEBPACK_IMPORTED_MODULE_5__angular_material__["B" /* MatTabsModule */],
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["C" /* MatTabsModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["f" /* MatCheckboxModule */],
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["t" /* MatRadioModule */],
-                __WEBPACK_IMPORTED_MODULE_5__angular_material__["b" /* MatAutocompleteModule */]
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["b" /* MatAutocompleteModule */],
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["x" /* MatSliderModule */]
             ],
             providers: [
                 {
@@ -474,21 +475,21 @@ module.exports = "<div class=\"overpage-content page-elements\" [ngSwitch]=\"u.o
 /***/ "../../../../../src/app/components/overpages/overpage-initial.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-initial\"  layout-col>\r\n  <!-- TERMS -->\r\n  <div *ngIf=\"!user.settings.accepted\" class=\"page-initial-section init-terms\">\r\n    <h1>Welcome to ndo6</h1>\r\n    <p>This app will use your location to represent it on a map.</p>\r\n    <p>If you accept the terms you can share your position in a \"party\".</p>\r\n    <p>A party is a shared map where all components enter after authentication.</p>\r\n    <p>In a party you can also share points, ways and messages (chat) between the components.</p>\r\n    <mat-checkbox [(ngModel)]=\"o.termsAccepted\">Accept</mat-checkbox>\r\n  </div>\r\n  <!-- USER -->\r\n  <div *ngIf=\"!user.settings.nick\" class=\"page-initial-section init-user\">\r\n    <h1>Your nickname</h1>\r\n    <p>You must specify a nickname to make yourself recognized inside a party.</p>\r\n    <mat-form-field flex>\r\n      <input matInput [(ngModel)]=\"o.nick\" placeholder=\"Nick\">\r\n    </mat-form-field>\r\n  </div>\r\n  <!-- INVITATION -->\r\n  <div *ngIf=\"user.invitation\" class=\"page-initial-section init-invitation\">\r\n    <h1>Invitation</h1>\r\n    <p>You have received an invitation:</p>\r\n    <mat-checkbox [(ngModel)]=\"o.inviteAccepted\">Accept</mat-checkbox>\r\n    <div *ngIf=\"error\" class=\"error\">{{error}}</div>\r\n  </div>\r\n  <!-- DONE -->\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"done()\" color=\"warn\" [disabled]=\"!o.nick || !o.termsAccepted\">OK</button>\r\n    <span flex></span>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-initial\"  layout-col>\r\n  <!-- TERMS -->\r\n  <div *ngIf=\"!user.settings.accepted\" class=\"page-initial-section init-terms\">\r\n    <h1>Welcome to ndo6</h1>\r\n    <p>This app will use your location to represent it on a map.</p>\r\n    <p>If you accept the terms you can share your position in a \"party\".</p>\r\n    <p>A party is a shared map where all components enter after authentication.</p>\r\n    <p>In a party you can also share points, ways and messages (chat) between the components.</p>\r\n    <mat-checkbox [(ngModel)]=\"o.termsAccepted\">Accept</mat-checkbox>\r\n  </div>\r\n  <!-- USER -->\r\n  <div *ngIf=\"!user.settings.nick\" class=\"page-initial-section init-user\">\r\n    <h1>Your nickname</h1>\r\n    <p>You must specify a nickname to make yourself recognized inside a party.</p>\r\n    <mat-form-field flex>\r\n      <input matInput [(ngModel)]=\"o.nick\" placeholder=\"Nick\">\r\n    </mat-form-field>\r\n  </div>\r\n  <!-- INVITATION -->\r\n  <div *ngIf=\"user.invitation\" class=\"page-initial-section init-invitation\">\r\n    <h1>Invitation</h1>\r\n    <p *ngIf=\"invite\">You have received an invitation:</p>\r\n    <p *ngIf=\"loading\">loading...</p>\r\n    <div *ngIf=\"!loading\" lyout-col>\r\n      <p *ngIf=\"invite\">{{invite.message}}</p>\r\n      <div *ngIf=\"invite\" class=\"ndo6-property\" layout-row><div class=\"name\">Map:</div><div class=\"value\" flex>{{invite.map}}</div> </div>\r\n      <p class=\"error\" *ngIf=\"invitationExpired\">This invitation has expired!</p>\r\n    </div>\r\n    <div *ngIf=\"invite\" class=\"invitation-accept\" layout-col>\r\n      <mat-checkbox *ngIf=\"!invitationExpired\" [(ngModel)]=\"o.inviteAccepted\" [disabled]=\"loading\">Accept</mat-checkbox>\r\n    </div>\r\n    <div *ngIf=\"error\" class=\"error\">{{error}}</div>\r\n  </div>\r\n  <!-- DONE -->\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"done()\" color=\"warn\" [disabled]=\"!o.nick || !o.termsAccepted || loading\">OK</button>\r\n    <span flex></span>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
 /***/ "../../../../../src/app/components/overpages/overpage-invite.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content\" layout-col>\r\n  <h1>Invite</h1>\r\n  <div label>Mail list</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"e-mails\" [(ngModel)]=\"u.overpage.options.element.emails\" matTextareaAutosize matAutosizeMinRows=\"2\" (change)=\"refreshState()\"></textarea>\r\n  </mat-form-field>\r\n  <div label>Message</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"message\" [(ngModel)]=\"u.overpage.options.element.message\" matTextareaAutosize matAutosizeMinRows=\"2\"></textarea>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-select placeholder=\"Center\" [(ngModel)]=\"u.overpage.options.element.point\" >\r\n      <mat-option>(none)</mat-option>\r\n      <mat-option *ngFor=\"let ele of elements\" [value]=\"ele.ndo6.name\">{{ele.ndo6.name}}</mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"invite()\" color=\"warn\" [disabled]=\"!inviteState.valid\">send invite</button>\r\n    <span flex></span>\r\n  </div>\r\n  <div *ngIf=\"inviteState.error\" class=\"error\" layout-col>\r\n    <div class=\"header\">Errors sending invite:</div>\r\n    <div>{{inviteState.error}}</div>\r\n  </div>\r\n\r\n</div>\r\n\r\n"
+module.exports = "<div class=\"overpage-content\" layout-col>\r\n  <h1>Invite</h1>\r\n  <div label>Mail list</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"e-mails\" [(ngModel)]=\"u.overpage.options.element.emails\" matTextareaAutosize matAutosizeMinRows=\"2\" (change)=\"refreshState()\"></textarea>\r\n  </mat-form-field>\r\n  <div label>Message</div>\r\n  <mat-form-field>\r\n    <textarea matInput placeholder=\"message\" [(ngModel)]=\"u.overpage.options.element.message\" matTextareaAutosize matAutosizeMinRows=\"2\"></textarea>\r\n  </mat-form-field>\r\n  <mat-form-field>\r\n    <mat-select placeholder=\"Center\" [(ngModel)]=\"u.overpage.options.element.point\" >\r\n      <mat-option>(none)</mat-option>\r\n      <mat-option *ngFor=\"let ele of elements\" [value]=\"ele.ndo6.name\">{{ele.ndo6.name}}</mat-option>\r\n    </mat-select>\r\n  </mat-form-field>\r\n  <div label>Validity of invitation ({{u.overpage.options.element.age}} days from today)</div>\r\n  <mat-slider [max]=\"10\" [min]=\"1\" [step]=\"1\" [tick-interval]=\"1\" [(ngModel)]=\"u.overpage.options.element.age\">\r\n  </mat-slider>\r\n  <div class=\"padding-top\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"invite()\" color=\"warn\" [disabled]=\"!inviteState.valid\">send invite</button>\r\n    <span flex></span>\r\n  </div>\r\n  <div *ngIf=\"inviteState.error\" class=\"error\" layout-col>\r\n    <div class=\"header\">Errors sending invite:</div>\r\n    <div>{{inviteState.error}}</div>\r\n  </div>\r\n</div>\r\n\r\n"
 
 /***/ }),
 
 /***/ "../../../../../src/app/components/overpages/overpage-map.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"addElement()\">\r\n        <mat-icon>add</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element button-row\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.name}}</div>\r\n        <button mat-icon-button (click)=\"find(ele.marker)\">\r\n          <mat-icon>{{ele.marker.ndo6.content.icon.code}}</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.mym)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div class=\"padding-top\" layout-row>\r\n      <span flex></span>\r\n      <button mat-raised-button (click)=\"invite()\" color=\"accent\" disabled>Invite in Party</button>\r\n      <span flex></span>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-map\" layout-col>\r\n  <form class=\"login-data\" *ngIf=\"!logged\" layout-col>\r\n    <mat-form-field class=\"example-full-width\">\r\n      <input type=\"text\" name=\"name\" placeholder=\"Pick a map name\" [(ngModel)]=\"data.name\" aria-label=\"map name\" (focus)=\"resetError()\" matInput [formControl]=\"mapName\" [matAutocomplete]=\"auto\">\r\n      <mat-autocomplete #auto=\"matAutocomplete\">\r\n        <mat-option *ngFor=\"let option of filteredOptions | async\" [value]=\"option\">{{ option }}</mat-option>\r\n      </mat-autocomplete>\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"password\" matInput type=\"password\" [(ngModel)]=\"data.password\" (focus)=\"resetError()\" placeholder=\"Password\">\r\n    </mat-form-field>\r\n    <mat-form-field>\r\n      <input name=\"nick\" matInput [(ngModel)]=\"data.nick\" (focus)=\"resetError()\" placeholder=\"Nikname\">\r\n    </mat-form-field>\r\n    <p></p>\r\n    <div class=\"login-toolbar\" layout-row>\r\n      <button mat-raised-button color=\"primary\" [disabled]=\"!validate()\" (click)=\"login()\">LOGIN</button>\r\n      <div flex></div>\r\n      <button mat-raised-button color=\"accent\" [disabled]=\"!validate()\" (click)=\"create()\">CREATE</button>\r\n    </div>\r\n  </form>\r\n  <div class=\"login-data info\" *ngIf=\"logged\" layout-col>\r\n    <div label>Current Map</div>\r\n    <div class=\"map-state button-row\" layout-row>\r\n      <div class=\"map-name\">{{data.name}}</div>\r\n      <div class=\"map-owner\" flex>{{data.nick}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"logout()\">\r\n        <mat-icon>power_settings_new</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"button-row button-row-label\" layout-row>\r\n      <div label flex>Elements</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"addElement()\">\r\n        <mat-icon>add</mat-icon>\r\n      </button>\r\n    </div>\r\n    <div class=\"map-elements\">\r\n      <div *ngIf=\"!elements.length\" class=\"grey\">no elements</div>\r\n      <div class=\"map-element button-row\" *ngFor=\"let ele of elements\" layout-row>\r\n        <div class=\"map-element-type\" flex>{{ele.name}}</div>\r\n        <button mat-icon-button (click)=\"find(ele.marker)\">\r\n          <mat-icon>{{ele.marker.ndo6.content.icon.code}}</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div label>Party</div>\r\n    <div class=\"map-owners\">\r\n      <div class=\"map-owner button-row\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{data.nick}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(ndo6.mym)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n      <div class=\"map-owner button-row\" *ngFor=\"let own of owners\" layout-row>\r\n        <div class=\"map-owner-name\" flex>{{own.name}}</div>\r\n        <button mat-mini-fab color=\"primary\" (click)=\"find(own.marker)\">\r\n          <mat-icon>person_pin_circle</mat-icon>\r\n        </button>\r\n      </div>\r\n    </div>\r\n    <div class=\"padding-top\" layout-row>\r\n      <span flex></span>\r\n      <button mat-raised-button (click)=\"invite()\" color=\"accent\">Invite in Party</button>\r\n      <span flex></span>\r\n    </div>\r\n  </div>\r\n  <div class=\"error\">{{error}}</div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -583,7 +584,8 @@ var OverpageInitialComponent = (function () {
         this.interaction = interaction;
         this.o = {};
         this.loading = false;
-        this.invite = {};
+        this.invite = null;
+        this.invitationExpired = false;
         this.error = null;
     }
     OverpageInitialComponent.prototype.ngOnInit = function () {
@@ -593,9 +595,14 @@ var OverpageInitialComponent = (function () {
         self.o.nick = self.user.settings.nick;
         self.o.termsAccepted = self.user.settings.accepted;
         self.o.inviteAccepted = false;
-        self.interaction.checkInvite({ invitation: self.user.invitation }, function (err, data) {
-            self.invite = data || {};
-            self.error = self.u.getErrorMessage(err);
+        self.invitationExpired = false;
+        self.interaction.checkInvite(self.user.invitation, function (err, data) {
+            self.invite = data;
+            var invite = self.invite || {};
+            var now = Date.now();
+            var age = (invite.age || (2 * 24 * 60)) * 60 * 1000;
+            self.invitationExpired = invite.created ? (now - invite.created > age) : false;
+            self.error = err ? self.u.getErrorMessage(err) : null;
             self.loading = false;
         });
     };
@@ -980,7 +987,7 @@ var MapElementPointComponent = (function () {
         e.content.icon = this.graph.getDef('flag');
         e.content.color = this.graph.defaults.color;
         e.content.position = this.ndo6.getCurrentPos();
-        e.content.draggable = true;
+        e.content.draggable = false;
         this.u.overpage.options.element = e;
         this.info = e;
     };
@@ -1049,7 +1056,7 @@ var OverpageInviteComponent = (function () {
         this.maps = maps;
         this.inviteState = {
             valid: false,
-            error: 'aksdjfaksdfj ashfkjasd fkahsdjfkhaksdfhakjsdfh akjsfh kajsdfk jahfk a'
+            error: ''
         };
         this.elements = [];
     }
@@ -1057,7 +1064,8 @@ var OverpageInviteComponent = (function () {
         this.u.overpage.options.element = {
             emails: '',
             message: this.user.settings.nick + ' invite you in map "' + this.user.settings.map + '"',
-            point: null
+            point: null,
+            age: 2
         };
         this.inviteState.valid = false;
         this.elements = this.maps.elements;
@@ -1866,6 +1874,7 @@ var Ndo6Service = (function () {
         this.watchId = null;
         this.active = false;
         this.center = false;
+        this.centerPoint = null;
         this.posErrorCounter = 0;
         this.clickOnMarker = null;
         this.pooling = null;
@@ -1902,10 +1911,11 @@ var Ndo6Service = (function () {
             if (self.user.isLogged()) {
                 self.logout();
             }
+            self.centerPoint = self.user.invite.point;
             self.login(self.user.invite.token, {
                 name: self.user.invite.map,
                 nick: self.user.settings.nick
-            }, function () { return self.maps.onElement(self.user.invite.point, function (m) { return self.centerMap(m); }); });
+            });
         }
     };
     Ndo6Service.prototype.getDistanceService = function () {
@@ -2034,7 +2044,7 @@ var Ndo6Service = (function () {
                 longitude: p.longitude,
                 id: self.user.settings.id
             }));
-            var center = self.center || self.followMarker === self.mym;
+            var center = self.center || (self.followMarker === self.mym);
             if (center === true) {
                 self.centerMap(self.mym);
                 self.center = false;
@@ -2237,6 +2247,9 @@ var Ndo6Service = (function () {
                 ele.draggable = !!ele.content.draggable;
                 ex = self.getMarker(ele);
                 self.maps.elements.push(ex);
+            }
+            if (!self.followMarker && !!self.centerPoint && ex.ndo6.name === self.centerPoint) {
+                self.centerMap(ex);
             }
         });
     };
@@ -2922,7 +2935,7 @@ var UtilsService = (function () {
     UtilsService = UtilsService_1 = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_material__["h" /* MatDialog */],
-            __WEBPACK_IMPORTED_MODULE_1__angular_material__["x" /* MatSnackBar */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_material__["y" /* MatSnackBar */],
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["f" /* ApplicationRef */]])
     ], UtilsService);
     return UtilsService;
