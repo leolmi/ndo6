@@ -797,11 +797,7 @@ exports.positions = function(req, res) {
   res.json(200, req.view.positions);
 };
 
-/**
- * Insert element
- */
-exports.element = function(req, res) {
-  // console.log('ELEMENT: ', req.body);
+function _onViewElement(req, res, cb) {
   if (!_validate(req, res)) return;
   const e = req.body;
   if (!e || !e.name || !e.type || !e.content) return u.error(res, 'Undefined element');
@@ -809,19 +805,37 @@ exports.element = function(req, res) {
   const x = _.find(req.view.elements, function(xe) {
     return xe.name === e.name && xe.type === e.type;
   });
-  // console.log('founded element:', x);
-  if (x) return u.error(res, 'Element already exists!');
-  // console.log('element not found ... insert new');
-  const ele = {
-    owner: req.owner,
-    name: e.name,
-    type: e.type,
-    content: e.content
-  };
-  // console.log('push new element', ele);
-  req.view.elements.push(ele);
-  // console.log('notify update...');
-  _update(req, res, ele, 'onElement', 'elements');
+  cb(x, e);
+}
+
+/**
+ * Insert element
+ */
+exports.element = function(req, res) {
+  _onViewElement(req, res, function(x, e){
+    if (!x) return u.error(res, 'Element already exists!');
+    const ele = {
+      owner: req.owner,
+      name: e.name,
+      type: e.type,
+      content: e.content
+    };
+    // console.log('push new element', ele);
+    req.view.elements.push(ele);
+    // console.log('notify update...');
+    _update(req, res, ele, 'onElement', 'elements');
+  });
+};
+
+/**
+ * Update element
+ */
+exports.updateElement = function(req, res) {
+  _onViewElement(req, res, function(x, e){
+    if (!x) return u.error(res, 'Element not found');
+    x.content = e.content;
+    _update(req, res, x, 'onElement', 'elements');
+  });
 };
 
 /**
@@ -1461,6 +1475,7 @@ router.post('/position', auth.isOnView(), controller.position);
 router.post('/message', auth.isOnView(), controller.message);
 router.post('/element', auth.isOnView(), controller.element);
 router.post('/remove', auth.isOnView(), controller.removeElement);
+router.post('/update', auth.isOnView(), controller.updateElement);
 router.post('/invite', auth.isOnView(), controller.invite);
 
 

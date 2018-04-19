@@ -520,7 +520,7 @@ module.exports = "<div class=\"overpage-content page-test\">\r\n  <div layout-co
 /***/ "../../../../../src/app/components/overpages/overpage-way.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"overpage-content page-way\" layout-col flex>\r\n  <div label>{{u.overpage.options.way.name}}</div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Start Address:</div><div class=\"value big-text\" flex>{{roadmap.start_address}}</div></div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">End Address:</div><div class=\"value big-text\" flex>{{roadmap.end_address}}</div></div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Distance:</div><div class=\"value big-text\" flex>{{roadmap.distance.text}}</div></div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Duration:</div><div class=\"value big-text\" flex>{{roadmap.duration.text}}</div></div>\r\n  <div label>Actions</div>\r\n  <div class=\"overpage-buttons-toolbar\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"deleteElement()\" [color]=\"deleteState.color\">{{deleteState.message}}</button>\r\n    <button mat-raised-button *ngIf=\"u.overpage.options.way.marker.ndo6._modified\" (click)=\"updateElement()\" color=\"primary\">Update way</button>\r\n    <span flex></span>\r\n  </div>\r\n  <div label>Instructions</div>\r\n  <div class=\"roadmap ndo6-scrollbar\" layout-col flex>\r\n    <div class=\"roadmap-step-list\">\r\n      <div *ngFor=\"let step of roadmap.steps\" class=\"roadmap-step\" [ngClass]=\"{'selected':step === current}\"\r\n           (click)=\"select(step)\" layout-col>\r\n        <div class=\"step-instruction\" [innerHtml]=\"step.instructions\"></div>\r\n        <div class=\"step-data\">{{step.distance.text}} - {{step.duration.text}}</div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n"
+module.exports = "<div class=\"overpage-content page-way\" layout-col flex>\r\n  <div label>{{u.overpage.options.way.name}}</div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Start Address:</div><div class=\"value big-text\" flex>{{roadmap.start_address}}</div></div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">End Address:</div><div class=\"value big-text\" flex>{{roadmap.end_address}}</div></div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Distance:</div><div class=\"value big-text\" flex>{{roadmap.distance.text}}</div></div>\r\n  <div class=\"ndo6-property\" layout-row><div class=\"name\">Duration:</div><div class=\"value big-text\" flex>{{roadmap.duration.text}}</div></div>\r\n  <div *ngIf=\"element.ndo6.content.points.length\" label>Points</div>\r\n  <div class=\"way-point\" *ngFor=\"let point of element.ndo6.content.points\" layout-row>\r\n    <div class=\"overpage-list-item\" layout-row flex>\r\n      <mat-icon>place</mat-icon>\r\n      <div flex>latitude={{point.latitude}}, longitude={{point.longitude}}</div>\r\n      <button mat-mini-fab color=\"warn\" (click)=\"deletePoint(point)\">\r\n        <mat-icon>delete</mat-icon>\r\n      </button>\r\n    </div>\r\n  </div>\r\n  <div label>Actions</div>\r\n  <div class=\"overpage-buttons-toolbar\" layout-row>\r\n    <span flex></span>\r\n    <button mat-raised-button (click)=\"deleteElement()\" [color]=\"deleteState.color\">{{deleteState.message}}</button>\r\n    <button mat-raised-button *ngIf=\"element.ndo6._modified\" (click)=\"updateElement()\" color=\"primary\">Update way</button>\r\n    <span flex></span>\r\n  </div>\r\n  <div label>Instructions</div>\r\n  <div class=\"roadmap ndo6-scrollbar\" layout-col flex>\r\n    <div class=\"roadmap-step-list\">\r\n      <div *ngFor=\"let step of roadmap.steps\" class=\"roadmap-step overpage-list-item\" [ngClass]=\"{'selected':step === current}\"\r\n           (click)=\"select(step)\" layout-col>\r\n        <div class=\"step-instruction\" [innerHtml]=\"step.instructions\"></div>\r\n        <div class=\"step-data\">{{step.distance.text}} - {{step.duration.text}}</div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -957,6 +957,7 @@ var OverpageWayComponent = (function () {
         this.ndo6 = ndo6;
         this.roadmap = {};
         this.current = null;
+        this.element = null;
         this.deleteStates = {
             first: {
                 message: 'Delete this way',
@@ -973,20 +974,24 @@ var OverpageWayComponent = (function () {
         this.current = step;
     };
     OverpageWayComponent.prototype.ngOnInit = function () {
-        this.roadmap = this.u.overpage.options.way.marker.ndo6.roadmap;
+        this.element = this.u.overpage.options.way.marker;
+        this.roadmap = this.element.ndo6.roadmap;
     };
     OverpageWayComponent.prototype.deleteElement = function () {
         if (this.deleteState === this.deleteStates.first) {
             this.deleteState = this.deleteStates.second;
         }
         else {
-            this.ndo6.deleteElement(this.u.overpage.options.way.marker);
+            this.ndo6.deleteElement(this.element);
             this.u.closeOverpage();
         }
     };
     OverpageWayComponent.prototype.updateElement = function () {
-        // TODO: aggiorna elemento
-        this.u.snack('Not implemented yet!');
+        this.ndo6.updateElement(this.element);
+    };
+    OverpageWayComponent.prototype.deletePoint = function (p) {
+        __WEBPACK_IMPORTED_MODULE_11_lodash___default.a.pull(this.element.ndo6.content.points, p);
+        this.element.ndo6._modified = true;
     };
     OverpageWayComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -1281,6 +1286,11 @@ var InteractionService = (function () {
         data._system = true;
         return data;
     };
+    InteractionService.prototype._post = function (method, data, cb) {
+        var self = this;
+        self.http.post(self.user.getUrl('api/view/' + method), self._check(data))
+            .subscribe(function (r) { return cb(null, r); }, self._err(cb));
+    };
     InteractionService.prototype.ngOnInit = function () {
         var self = this;
         if (self.user.settings.token) {
@@ -1313,28 +1323,25 @@ var InteractionService = (function () {
             .subscribe(function (r) { return cb(null, r); }, this._err(cb));
     };
     InteractionService.prototype.create = function (data, cb) {
-        this.http.post(this.user.getUrl('api/view/create'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
+        this._post('create', data, cb);
     };
     InteractionService.prototype.position = function (data, cb) {
-        this.http.post(this.user.getUrl('api/view/position'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
+        this._post('position', data, cb);
     };
     InteractionService.prototype.message = function (data, cb) {
-        this.http.post(this.user.getUrl('api/view/message'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
+        this._post('message', data, cb);
     };
     InteractionService.prototype.element = function (data, cb) {
-        this.http.post(this.user.getUrl('api/view/element'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
+        this._post('element', data, cb);
+    };
+    InteractionService.prototype.updateElement = function (data, cb) {
+        this._post('update', data, cb);
     };
     InteractionService.prototype.deleteElement = function (data, cb) {
-        this.http.post(this.user.getUrl('api/view/remove'), this._check(data))
-            .subscribe(function (r) { return cb(); }, this._err(cb));
+        this._post('remove', data, cb);
     };
     InteractionService.prototype.invite = function (data, cb) {
-        this.http.post(this.user.getUrl('api/view/invite'), this._check(data))
-            .subscribe(function (r) { return cb(null, r); }, this._err(cb));
+        this._post('invite', data, cb);
     };
     InteractionService.prototype.checkInvite = function (invitation, cb) {
         if (!invitation) {
@@ -2384,7 +2391,7 @@ var Ndo6Service = (function () {
         if (!!way.ndo6._initialized) {
             way.ndo6._modified = true;
         }
-        way.ndo6.content.points = __WEBPACK_IMPORTED_MODULE_7_lodash___default.a.map(way.ndo6._data.request.waypoints, function (wp) { return self.maps.getPosition(wp.location); });
+        way.ndo6.content.points = __WEBPACK_IMPORTED_MODULE_7_lodash___default.a.map(way.ndo6._data.request.waypoints, function (wp) { return self.maps.getPosition(wp.location.location); });
         way.ndo6.roadmap = way.ndo6._data.routes[0].legs[0];
         way.ndo6._initialized = true;
         // console.log('WAY details:', way.ndo6._data);
@@ -2523,11 +2530,20 @@ var Ndo6Service = (function () {
             }
         });
     };
-    Ndo6Service.prototype.deleteElement = function (marker) {
+    Ndo6Service.prototype.updateElement = function (e) {
         var self = this;
-        self.interaction.deleteElement(marker.ndo6, function (err) {
+        self.interaction.updateElement(e.ndo6, function (err) {
             if (!err) {
-                self.maps.deleteMapElement(marker);
+                e.ndo6._modified = false;
+                self.u.snack('Element updated.');
+            }
+        });
+    };
+    Ndo6Service.prototype.deleteElement = function (e) {
+        var self = this;
+        self.interaction.deleteElement(e.ndo6, function (err) {
+            if (!err) {
+                self.maps.deleteMapElement(e);
                 self.u.snack('Element deleted.');
             }
         });
