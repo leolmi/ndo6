@@ -813,7 +813,7 @@ function _onViewElement(req, res, cb) {
  */
 exports.element = function(req, res) {
   _onViewElement(req, res, function(x, e){
-    if (!x) return u.error(res, 'Element already exists!');
+    if (x) return u.error(res, 'Element already exists!');
     const ele = {
       owner: req.owner,
       name: e.name,
